@@ -25,13 +25,17 @@ Run in PowerShell at the repository root:
 ```powershell
 rustup toolchain install 1.88.0 --profile minimal --component rustfmt --component clippy
 powershell -NoProfile -File Scripts/Initialize-BuildDependencies.ps1
-dotnet restore TrenchHQ.slnx --locked-mode -p:Platform=x64
+dotnet restore TrenchHQ.slnx --locked-mode -p:Platform=x64 -p:Configuration=Release
 dotnet build TrenchHQ.slnx -c Release -p:Platform=x64 -p:ContinuousIntegrationBuild=true --no-restore
 ```
 
 Bootstrap verifies Node, runs `npm ci --ignore-scripts` with that runtime and
 invokes esbuild explicitly. MSBuild builds the locked Rust engine and native
 WindowPin helper. NuGet/Cargo/npm lock files belong in source control.
+
+Restore and build must use the same configuration. Release enables ReadyToRun;
+restoring with Debug defaults can omit its compiler package and fail with
+`NETSDK1094` on a fresh machine.
 
 Use Visual Studio's packaged launch for interactive development. Deployment can
 register the manifest's family and use its local data. Preserve installations and

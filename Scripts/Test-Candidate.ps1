@@ -28,7 +28,7 @@ function Invoke-Gate([string]$Name, [string]$Program, [string[]]$Arguments) {
 Push-Location $root
 try {
     if (Test-Path CANDIDATE.json) { Invoke-Gate 'source-before' 'python' @('Scripts/Verify-Candidate.py') }
-    Invoke-Gate 'restore' 'dotnet' @('restore','TrenchHQ.slnx','--locked-mode','-p:Platform=x64')
+    Invoke-Gate 'restore' 'dotnet' @('restore','TrenchHQ.slnx','--locked-mode','-p:Platform=x64','-p:Configuration=Release')
     Invoke-Gate 'release-build' 'dotnet' @('build','TrenchHQ.slnx','-c','Release','-p:Platform=x64','-p:ContinuousIntegrationBuild=true','--no-restore')
     foreach ($name in @('LogicTests','SocialTests','IntegrationTests','OnChainIntegrationTests')) {
         Invoke-Gate $name 'dotnet' @('run','--project',"Tests/TrenchHQ.$name/TrenchHQ.$name.csproj",'-c','Release','-p:ContinuousIntegrationBuild=true')
