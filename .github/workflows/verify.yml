@@ -28,7 +28,9 @@ jobs:
         shell: powershell
         run: |
           $live = '${{ inputs.live_exchanges }}' -eq 'true'
-          ./Scripts/Test-Candidate.ps1 -EvidencePath "$env:RUNNER_TEMP/TrenchHQ-gates" -LiveExchanges:$live
+          # Hosted Windows runs elevated; the product rejects elevated pin targets.
+          ./Scripts/Test-Candidate.ps1 -EvidencePath "$env:RUNNER_TEMP/TrenchHQ-gates" -LiveExchanges:$live -SkipInteractiveWindowTests
+          'Native/embedded window-pin tests are skipped on the elevated hosted runner. Both remain required on an interactive, non-elevated Windows desktop; cache checks run here.' | Add-Content $env:GITHUB_STEP_SUMMARY
       - name: Build and inspect private Store upload
         shell: powershell
         run: |

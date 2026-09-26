@@ -1,5 +1,9 @@
 [CmdletBinding()]
-param([Parameter(Mandatory=$true)][string]$EvidencePath, [switch]$LiveExchanges)
+param(
+    [Parameter(Mandatory=$true)][string]$EvidencePath,
+    [switch]$LiveExchanges,
+    [switch]$SkipInteractiveWindowTests
+)
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $evidence = [IO.Path]::GetFullPath($EvidencePath)
@@ -40,9 +44,18 @@ try {
         Invoke-Gate 'rust-clippy' 'cargo' @('+1.88.0','clippy','--locked','--all-targets','--','-D','warnings')
         Invoke-Gate 'rust-tests' 'cargo' @('+1.88.0','test','--locked')
     } finally { Pop-Location }
-    Invoke-Gate 'pin-native' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','-p:ContinuousIntegrationBuild=true')
-    Invoke-Gate 'pin-embedded' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','--no-build','--','--embedded-lock')
-    Invoke-Gate 'pin-cache' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','--no-build','--','--cache-only')
+    if ($SkipInteractiveWindowTests) {
+        $reason = 'Requires an interactive, non-elevated Windows desktop; remains a release gate.'
+        foreach ($name in @('pin-native','pin-embedded')) {
+            $script:results += [pscustomobject]@{Gate=$name;ExitCode=$null;Status='skipped';Reason=$reason}
+            Write-Warning "SKIPPED $name. $reason"
+        }
+        $script:results | ConvertTo-Json -Depth 3 | Set-Content -Encoding UTF8 (Join-Path $evidence 'gates.json')
+    } else {
+        Invoke-Gate 'pin-native' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','-p:ContinuousIntegrationBuild=true')
+        Invoke-Gate 'pin-embedded' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','--no-build','--','--embedded-lock')
+    }
+    Invoke-Gate 'pin-cache' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','-p:ContinuousIntegrationBuild=true','--','--cache-only')
     if ($LiveExchanges) {
         Invoke-Gate 'exchanges-live' 'dotnet' @('run','--project','Tests/TrenchHQ.ProviderValidation','-c','Release','-p:ContinuousIntegrationBuild=true')
     }

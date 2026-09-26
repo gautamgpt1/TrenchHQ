@@ -61,8 +61,12 @@ For focused edits, run affected commands from `Scripts/Test-Candidate.ps1`.
 Real provider certification requires fresh authorized keys through protected
 configuration. Never reuse another developer's saved credentials.
 
-Hosted CI still needs its first observed run; local results do not prove that
-GitHub's Windows runner supports every interactive window test.
+Hosted Windows runners [run as administrators with UAC disabled](https://docs.github.com/en/actions/reference/runners/github-hosted-runners#administrative-privileges).
+TrenchHQ excludes elevated pin targets. CI explicitly uses
+`-SkipInteractiveWindowTests`, records `pin-native` and `pin-embedded` as skipped,
+and still runs the native cache checks. Run the default command above on an
+interactive, non-elevated desktop for both pin modes before binary release.
+A hosted CI pass does not certify these two interactive gates.
 
 ## Package privately
 
