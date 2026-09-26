@@ -20,7 +20,10 @@ function Invoke-Gate([string]$Name, [string]$Program, [string[]]$Arguments) {
     $script:results += [pscustomobject]@{Gate=$Name;ExitCode=$code;Log=[IO.Path]::GetFileName($log)}
     $script:results | ConvertTo-Json -Depth 3 | Set-Content -Encoding UTF8 (Join-Path $evidence 'gates.json')
     Write-Output "$Name exit=$code"
-    if ($code -ne 0) { throw "Candidate gate failed: $Name. See its evidence log." }
+    if ($code -ne 0) {
+        Get-Content -LiteralPath $log -Tail 100
+        throw "Candidate gate failed: $Name. See its evidence log."
+    }
 }
 Push-Location $root
 try {
