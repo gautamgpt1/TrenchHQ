@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="TrenchHQ.DockedBarWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:TrenchHQ.Controls"
+    Title="Docked Bar">
+
+    <Grid x:Name="DockedBarRoot" Background="#FF000000">
+        <Grid.Resources>
+            <SolidColorBrush x:Key="DockedBarTextBrush" Color="#F5F5F5" />
+            <SolidColorBrush x:Key="DockedBarSeparatorBrush" Color="#333333" />
+            <Style x:Key="WebsiteActionButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Width" Value="28" />
+                <Setter Property="MinWidth" Value="28" />
+                <Setter Property="Height" Value="28" />
+                <Setter Property="MinHeight" Value="28" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="Foreground" Value="{StaticResource DockedBarTextBrush}" />
+                <Setter Property="BorderThickness" Value="0" />
+                <Setter Property="CornerRadius" Value="14" />
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="ControlsRow" Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="PanelContent" Grid.Row="1" Grid.ColumnSpan="2">
+            <Grid x:Name="ApplicationWindowArea" Visibility="Collapsed" SizeChanged="OnApplicationAreaSizeChanged">
+                <TextBlock x:Name="ApplicationWindowStatus" Text="Select Choose window to pin an application here."
+                           Margin="12" TextWrapping="Wrap" VerticalAlignment="Center"
+                           Foreground="{StaticResource DockedBarTextBrush}" />
+            </Grid>
+            <controls:PriceTickerWidget x:Name="PriceTicker" />
+            <controls:WalletActivityWidget x:Name="WalletActivity" Visibility="Collapsed" />
+            <controls:XTimelineWidget x:Name="XTimeline" Visibility="Collapsed" />
+            <controls:WebsiteWidget x:Name="Website" Visibility="Collapsed" />
+        </Grid>
+
+        <StackPanel x:Name="PanelControls"
+                    Grid.Column="1"
+                    Margin="8,4"
+                    Orientation="Horizontal"
+                    Spacing="4"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top">
+            <StackPanel.Resources>
+                <SolidColorBrush x:Key="ButtonBackgroundPointerOver" Color="#1FFFFFFF" />
+                <SolidColorBrush x:Key="ButtonBackgroundPressed" Color="#2AFFFFFF" />
+                <SolidColorBrush x:Key="ButtonBorderBrushPointerOver" Color="Transparent" />
+                <SolidColorBrush x:Key="ButtonBorderBrushPressed" Color="Transparent" />
+                <SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#F5F5F5" />
+                <SolidColorBrush x:Key="ButtonForegroundPressed" Color="#F5F5F5" />
+            </StackPanel.Resources>
+            <Button x:Name="ChooseApplicationButton" Style="{StaticResource WebsiteActionButtonStyle}" Visibility="Collapsed"
+                    Click="OnChooseApplicationClick" AutomationProperties.Name="Pin application window" ToolTipService.ToolTip="Pin window">
+                <FontIcon x:Name="ApplicationPinIcon" Glyph="&#xE718;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+            </Button>
+            <StackPanel x:Name="WebsiteActions" Orientation="Horizontal" Spacing="2" Visibility="Collapsed">
+                <Button Style="{StaticResource WebsiteActionButtonStyle}" Click="OnWebsiteHomeClick"
+                        AutomationProperties.Name="Go to saved website" ToolTipService.ToolTip="Go to saved website">
+                    <FontIcon Glyph="&#xE80F;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+                <Button Style="{StaticResource WebsiteActionButtonStyle}" Click="OnWebsiteReloadClick"
+                        AutomationProperties.Name="Refresh website" ToolTipService.ToolTip="Refresh website">
+                    <FontIcon Glyph="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+                <Button x:Name="WebsiteLockButton" Style="{StaticResource WebsiteActionButtonStyle}" Click="OnWebsiteLockClick"
+                        AutomationProperties.Name="Lock page interaction" ToolTipService.ToolTip="Lock page interaction">
+                    <FontIcon x:Name="WebsiteLockIcon" Glyph="&#xE785;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+                <Button Style="{StaticResource WebsiteActionButtonStyle}" Click="OnWebsiteOpenClick"
+                        AutomationProperties.Name="Open in browser" ToolTipService.ToolTip="Open in browser">
+                    <FontIcon Glyph="&#xE8A7;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+            </StackPanel>
+            <Ellipse x:Name="ContentStatusDot"
+                     Width="8"
+                     Height="8"
+                     Margin="2,0,0,0"
+                     VerticalAlignment="Center"
+                     Fill="#FF8A8A8A"
+                     AutomationProperties.Name="Content status: Not configured" />
+            <Button Style="{StaticResource WebsiteActionButtonStyle}" AutomationProperties.Name="Open dashboard" Click="OnOpenSettingsClick" ToolTipService.ToolTip="Open dashboard">
+                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="{StaticResource DockedBarTextBrush}" Glyph="&#xE713;" IsTextScaleFactorEnabled="False" />
+            </Button>
+            <Button Style="{StaticResource WebsiteActionButtonStyle}" AutomationProperties.Name="Minimize docked bar" Click="OnMinimizeClick" ToolTipService.ToolTip="Minimize">
+                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="{StaticResource DockedBarTextBrush}" Glyph="&#xE73F;" IsTextScaleFactorEnabled="False" />
+            </Button>
+            <Button Style="{StaticResource WebsiteActionButtonStyle}" AutomationProperties.Name="Close docked bar" Click="OnCloseClick" ToolTipService.ToolTip="Close docked bar">
+                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="14" Foreground="{StaticResource DockedBarTextBrush}" Glyph="&#xE711;" IsTextScaleFactorEnabled="False" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</Window>

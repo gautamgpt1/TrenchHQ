@@ -1,0 +1,27 @@
+<UserControl
+    x:Class="TrenchHQ.Controls.XTimelineWidget"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid x:Name="WidgetRoot" Background="#FF000000">
+        <ScrollViewer x:Name="FeedScroller" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="PostItems">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Padding="{Binding Padding}" BorderThickness="0,0,0,1" BorderBrush="#FF333333">
+                            <StackPanel Spacing="{Binding Spacing}">
+                                <TextBlock Text="{Binding Heading}" FontSize="{Binding HeadingFontSize}" Foreground="#FFF5F5F5" FontWeight="SemiBold" TextWrapping="Wrap" />
+                                <TextBlock Text="{Binding Text}" FontSize="{Binding BodyFontSize}" Foreground="#FFF5F5F5" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                                <TextBlock Text="{Binding Detail}" Foreground="#FFAAAAAA" FontSize="{Binding DetailFontSize}" TextWrapping="Wrap" />
+                                <HyperlinkButton Content="View on X" Tag="{Binding Url}" FontSize="{Binding BodyFontSize}" Click="OnOpenPostClick" Padding="0" />
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <Button x:Name="LatestButton" Visibility="Collapsed" Background="Transparent" BorderThickness="0"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch" Click="OnOpenPostClick">
+            <TextBlock x:Name="LatestText" Foreground="#FFF5F5F5" TextTrimming="CharacterEllipsis" MaxLines="1" />
+        </Button>
+    </Grid>
+</UserControl>

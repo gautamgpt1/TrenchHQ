@@ -1,0 +1,62 @@
+{
+  "source": {
+    "rpcUrl": "https://api.mainnet-beta.solana.com",
+    "accessedAtUtc": "2026-09-01T13:35:00Z",
+    "signature": "66MW21HaUvPsUVvsaKufczrDDqZrT7ADqyCa9RX5XFERUcnjtm3fE8GDtbJT7j5Xxowi1oPZJdmganCvoPpBMtnG",
+    "slot": 443448226,
+    "blockTimeUnixSeconds": 1788273581,
+    "note": "Successful classic SPL-token Pump sell reduced to its Anchor self-CPI TradeEvent instruction."
+  },
+  "selections": [
+    {
+      "descriptor": {
+        "poolKey": {
+          "chainNamespace": "solana",
+          "chainId": "mainnet-beta",
+          "protocolId": "pumpBondingCurve",
+          "poolAddress": "4BCFisrHpcM983FkLFKAuL1Nn6iRf9r9j5NY78Bxju65"
+        },
+        "poolType": "bondingCurve",
+        "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "baseMint": "ACjQoC69MW5m6Bfht34Pd8x3oXn9xLjPK9k3p82cpump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseDecimals": 6,
+        "quoteDecimals": 9,
+        "baseVault": null,
+        "quoteVault": null,
+        "supportStatus": "supported",
+        "supportReason": null
+      },
+      "selectedMint": "ACjQoC69MW5m6Bfht34Pd8x3oXn9xLjPK9k3p82cpump"
+    }
+  ],
+  "transaction": {
+    "signature": "66MW21HaUvPsUVvsaKufczrDDqZrT7ADqyCa9RX5XFERUcnjtm3fE8GDtbJT7j5Xxowi1oPZJdmganCvoPpBMtnG",
+    "slot": 443448226,
+    "failed": false,
+    "commitment": "confirmed",
+    "sourceId": "solana-public-rpc-golden-fixture",
+    "observedAtUnixMs": 1788273581000,
+    "instructions": [
+      {
+        "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "dataBase64": "5EWlLlHLmh2923/TTuZh7oi6hlKD8FDmCeIXiJNWRegtO6nqMv5LIM/lxFPb9Wrfp0NSAQAAAACQqIsxTgAAAACItPMLTwytTzoXkeyL30aEFopdkhgn3lZs+BnzecjvCa3jlmoAAAAA3effugoAAAAgqwilRnsCAN07vL4DAAAAIBP2WLV8AQCNGBoMhJ+pN6bzSt7TCB75VwCqywybs9kJpLkUdSek618AAAAAAAAAqTYDAAAAAADrB5mgcBEOvHKQ1D/PaBrw04IjYhFPXWZrPho8N3vBbQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAc2VsbAAeAAAAAAAAAMoDAQAAAAAAiBMAAAAAAABUmwEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKdDUgEAAAAA3effugoAAADdO7y+AwAAAA==",
+        "outerInstructionIndex": 2,
+        "innerInstructionIndex": 2,
+        "stackHeight": 2,
+        "accountAddresses": []
+      }
+    ],
+    "programData": [],
+    "tokenBalances": []
+  },
+  "expected": [
+    {
+      "protocolId": "pumpBondingCurve",
+      "poolAddress": "4BCFisrHpcM983FkLFKAuL1Nn6iRf9r9j5NY78Bxju65",
+      "lastTradeCoefficient": "66009331171",
+      "lastTradeScale": 18,
+      "eventId": "66MW21HaUvPsUVvsaKufczrDDqZrT7ADqyCa9RX5XFERUcnjtm3fE8GDtbJT7j5Xxowi1oPZJdmganCvoPpBMtnG:2:2:pumpTrade:4BCFisrHpcM983FkLFKAuL1Nn6iRf9r9j5NY78Bxju65"
+    }
+  ]
+}

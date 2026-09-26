@@ -1,0 +1,21 @@
+{
+  "name": "trenchhq-sidecar",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "main.cjs",
+  "scripts": {
+    "build": "esbuild main.cjs --bundle --platform=node --format=cjs --external:http-proxy-agent --external:https-proxy-agent --external:socks-proxy-agent --outfile=dist/sidecar.bundle.cjs",
+    "start": "node dist/sidecar.bundle.cjs"
+  },
+  "dependencies": {
+    "ccxt": "^4.5.78",
+    "http-proxy-agent": "^8.0.0",
+    "https-proxy-agent": "^8.0.0",
+    "protobufjs": "^7.6.6",
+    "socks-proxy-agent": "^9.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  }
+}

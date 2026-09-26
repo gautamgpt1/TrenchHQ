@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="TrenchHQ.Overlay"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:TrenchHQ.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="Overlay">
+
+        <Grid x:Name="OverlayRoot" Background="Transparent">
+        <Grid.Resources>
+            <SolidColorBrush x:Key="OverlaySeparatorBrush" Color="#4D3B3B3B" />
+            <SolidColorBrush x:Key="OverlayTextBrush" Color="#F5F5F5" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid x:Name="OverlayTitleBar" Grid.Row="0" MinHeight="32" Margin="0" Background="#26000000" VerticalAlignment="Top">
+            <Grid.Resources>
+                <SolidColorBrush x:Key="TitleBarButtonNormalBrush" Color="Transparent" />
+                <SolidColorBrush x:Key="TitleBarButtonHoverBrush" Color="#141414" />
+                <SolidColorBrush x:Key="TitleBarButtonPressedBrush" Color="#1A1A1A" />
+                <SolidColorBrush x:Key="TitleBarButtonForegroundBrush" Color="#F5F5F5" />
+
+                <Style x:Key="TitleBarCircleButtonStyle" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                    <Setter Property="Width" Value="28" />
+                    <Setter Property="Height" Value="28" />
+                    <Setter Property="MinWidth" Value="28" />
+                    <Setter Property="MinHeight" Value="28" />
+                    <Setter Property="CornerRadius" Value="14" />
+                    <Setter Property="Padding" Value="0" />
+                    <Setter Property="Background" Value="{StaticResource TitleBarButtonNormalBrush}" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Foreground" Value="{StaticResource TitleBarButtonForegroundBrush}" />
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="Button">
+                                <Grid>
+                                    <Border x:Name="Root"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="{TemplateBinding CornerRadius}">
+                                        <ContentPresenter HorizontalAlignment="Center"
+                                                          VerticalAlignment="Center"
+                                                          Foreground="{TemplateBinding Foreground}" />
+                                    </Border>
+                                    <VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Normal" />
+                                            <VisualState x:Name="PointerOver">
+                                                <VisualState.Setters>
+                                                    <Setter Target="Root.Background" Value="{StaticResource TitleBarButtonHoverBrush}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Pressed">
+                                                <VisualState.Setters>
+                                                    <Setter Target="Root.Background" Value="{StaticResource TitleBarButtonPressedBrush}" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Disabled">
+                                                <VisualState.Setters>
+                                                    <Setter Target="Root.Opacity" Value="0.6" />
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>
+                                </Grid>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Grid.Resources>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="TitleBarDragRegion" Grid.Column="0" Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <TextBlock x:Name="OverlayTitleText"
+                           Text="Overlay"
+                           Style="{StaticResource SectionTitleStyle}"
+                           Margin="12,0,8,0"
+                           VerticalAlignment="Center"
+                           TextWrapping="NoWrap"
+                           TextTrimming="CharacterEllipsis"
+                           MaxLines="1" />
+            </Grid>
+
+            <StackPanel x:Name="TitleBarButtons" Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center" Margin="0,0,8,0">
+                <StackPanel x:Name="ApplicationActions" Orientation="Horizontal" Spacing="2" Visibility="Collapsed">
+                    <Button x:Name="ChooseApplicationButton" Style="{StaticResource TitleBarCircleButtonStyle}"
+                            Click="OnChooseApplicationClick" AutomationProperties.Name="Pin application window" ToolTipService.ToolTip="Pin window">
+                        <FontIcon x:Name="ApplicationPinIcon" Glyph="&#xE718;" FontSize="14" IsTextScaleFactorEnabled="False" />
+                    </Button>
+                </StackPanel>
+                <StackPanel x:Name="WebsiteActions" Orientation="Horizontal" Spacing="2" Visibility="Collapsed">
+                    <Button Style="{StaticResource TitleBarCircleButtonStyle}"
+                            Click="OnWebsiteHomeClick" AutomationProperties.Name="Go to saved website" ToolTipService.ToolTip="Go to saved website">
+                        <FontIcon Glyph="&#xE80F;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                    </Button>
+                    <Button Style="{StaticResource TitleBarCircleButtonStyle}"
+                            Click="OnWebsiteReloadClick" AutomationProperties.Name="Refresh website" ToolTipService.ToolTip="Refresh website">
+                        <FontIcon Glyph="&#xE72C;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                    </Button>
+                    <Button x:Name="WebsiteLockButton" Style="{StaticResource TitleBarCircleButtonStyle}"
+                            Click="OnWebsiteLockClick" AutomationProperties.Name="Lock page interaction" ToolTipService.ToolTip="Lock page interaction">
+                        <FontIcon x:Name="WebsiteLockIcon" Glyph="&#xE785;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                    </Button>
+                    <Button Style="{StaticResource TitleBarCircleButtonStyle}"
+                            Click="OnWebsiteOpenClick" AutomationProperties.Name="Open in browser" ToolTipService.ToolTip="Open in browser">
+                        <FontIcon Glyph="&#xE8A7;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                    </Button>
+                </StackPanel>
+                <Ellipse x:Name="ContentStatusDot"
+                         Width="8"
+                         Height="8"
+                         Margin="2,0,0,0"
+                         VerticalAlignment="Center"
+                         Fill="#FF8A8A8A"
+                         AutomationProperties.Name="Content status: Not configured" />
+                <Button Style="{StaticResource TitleBarCircleButtonStyle}" VerticalAlignment="Center" VerticalContentAlignment="Center" Click="OnOpenSettingsClick" AutomationProperties.Name="Open TrenchHQ settings" ToolTipService.ToolTip="Settings">
+                    <FontIcon Glyph="&#xE713;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+                <Button Style="{StaticResource TitleBarCircleButtonStyle}" VerticalAlignment="Center" VerticalContentAlignment="Center" Click="OnMinimizeClick" AutomationProperties.Name="Minimize overlay" ToolTipService.ToolTip="Minimize">
+                    <FontIcon Glyph="&#xE73F;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+                <Button Style="{StaticResource TitleBarCircleButtonStyle}" VerticalAlignment="Center" VerticalContentAlignment="Center" Click="OnCloseClick" AutomationProperties.Name="Close overlay" ToolTipService.ToolTip="Close">
+                    <FontIcon Glyph="&#xE711;" FontFamily="Segoe Fluent Icons" FontSize="14" IsTextScaleFactorEnabled="False" />
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="OverlayContentArea" Grid.Row="1">
+            <Grid x:Name="ApplicationWindowArea" Visibility="Collapsed" SizeChanged="OnApplicationAreaSizeChanged">
+                <TextBlock x:Name="ApplicationWindowStatus" Text="Use Choose window in the title bar to pin an application here."
+                           TextWrapping="Wrap" Margin="16" Foreground="{StaticResource OverlayTextBrush}" />
+            </Grid>
+            <controls:PriceTickerWidget x:Name="PriceTicker" />
+            <controls:WalletActivityWidget x:Name="WalletActivity" Visibility="Collapsed" />
+            <controls:XTimelineWidget x:Name="XTimeline" Visibility="Collapsed" />
+            <controls:WebsiteWidget x:Name="Website" Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</Window>

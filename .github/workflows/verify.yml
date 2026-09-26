@@ -1,0 +1,40 @@
+name: Verify source
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      live_exchanges:
+        type: boolean
+        default: false
+        description: Test unauthenticated live exchange feeds
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2025
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5
+        with:
+          global-json-file: global.json
+      - name: Restore Rust toolchain
+        run: rustup toolchain install 1.88.0 --profile minimal --component rustfmt --component clippy
+      - name: Restore locked sidecar inputs
+        shell: powershell
+        run: ./Scripts/Initialize-BuildDependencies.ps1
+      - name: Candidate gates
+        shell: powershell
+        run: |
+          $live = '${{ inputs.live_exchanges }}' -eq 'true'
+          ./Scripts/Test-Candidate.ps1 -EvidencePath "$env:RUNNER_TEMP/TrenchHQ-gates" -LiveExchanges:$live
+      - name: Build and inspect private Store upload
+        shell: powershell
+        run: |
+          $output = "$env:RUNNER_TEMP/TrenchHQ-package"
+          ./Scripts/Build-ReleasePackage.ps1 -OutputPath $output -StoreUpload
+          $package = Get-ChildItem -LiteralPath $output -Recurse -Filter *.msix | Where-Object { $_.DirectoryName -notlike '*\Dependencies\*' } | Select-Object -First 1
+          python Scripts/Inspect-Package.py $package.FullName "$env:RUNNER_TEMP/TrenchHQ-payload.json"
+          if ($LASTEXITCODE -ne 0) { throw 'Package inspection failed.' }
+      # Do not upload unsigned binary artifacts or automatically publish a release.

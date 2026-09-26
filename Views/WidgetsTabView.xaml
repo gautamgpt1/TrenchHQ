@@ -1,0 +1,637 @@
+<UserControl
+    x:Class="TrenchHQ.Views.WidgetsTabView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:TrenchHQ.Controls">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Margin="32,24,32,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Text="Widgets" Style="{StaticResource PageTitleStyle}" />
+            <TextBlock Grid.Row="1"
+                       Text="Create and configure reusable content for your desktop display."
+                       Style="{StaticResource PageSubtitleStyle}" />
+        </Grid>
+
+        <Border Grid.Row="1"
+                Margin="32,12,32,0"
+                BorderBrush="{StaticResource SeparatorBrush}"
+                BorderThickness="0,0,0,1" />
+
+        <Grid Grid.Row="2" Background="{StaticResource AppBackgroundBrush}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="WidgetSidebarColumn" Width="240" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid x:Name="WidgetSidebar"
+                  Grid.Column="0"
+                  Background="{StaticResource AppBackgroundBrush}"
+                  BorderBrush="{StaticResource SeparatorBrush}"
+                  BorderThickness="0,0,1,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="64" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Padding="16,10,12,10" ColumnSpacing="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="WidgetHeadingText"
+                               Text="Your widgets (0)"
+                               Style="{StaticResource SidebarTitleStyle}"
+                               VerticalAlignment="Center" />
+                    <Button x:Name="WidgetAddButton"
+                            AutomationProperties.Name="Add widget"
+                            Grid.Column="1"
+                            Padding="12,0"
+                            MinHeight="32"
+                            Style="{StaticResource SecondaryButtonStyle}">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                            <TextBlock Text="+" FontSize="16" />
+                            <TextBlock Text="Add" />
+                        </StackPanel>
+                        <Button.Flyout>
+                            <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                <MenuFlyoutItem Text="Price Ticker" Click="OnAddPriceTickerClick" />
+                                <MenuFlyoutItem Text="Wallet Watcher" Click="OnAddWalletActivityClick" />
+                                <MenuFlyoutItem Text="X Tracker (official API)" Click="OnAddXTimelineClick" />
+                                <MenuFlyoutItem Text="Website" Click="OnAddWebsiteClick" />
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                </Grid>
+
+                <ListView x:Name="WidgetList"
+                          Grid.Row="1"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          SelectionMode="Single"
+                          SelectionChanged="OnWidgetSelectionChanged">
+                    <ListView.Resources>
+                        <SolidColorBrush x:Key="ListViewItemBackground" Color="Transparent" />
+                        <SolidColorBrush x:Key="ListViewItemBackgroundPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="ListViewItemBackgroundSelected" Color="Transparent" />
+                        <SolidColorBrush x:Key="ListViewItemBackgroundSelectedPointerOver" Color="Transparent" />
+                        <SolidColorBrush x:Key="ListViewItemForeground" Color="#B5B5B5" />
+                        <SolidColorBrush x:Key="ListViewItemForegroundPointerOver" Color="#4CE5C1" />
+                        <SolidColorBrush x:Key="ListViewItemForegroundSelected" Color="#4CE5C1" />
+                        <SolidColorBrush x:Key="ListViewItemForegroundSelectedPointerOver" Color="#4CE5C1" />
+                    </ListView.Resources>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="MinHeight" Value="40" />
+                            <Setter Property="Padding" Value="16,6" />
+                            <Setter Property="Margin" Value="0" />
+                            <Setter Property="CornerRadius" Value="0" />
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"
+                                       Style="{StaticResource ListItemTitleStyle}"
+                                       VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid x:Name="WidgetEmptyState" Margin="32,16,32,28">
+                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="10">
+                        <Button x:Name="EmptyWidgetAddButton"
+                                Width="48"
+                                Height="48"
+                                Padding="0"
+                                HorizontalAlignment="Center"
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"
+                                AutomationProperties.AutomationId="EmptyWidgetAddButton"
+                                AutomationProperties.Name="Add first widget"
+                                Background="{StaticResource InputBackgroundBrush}"
+                                BorderThickness="0"
+                                CornerRadius="24"
+                                Click="OnAddPriceTickerClick">
+                            <FontIcon Glyph="&#xE710;" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="{StaticResource AccentBrush}" />
+                        </Button>
+                        <TextBlock Text="Create your first widget" Style="{StaticResource SectionTitleStyle}" HorizontalAlignment="Center" />
+                        <TextBlock Text="Add a Price Ticker to choose the instruments it should display."
+                                   Style="{StaticResource HintTextStyle}"
+                                   TextAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+
+                <Grid x:Name="WidgetEditor" Visibility="Collapsed">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Margin="32,16,32,0" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel VerticalAlignment="Center" Spacing="2">
+                            <TextBlock x:Name="WidgetNameText"
+                                       Style="{StaticResource EditorTitleStyle}" />
+                            <TextBlock x:Name="SaveStatusText"
+                                       Style="{StaticResource HintTextStyle}"
+                                       TextWrapping="Wrap"
+                                       AutomationProperties.LiveSetting="Polite" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Button x:Name="WidgetCancelButton"
+                                    Style="{StaticResource StagedSecondaryButtonStyle}"
+                                    Click="OnCancelClick">Cancel</Button>
+                            <Button x:Name="WidgetSaveButton"
+                                    Style="{StaticResource StagedPrimaryButtonStyle}"
+                                    Click="OnSaveClick">Save</Button>
+                            <Border Width="1" Height="24" Margin="4,0"
+                                    Background="{StaticResource SeparatorBrush}" />
+                            <Button x:Name="DeleteWidgetButton"
+                                    AutomationProperties.Name="Delete widget"
+                                    Style="{StaticResource DangerIconButtonStyle}"
+                                    Click="OnDeleteClick"
+                                    ToolTipService.ToolTip="Delete widget">
+                                <SymbolIcon Symbol="Delete" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Grid.Row="1"
+                            BorderBrush="{StaticResource SeparatorBrush}"
+                            BorderThickness="0,0,0,1"
+                            Margin="32,12,32,0" />
+
+                    <Grid x:Name="PriceTickerEditor" Grid.Row="2" Margin="32,16,32,16">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Grid ColumnSpacing="12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="InstrumentSearchBox"
+                                     Style="{StaticResource InputTextBoxStyle}"
+                                     PlaceholderText="Search token name, symbol, pair, exchange, or contract address"
+                                     TextChanged="OnInstrumentSearchTextChanged"
+                                     KeyDown="OnInstrumentSearchKeyDown" />
+                            <Button x:Name="InstrumentSearchButton"
+                                    Grid.Column="1"
+                                    Style="{StaticResource PrimaryButtonStyle}"
+                                    Click="OnInstrumentSearchClick">Search</Button>
+                        </Grid>
+
+                        <StackPanel Grid.Row="1" Spacing="8">
+                            <ComboBox x:Name="OnChainPriceModeBox"
+                                      Header="On-chain price updates"
+                                      Width="350"
+                                      HorizontalAlignment="Left"
+                                      SelectionChanged="OnOnChainPriceModeChanged">
+                                <ComboBoxItem Content="Poll current pool state every second" Tag="oneSecondPolling" />
+                                <ComboBoxItem Content="Live event stream (WebSocket or gRPC)" Tag="webSocket" />
+                            </ComboBox>
+                            <TextBlock Text="Polling checks current state at one-second intervals, waiting for each request to finish. Streaming follows live events. Cost depends on your provider and activity; neither mode is always cheaper. Centralized markets are unaffected."
+                                       Style="{StaticResource HintTextStyle}"
+                                       TextWrapping="Wrap" />
+                            <StackPanel x:Name="ProviderRequiredPanel"
+                                        Margin="0,10,0,0"
+                                        Orientation="Horizontal"
+                                        Spacing="6"
+                                        Visibility="Collapsed">
+                                <TextBlock Text="Set up an active data provider for this chain to stream the pool."
+                                           Style="{StaticResource WarningTextStyle}"
+                                           VerticalAlignment="Center" />
+                                <HyperlinkButton Content="Open API Connections"
+                                                 Padding="0"
+                                                 Click="OnManageProvidersClick" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <ScrollViewer x:Name="SelectedInstrumentsScroller"
+                                      Grid.Row="2"
+                                      Margin="0,12,0,0"
+                                      MaxHeight="76"
+                                      Visibility="Collapsed"
+                                      HorizontalScrollMode="Disabled"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      VerticalScrollMode="Enabled"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalContentAlignment="Stretch">
+                            <ItemsControl x:Name="SelectedInstrumentsChips">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <controls:WrapPanel HorizontalSpacing="8" VerticalSpacing="8" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Style="{StaticResource ChipStyle}">
+                                            <StackPanel Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DisplayLabel}" FontSize="12" VerticalAlignment="Center" />
+                                                <Button Style="{StaticResource ChipIconButtonStyle}"
+                                                        Tag="{Binding}"
+                                                        AutomationProperties.Name="Remove selected instrument"
+                                                        ToolTipService.ToolTip="Remove"
+                                                        Click="OnRemoveInstrumentClick">
+                                                    <FontIcon Glyph="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10" />
+                                                </Button>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+
+                        <Grid Grid.Row="4" Margin="0,12,0,0" MinHeight="160">
+                            <ListView x:Name="MarketsListView"
+                                      Padding="0,0,12,0"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      SelectionMode="None"
+                                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="0" />
+                                        <Setter Property="IsTabStop" Value="False" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource SeparatorBrush}" BorderThickness="0,0,0,1">
+                                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                      Tag="{Binding TagValue}"
+                                                      AutomationProperties.Name="{Binding TagValue}"
+                                                      HorizontalAlignment="Stretch"
+                                                      HorizontalContentAlignment="Stretch"
+                                                      Padding="0,10"
+                                                      Click="OnMarketSelectionClick">
+                                                <Grid Margin="8,0,0,0" ColumnSpacing="12">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="200" />
+                                                        <ColumnDefinition Width="*" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <TextBlock Text="{Binding Symbol}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding VenueName}" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                </Grid>
+                                            </CheckBox>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+
+                            <Grid x:Name="MarketsLoadingOverlay" Background="Transparent" Visibility="Visible">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                                    <ProgressRing Width="32" Height="32" IsActive="True" Foreground="{StaticResource AccentBrush}" />
+                                    <TextBlock Text="Loading markets..." Style="{StaticResource HintTextStyle}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <StackPanel x:Name="MarketsEmptyState" Visibility="Collapsed" HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="6">
+                                <TextBlock x:Name="MarketsEmptyTitle" Text="No markets loaded yet." Style="{StaticResource HintTextStyle}" />
+                                <TextBlock x:Name="MarketsEmptySubtitle" Text="Try again in a moment." Style="{StaticResource HintTextStyle}" />
+                            </StackPanel>
+
+                            <Grid x:Name="OnChainResultsGrid" Visibility="Collapsed">
+                                <ListView x:Name="OnChainPoolsListView"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          SelectionMode="None"
+                                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <ListView.ItemContainerStyle>
+                                        <Style TargetType="ListViewItem">
+                                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                            <Setter Property="Padding" Value="0" />
+                                            <Setter Property="IsTabStop" Value="False" />
+                                        </Style>
+                                    </ListView.ItemContainerStyle>
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border BorderBrush="{StaticResource SeparatorBrush}" BorderThickness="0,0,0,1">
+                                                <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                                          IsEnabled="{Binding IsSelectable}"
+                                                          Tag="{Binding}"
+                                                          HorizontalAlignment="Stretch"
+                                                          HorizontalContentAlignment="Stretch"
+                                                          Padding="0,8"
+                                                          Click="OnPoolSelectionClick">
+                                                    <Grid Margin="8,0,0,0" ColumnSpacing="14">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="58" />
+                                                            <ColumnDefinition Width="210" />
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                        </Grid.ColumnDefinitions>
+                                                        <Grid Width="52" Height="52" VerticalAlignment="Center">
+                                                            <Border Width="46"
+                                                                    Height="46"
+                                                                    Background="#252525"
+                                                                    CornerRadius="23"
+                                                                    HorizontalAlignment="Left"
+                                                                    VerticalAlignment="Top">
+                                                                <Grid>
+                                                                    <FontIcon Glyph="&#xE8D4;"
+                                                                              FontSize="15"
+                                                                              Foreground="{StaticResource TextSecondaryBrush}" />
+                                                                    <Image Source="{Binding Icon}" Stretch="UniformToFill" />
+                                                                </Grid>
+                                                            </Border>
+                                                            <Border Height="18"
+                                                                    Padding="2"
+                                                                    Background="#202020"
+                                                                    BorderBrush="{StaticResource SeparatorBrush}"
+                                                                    BorderThickness="1"
+                                                                    CornerRadius="9"
+                                                                    HorizontalAlignment="Right"
+                                                                    VerticalAlignment="Bottom"
+                                                                    AutomationProperties.Name="{Binding Title}"
+                                                                    ToolTipService.ToolTip="{Binding Title}">
+                                                                <StackPanel Orientation="Horizontal" Spacing="2">
+                                                                    <Image Source="{Binding ChainIcon}" Width="12" Height="12" Stretch="Uniform" />
+                                                                    <Grid Width="12" Height="12">
+                                                                        <Image Source="{Binding VenueIcon}" Stretch="Uniform" />
+                                                                    </Grid>
+                                                                </StackPanel>
+                                                            </Border>
+                                                        </Grid>
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="3">
+                                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding AssetDisplayName}"
+                                                                           MaxWidth="135"
+                                                                           FontSize="14"
+                                                                           FontWeight="SemiBold"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding AssetSymbol}"
+                                                                           MaxWidth="60"
+                                                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                                                           FontSize="14"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                            <StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding Age}"
+                                                                           FontSize="12"
+                                                                           FontWeight="SemiBold"
+                                                                           VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding TokenAddressText}"
+                                                                           Foreground="{StaticResource TextSecondaryBrush}"
+                                                                           FontSize="12"
+                                                                           TextTrimming="CharacterEllipsis"
+                                                                           VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        <Grid Grid.Column="2" ColumnSpacing="16" VerticalAlignment="Center">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="*" />
+                                                                <ColumnDefinition Width="*" />
+                                                            </Grid.ColumnDefinitions>
+                                                            <StackPanel Orientation="Horizontal" Spacing="4">
+                                                                <TextBlock Text="MC" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding MarketCap}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="4">
+                                                                <TextBlock Text="L" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Liquidity}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                                                <TextBlock Text="V" Foreground="{StaticResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                                                <TextBlock Text="{Binding Volume24h}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                            </StackPanel>
+                                                        </Grid>
+                                                        <TextBlock Grid.Column="3"
+                                                                   Text="{Binding Status}"
+                                                                   Visibility="{Binding StatusVisibility}"
+                                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                                   MaxWidth="175"
+                                                                   VerticalAlignment="Center"
+                                                                   TextWrapping="Wrap" />
+                                                    </Grid>
+                                                </CheckBox>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+
+                            <StackPanel x:Name="OnChainPoolsEmptyState"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Spacing="6">
+                                <ProgressRing x:Name="PoolSearchProgress"
+                                              Width="32"
+                                              Height="32"
+                                              HorizontalAlignment="Center"
+                                              IsActive="False"
+                                              Visibility="Collapsed" />
+                                <TextBlock x:Name="PoolSearchStatusText"
+                                           Style="{StaticResource HintTextStyle}"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           Visibility="Collapsed" />
+                                <StackPanel x:Name="OnChainPoolsEmptyPrompt" Spacing="6">
+                                    <TextBlock Text="Enter a Solana or EVM contract address to discover its pools."
+                                               Style="{StaticResource HintTextStyle}"
+                                               TextAlignment="Center" />
+                                    <TextBlock Text="Every pool is listed separately and validated on-chain."
+                                               Style="{StaticResource HintTextStyle}"
+                                               TextAlignment="Center" />
+                                </StackPanel>
+                            </StackPanel>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                    <ScrollViewer x:Name="WalletActivityEditor"
+                                  Grid.Row="2"
+                                  Margin="32,16,32,16"
+                                  Visibility="Collapsed"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel Spacing="16">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="Tracked wallets" Style="{StaticResource SubsectionTitleStyle}" />
+                                <TextBlock Text="Watch public addresses through the active API connection for each chain. TrenchHQ never needs a seed phrase or private key."
+                                           Style="{StaticResource HintTextStyle}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <Grid ColumnSpacing="10" RowSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="190" />
+                                    <ColumnDefinition Width="190" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ComboBox x:Name="WalletChainBox"
+                                          Header="Chain"
+                                          SelectedIndex="0"
+                                          Style="{StaticResource InputComboBoxStyle}"
+                                          HorizontalAlignment="Stretch">
+                                    <ComboBoxItem Tag="solana|mainnet-beta"><StackPanel Orientation="Horizontal" Spacing="8"><Image Width="18" Height="18" Source="ms-appx:///Assets/Chains/solana.svg" /><TextBlock Text="Solana" /></StackPanel></ComboBoxItem>
+                                    <ComboBoxItem Tag="eip155|1"><StackPanel Orientation="Horizontal" Spacing="8"><Image Width="18" Height="18" Source="ms-appx:///Assets/Chains/ethereum.svg" /><TextBlock Text="Ethereum" /></StackPanel></ComboBoxItem>
+                                    <ComboBoxItem Tag="eip155|8453"><StackPanel Orientation="Horizontal" Spacing="8"><Image Width="18" Height="18" Source="ms-appx:///Assets/Chains/base.svg" /><TextBlock Text="Base" /></StackPanel></ComboBoxItem>
+                                    <ComboBoxItem Tag="eip155|56"><StackPanel Orientation="Horizontal" Spacing="8"><Image Width="18" Height="18" Source="ms-appx:///Assets/Chains/bnb-chain.svg" /><TextBlock Text="BNB Smart Chain" /></StackPanel></ComboBoxItem>
+                                    <ComboBoxItem Tag="eip155|4663"><StackPanel Orientation="Horizontal" Spacing="8"><Image Width="18" Height="18" Source="ms-appx:///Assets/Chains/robinhood-chain.svg" /><TextBlock Text="Robinhood Chain" /></StackPanel></ComboBoxItem>
+                                </ComboBox>
+                                <TextBox x:Name="WalletLabelBox"
+                                         Grid.Column="1"
+                                         Header="Name"
+                                         PlaceholderText="Whale, Treasury…"
+                                         Style="{StaticResource InputTextBoxStyle}" />
+                                <TextBox x:Name="WalletAddressBox"
+                                         Grid.Column="2"
+                                         Header="Public address"
+                                         PlaceholderText="Paste a public wallet address"
+                                         Style="{StaticResource InputTextBoxStyle}"
+                                         KeyDown="OnWalletAddressKeyDown" />
+                                <Button Grid.Column="3"
+                                        Margin="0,24,0,0"
+                                        Style="{StaticResource PrimaryButtonStyle}"
+                                        Click="OnAddTrackedWalletClick">Add wallet</Button>
+                            </Grid>
+
+                            <TextBlock x:Name="WalletEditorStatusText"
+                                       Style="{StaticResource HintTextStyle}"
+                                       TextWrapping="Wrap" />
+
+                            <ListView x:Name="TrackedWalletsListView"
+                                      MinHeight="180"
+                                      Background="Transparent"
+                                      BorderThickness="0"
+                                      SelectionMode="None">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                        <Setter Property="Padding" Value="0" />
+                                        <Setter Property="IsTabStop" Value="False" />
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource SeparatorBrush}"
+                                                BorderThickness="0,0,0,1"
+                                                Padding="0,12">
+                                            <Grid ColumnSpacing="14">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition Width="180" />
+                                                    <ColumnDefinition Width="170" />
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <Image Width="20" Height="20" Source="{Binding Icon}" Stretch="Uniform" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="1" Text="{Binding Label}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="2" Text="{Binding ChainLabel}" Style="{StaticResource HintTextStyle}" VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="3" Text="{Binding Address}" FontFamily="Cascadia Mono" FontSize="12" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                <Button Grid.Column="4"
+                                                        Tag="{Binding Key}"
+                                                        AutomationProperties.Name="Remove tracked wallet"
+                                                        Style="{StaticResource DangerIconButtonStyle}"
+                                                        Click="OnRemoveTrackedWalletClick">
+                                                    <SymbolIcon Symbol="Delete" />
+                                                </Button>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <ScrollViewer x:Name="XTimelineEditor"
+                                  Grid.Row="2"
+                                  Margin="32,16,32,16"
+                                  Visibility="Collapsed"
+                                  VerticalScrollBarVisibility="Auto">
+                        <StackPanel MaxWidth="720" HorizontalAlignment="Left" Spacing="16">
+                            <StackPanel Spacing="4">
+                                <TextBlock Text="X account feed" Style="{StaticResource SubsectionTitleStyle}" />
+                                <TextBlock Text="Track up to 500 accounts through the official X API. Configure and test your bearer token in API settings. Paid HTTP streaming; standard delivery is within seconds, not guaranteed subsecond."
+                                           Style="{StaticResource HintTextStyle}"
+                                           TextWrapping="Wrap" />
+                            </StackPanel>
+
+                            <TextBox x:Name="XTimelineUrlBox"
+                                     Header="Accounts (one per line, or separated by commas)"
+                                     PlaceholderText="@account, @anotheraccount"
+                                     AcceptsReturn="True"
+                                     MinHeight="110"
+                                     MaxHeight="240"
+                                     Style="{StaticResource InputTextBoxStyle}"
+                                     TextChanged="OnXTimelineTextChanged" />
+
+                            <ToggleSwitch x:Name="XExternalContentConsentToggle"
+                                          Header="Load posts through the official X API"
+                                          OffContent="Off"
+                                          OnContent="On"
+                                          Toggled="OnXExternalContentConsentToggled" />
+
+                            <TextBox x:Name="XTextFilterBox" Header="Text filter (optional, applied locally)"
+                                     Style="{StaticResource InputTextBoxStyle}" TextChanged="OnXTimelineTextChanged" />
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <CheckBox x:Name="XPostsCheck" Content="Posts" Checked="OnXExternalContentConsentToggled" Unchecked="OnXExternalContentConsentToggled" />
+                                <CheckBox x:Name="XRepliesCheck" Content="Replies" Checked="OnXExternalContentConsentToggled" Unchecked="OnXExternalContentConsentToggled" />
+                                <CheckBox x:Name="XRepostsCheck" Content="Reposts" Checked="OnXExternalContentConsentToggled" Unchecked="OnXExternalContentConsentToggled" />
+                                <CheckBox x:Name="XQuotesCheck" Content="Quotes" Checked="OnXExternalContentConsentToggled" Unchecked="OnXExternalContentConsentToggled" />
+                            </StackPanel>
+                            <TextBlock Text="Enabled trackers share one official X connection. Posts are held in memory for 15 minutes. X receives your watchlist and charges for API usage. Filters below are local and do not reduce Post-read charges. Reconnect gaps may be missing."
+                                       Style="{StaticResource HintTextStyle}"
+                                       TextWrapping="Wrap" />
+
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <HyperlinkButton Content="X privacy policy"
+                                                 Padding="0"
+                                                 Tag="https://x.com/en/privacy"
+                                                 Click="OnOpenXPolicyClick" />
+                                <HyperlinkButton Content="X cookie policy"
+                                                 Padding="0"
+                                                 Tag="https://help.x.com/en/rules-and-policies/x-cookies"
+                                                 Click="OnOpenXPolicyClick" />
+                            </StackPanel>
+
+                            <TextBlock x:Name="XTimelineEditorStatusText"
+                                       Style="{StaticResource HintTextStyle}"
+                                       TextWrapping="Wrap" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <ScrollViewer x:Name="WebsiteEditor" Grid.Row="2" Margin="32,16,32,16"
+                                  Visibility="Collapsed" VerticalScrollBarVisibility="Auto">
+                        <StackPanel MaxWidth="720" HorizontalAlignment="Left" Spacing="16">
+                            <TextBlock Text="Website" Style="{StaticResource SubsectionTitleStyle}" />
+                            <TextBox x:Name="WebsiteUrlBox" Header="Website address" PlaceholderText="example.com"
+                                     Style="{StaticResource InputTextBoxStyle}" TextChanged="OnWebsiteEdited" />
+                            <NumberBox x:Name="WebsiteZoomBox" Header="Zoom (%)" Minimum="50" Maximum="200"
+                                       Value="100" SpinButtonPlacementMode="Compact"
+                                       Style="{StaticResource InputNumberBoxStyle}" ValueChanged="OnWebsiteNumberChanged" />
+                            <TextBlock x:Name="WebsiteStatusText" Style="{StaticResource HintTextStyle}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                </Grid>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

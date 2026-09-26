@@ -1,0 +1,11 @@
+<UserControl
+    x:Class="TrenchHQ.Controls.WebsiteWidget"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid x:Name="WidgetRoot" Background="#111111">
+        <Grid>
+            <Grid x:Name="BrowserHost" />
+            <Border x:Name="InteractionShield" Background="Transparent" Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</UserControl>

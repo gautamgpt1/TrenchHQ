@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Helpers\CertifiedExchangeCatalog.cs" Link="Production\CertifiedExchangeCatalog.cs" />
+    <Compile Include="..\..\Helpers\MarketReconnectRules.cs" Link="Production\MarketReconnectRules.cs" />
+    <Compile Include="..\..\Helpers\MarketFeedProtocolParser.cs" Link="Production\MarketFeedProtocolParser.cs" />
+    <Compile Include="..\..\Helpers\MarketSidecarClient.cs" Link="Production\MarketSidecarClient.cs" />
+    <Compile Include="..\..\Helpers\MarketSidecarState.cs" Link="Production\MarketSidecarState.cs" />
+    <Compile Include="..\..\Models\MarketFeedContracts.cs" Link="Production\MarketFeedContracts.cs" />
+    <Content Include="..\..\SidecarRuntime\node.exe" Link="SidecarRuntime\node.exe" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="..\..\SidecarApp\dist\sidecar.bundle.cjs" Link="SidecarApp\dist\sidecar.bundle.cjs" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

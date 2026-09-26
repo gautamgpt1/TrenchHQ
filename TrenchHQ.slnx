@@ -1,0 +1,14 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+  </Configurations>
+  <Project Path="TrenchHQ.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+    <Deploy />
+  </Project>
+  <Project Path="OnChainTransport/TrenchHQ.OnChain.Yellowstone.csproj" />
+  <Project Path="Tests/TrenchHQ.LogicTests/TrenchHQ.LogicTests.csproj" />
+  <Project Path="Tests/TrenchHQ.IntegrationTests/TrenchHQ.IntegrationTests.csproj" />
+  <Project Path="Tests/TrenchHQ.OnChainIntegrationTests/TrenchHQ.OnChainIntegrationTests.csproj" />
+  <Project Path="Tests/TrenchHQ.ProviderValidation/TrenchHQ.ProviderValidation.csproj" />
+</Solution>

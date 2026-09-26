@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package solana.storage.ConfirmedBlock;
+option csharp_namespace = "TrenchHQ.Yellowstone.SolanaStorage";
+
+message Transaction {
+  repeated bytes signatures = 1;
+  Message message = 2;
+}
+
+message Message {
+  repeated bytes account_keys = 2;
+  repeated CompiledInstruction instructions = 4;
+  bool versioned = 5;
+}
+
+message CompiledInstruction {
+  uint32 program_id_index = 1;
+  bytes accounts = 2;
+  bytes data = 3;
+}
+
+message TransactionStatusMeta {
+  TransactionError err = 1;
+  repeated InnerInstructions inner_instructions = 5;
+  repeated string log_messages = 6;
+  repeated TokenBalance pre_token_balances = 7;
+  repeated TokenBalance post_token_balances = 8;
+  repeated bytes loaded_writable_addresses = 12;
+  repeated bytes loaded_readonly_addresses = 13;
+}
+
+message TransactionError {
+  bytes err = 1;
+}
+
+message InnerInstructions {
+  uint32 index = 1;
+  repeated InnerInstruction instructions = 2;
+}
+
+message InnerInstruction {
+  uint32 program_id_index = 1;
+  bytes accounts = 2;
+  bytes data = 3;
+  optional uint32 stack_height = 4;
+}
+
+message TokenBalance {
+  uint32 account_index = 1;
+  string mint = 2;
+  UiTokenAmount ui_token_amount = 3;
+  string owner = 4;
+  string program_id = 5;
+}
+
+message UiTokenAmount {
+  double ui_amount = 1;
+  uint32 decimals = 2;
+  string amount = 3;
+  string ui_amount_string = 4;
+}

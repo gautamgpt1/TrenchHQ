@@ -1,0 +1,99 @@
+{
+  "source": {
+    "rpcUrl": "https://api.mainnet-beta.solana.com",
+    "accessedAtUtc": "2026-09-01T00:00:00Z",
+    "signature": "3GB1F2g2oTSqMQ3fAmNhLPN7pnNYtbnUVLpCLPwwgp9CN9eySonb2PPBEBJcu1Aoeh3WbywVX1zY91XBJNitrUzQ",
+    "slot": 443398559,
+    "blockTimeUnixSeconds": 1788257775,
+    "note": "Public mainnet transaction reduced to one Raydium CLMM swap and its direct SPL Token CPI transfers."
+  },
+  "selections": [
+    {
+      "descriptor": {
+        "poolKey": {
+          "chainNamespace": "solana",
+          "chainId": "mainnet-beta",
+          "protocolId": "raydiumClmm",
+          "poolAddress": "BZtgQEyS6eXUXicYPHecYQ7PybqodXQMvkjUbP4R8mUU"
+        },
+        "poolType": "clmm",
+        "programId": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+        "baseMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseDecimals": 6,
+        "quoteDecimals": 6,
+        "baseVault": "7NQjToK5NenQZvhPRc1nC1URuKJ4nuLxGPdTbpTiz9EN",
+        "quoteVault": "4iJQGzZpys4N13rGXbsB3NqehPkrgrcmDUEcLw7D6GKL",
+        "supportStatus": "supported",
+        "supportReason": null
+      },
+      "selectedMint": "Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB"
+    }
+  ],
+  "transaction": {
+    "signature": "3GB1F2g2oTSqMQ3fAmNhLPN7pnNYtbnUVLpCLPwwgp9CN9eySonb2PPBEBJcu1Aoeh3WbywVX1zY91XBJNitrUzQ",
+    "slot": 443398559,
+    "failed": false,
+    "commitment": "confirmed",
+    "sourceId": "solana-public-rpc-golden-fixture",
+    "observedAtUnixMs": 1788257775000,
+    "instructions": [
+      {
+        "programId": "CAMMCzo5YL8w4VFF8KVHrK22GGUsp5VTaW7grrKgrWqK",
+        "dataBase64": "+MaekeF1h8j/5yAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE=",
+        "outerInstructionIndex": 2,
+        "innerInstructionIndex": 6,
+        "stackHeight": 2,
+        "accountAddresses": [
+          "78Bo7xxGWBEvqbh3VMKvkFG4Z63cXKSJ2LCEXAanhN7a",
+          "9iFER3bpjf1PTTCQCfTRu17EJgvsxo9pVyA9QWwEuX4x",
+          "BZtgQEyS6eXUXicYPHecYQ7PybqodXQMvkjUbP4R8mUU",
+          "3P17LtPYpz6TdfVGMLs4AskARoiWu9o2Mg1XrzSpj6JE",
+          "LcpbbJ5Ka8BEgFBDKhLMLYfsg1FP4XFyxogg95xW6sU",
+          "4iJQGzZpys4N13rGXbsB3NqehPkrgrcmDUEcLw7D6GKL",
+          "7NQjToK5NenQZvhPRc1nC1URuKJ4nuLxGPdTbpTiz9EN",
+          "3YZE41e4GKm9Uqvx6H4QA1FdyxT15nEjUP8LbvdiDF2t",
+          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "2CntbsRKrr4an5zekGb8WZyPyPzbXv9R2CErrRQSQVo2",
+          "2PufrkkvNj7nF32GRvoR1DEmXs8F99gYzyzCQtmbndxd",
+          "FULWc1hWdGMBGSB4Ut3QZBCU74muZmLmM9z9UqheWoUw",
+          "HSJS4BrYCZq9DmCNFNfctqq9o2sfTY5YQiy9n4W8djcB"
+        ]
+      },
+      {
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "dataBase64": "A//nIAAAAAAA",
+        "outerInstructionIndex": 2,
+        "innerInstructionIndex": 7,
+        "stackHeight": 3,
+        "accountAddresses": [
+          "3P17LtPYpz6TdfVGMLs4AskARoiWu9o2Mg1XrzSpj6JE",
+          "4iJQGzZpys4N13rGXbsB3NqehPkrgrcmDUEcLw7D6GKL",
+          "78Bo7xxGWBEvqbh3VMKvkFG4Z63cXKSJ2LCEXAanhN7a"
+        ]
+      },
+      {
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "dataBase64": "Aw3pIAAAAAAA",
+        "outerInstructionIndex": 2,
+        "innerInstructionIndex": 8,
+        "stackHeight": 3,
+        "accountAddresses": [
+          "7NQjToK5NenQZvhPRc1nC1URuKJ4nuLxGPdTbpTiz9EN",
+          "LcpbbJ5Ka8BEgFBDKhLMLYfsg1FP4XFyxogg95xW6sU",
+          "BZtgQEyS6eXUXicYPHecYQ7PybqodXQMvkjUbP4R8mUU"
+        ]
+      }
+    ],
+    "tokenBalances": []
+  },
+  "expected": [
+    {
+      "protocolId": "raydiumClmm",
+      "poolAddress": "BZtgQEyS6eXUXicYPHecYQ7PybqodXQMvkjUbP4R8mUU",
+      "lastTradeCoefficient": "999874815294603658",
+      "lastTradeScale": 18,
+      "eventId": "3GB1F2g2oTSqMQ3fAmNhLPN7pnNYtbnUVLpCLPwwgp9CN9eySonb2PPBEBJcu1Aoeh3WbywVX1zY91XBJNitrUzQ:2:6:raydiumClmmSwap:BZtgQEyS6eXUXicYPHecYQ7PybqodXQMvkjUbP4R8mUU"
+    }
+  ]
+}

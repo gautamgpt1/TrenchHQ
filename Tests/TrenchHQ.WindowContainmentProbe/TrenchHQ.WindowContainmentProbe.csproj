@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platform>x64</Platform>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Helpers\ApplicationWindowPin.cs" Link="Production\ApplicationWindowPin.cs" />
+    <Compile Include="..\..\Helpers\ApplicationWindowNative.cs" Link="Production\ApplicationWindowNative.cs" />
+  </ItemGroup>
+  <Import Project="..\..\Native\WindowPin\WindowPin.targets" />
+</Project>

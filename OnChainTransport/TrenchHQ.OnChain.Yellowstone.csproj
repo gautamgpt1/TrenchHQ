@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.36.0" />
+    <PackageReference Include="Grpc.Core.Api" Version="2.83.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.83.0" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="..\ThirdParty\Yellowstone\geyser.proto"
+              Link="geyser.proto"
+              ProtoRoot="..\ThirdParty\Yellowstone"
+              GrpcServices="Client" />
+    <Protobuf Include="..\ThirdParty\Yellowstone\solana-storage.proto"
+              Link="solana-storage.proto"
+              ProtoRoot="..\ThirdParty\Yellowstone"
+              GrpcServices="None" />
+  </ItemGroup>
+</Project>

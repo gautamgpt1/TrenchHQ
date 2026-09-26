@@ -1,0 +1,11 @@
+{
+  "node": {
+    "version": "22.23.3",
+    "url": "https://nodejs.org/dist/v22.23.3/win-x64/node.exe",
+    "sha256": "9c9245166b4a8e182e0b797da9c20136117ff24368eaff1fec8343a123c8db0e",
+    "licenseUrl": "https://raw.githubusercontent.com/nodejs/node/v22.23.3/LICENSE",
+    "licenseSha256": "c738ae413cf561f174e34f6961f8ca458aae2369a73640dda6234c629b98bcc4"
+  },
+  "rustToolchain": "1.88.0",
+  "dotnetSdk": "10.0.401"
+}

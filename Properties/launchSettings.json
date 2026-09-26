@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TrenchHQ (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "TrenchHQ (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

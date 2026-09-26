@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\..\Models\SocialFeedModels.cs" Link="Production\SocialFeedModels.cs" />
+    <Compile Include="..\..\Helpers\SocialFeedRules.cs" Link="Production\SocialFeedRules.cs" />
+    <Compile Include="..\..\Helpers\SocialPostParser.cs" Link="Production\SocialPostParser.cs" />
+    <Compile Include="..\..\Helpers\SocialFeedSources.cs" Link="Production\SocialFeedSources.cs" />
+    <Compile Include="..\..\Helpers\SocialFeedService.cs" Link="Production\SocialFeedService.cs" />
+    <Compile Include="..\..\Helpers\SocialProviderStore.cs" Link="Production\SocialProviderStore.cs" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+</Project>

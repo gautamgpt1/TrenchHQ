@@ -1,0 +1,179 @@
+{
+  "source": {
+    "rpcUrl": "https://api.mainnet-beta.solana.com",
+    "accessedAtUtc": "2026-09-01T00:00:00Z",
+    "signature": "3P4F99hqjqN1KkpKoE3FUSrdBSy5rH9j3MzmycpBF6jm7EpNH7VbcRbhp26R3YMDFzKMPiZrD954RRmzJMW8HyMH",
+    "slot": 443381510,
+    "blockTimeUnixSeconds": 1788252369,
+    "note": "Public mainnet transaction reduced to the two supported swap instructions and their direct SPL Token CPI transfers."
+  },
+  "selections": [
+    {
+      "descriptor": {
+        "poolKey": {
+          "chainNamespace": "solana",
+          "chainId": "mainnet-beta",
+          "protocolId": "orcaWhirlpool",
+          "poolAddress": "BSddxwYW73as8852ZTHRH13pbZEmZ96NBjayc5mSVtkZ"
+        },
+        "poolType": "whirlpool",
+        "programId": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "baseMint": "So11111111111111111111111111111111111111112",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseDecimals": 9,
+        "quoteDecimals": 6,
+        "baseVault": "F4CAXDT5v7F7XpqPqKqPbBpj2uuncGHXsXg9xD3CCejA",
+        "quoteVault": "BHqCWgG33QpPb17ryW5Hbfc4oP18UFcZ1GQdB5aAqu48",
+        "supportStatus": "supported",
+        "supportReason": null
+      },
+      "selectedMint": "So11111111111111111111111111111111111111112"
+    },
+    {
+      "descriptor": {
+        "poolKey": {
+          "chainNamespace": "solana",
+          "chainId": "mainnet-beta",
+          "protocolId": "raydiumCpmm",
+          "poolAddress": "7JuwJuNU88gurFnyWeiyGKbFmExMWcmRZntn9imEzdny"
+        },
+        "poolType": "cpmm",
+        "programId": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+        "baseMint": "So11111111111111111111111111111111111111112",
+        "quoteMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "baseDecimals": 9,
+        "quoteDecimals": 6,
+        "baseVault": "7VLUXrnSSDo9BfCa4NWaQs68g7ddDY1sdXBKW6Xswj9Y",
+        "quoteVault": "3rzbbW5Q8MA7sCaowf28hNgACNPecdS2zceWy7Ptzua9",
+        "supportStatus": "supported",
+        "supportReason": null
+      },
+      "selectedMint": "So11111111111111111111111111111111111111112"
+    }
+  ],
+  "transaction": {
+    "signature": "3P4F99hqjqN1KkpKoE3FUSrdBSy5rH9j3MzmycpBF6jm7EpNH7VbcRbhp26R3YMDFzKMPiZrD954RRmzJMW8HyMH",
+    "slot": 443381510,
+    "failed": false,
+    "commitment": "confirmed",
+    "sourceId": "solana-public-rpc-golden-fixture",
+    "observedAtUnixMs": 1788252369000,
+    "instructions": [
+      {
+        "programId": "whirLbMiicVdio4qvUfM5KAg6Ct8VwpYzGff3uctyCc",
+        "dataBase64": "KwTtCxrJHmLZHQEAAAAAAAEAAAAAAAAArzMbqDJ/uzWxxP7/AAAAAAEAAA==",
+        "outerInstructionIndex": 7,
+        "innerInstructionIndex": 5,
+        "stackHeight": 2,
+        "accountAddresses": [
+          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+          "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn",
+          "BSddxwYW73as8852ZTHRH13pbZEmZ96NBjayc5mSVtkZ",
+          "So11111111111111111111111111111111111111112",
+          "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "DT2krA8vSP96D68nH86eAztZHVM18YB5i4gDXjLBDXm7",
+          "F4CAXDT5v7F7XpqPqKqPbBpj2uuncGHXsXg9xD3CCejA",
+          "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "BHqCWgG33QpPb17ryW5Hbfc4oP18UFcZ1GQdB5aAqu48",
+          "HguvUisdT1aHjFoJQYAuqtD3d93uL1QvvMAajDFK3dZi",
+          "93u8nsxaTeMfzCN36q6HeyaubUKFMrmL2wPKeYvUHZQU",
+          "6AtrQyT7VAdX3KE7fxPxx9GGCNvQEjQBHcqfmHCLREBC",
+          "A4GJjZTtFc2TnwpAuEYDqcmnUSqruEkrEexocQ1b8hVp"
+        ]
+      },
+      {
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "dataBase64": "DNkdAQAAAAAABg==",
+        "outerInstructionIndex": 7,
+        "innerInstructionIndex": 6,
+        "stackHeight": 3,
+        "accountAddresses": [
+          "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "BHqCWgG33QpPb17ryW5Hbfc4oP18UFcZ1GQdB5aAqu48",
+          "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn"
+        ]
+      },
+      {
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "dataBase64": "DFDnCgAAAAAACQ==",
+        "outerInstructionIndex": 7,
+        "innerInstructionIndex": 7,
+        "stackHeight": 3,
+        "accountAddresses": [
+          "F4CAXDT5v7F7XpqPqKqPbBpj2uuncGHXsXg9xD3CCejA",
+          "So11111111111111111111111111111111111111112",
+          "DT2krA8vSP96D68nH86eAztZHVM18YB5i4gDXjLBDXm7",
+          "BSddxwYW73as8852ZTHRH13pbZEmZ96NBjayc5mSVtkZ"
+        ]
+      },
+      {
+        "programId": "CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C",
+        "dataBase64": "j75a2sQeM95FWgAAAAAAAAAAAAAAAAAA",
+        "outerInstructionIndex": 7,
+        "innerInstructionIndex": 9,
+        "stackHeight": 2,
+        "accountAddresses": [
+          "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn",
+          "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL",
+          "D4FPEruKEHrG5TenZ2mpDGEfu1iUvTiqBxvpU8HLBvC2",
+          "7JuwJuNU88gurFnyWeiyGKbFmExMWcmRZntn9imEzdny",
+          "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "DT2krA8vSP96D68nH86eAztZHVM18YB5i4gDXjLBDXm7",
+          "3rzbbW5Q8MA7sCaowf28hNgACNPecdS2zceWy7Ptzua9",
+          "7VLUXrnSSDo9BfCa4NWaQs68g7ddDY1sdXBKW6Xswj9Y",
+          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+          "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "So11111111111111111111111111111111111111112",
+          "4MYrPgjgFceyhtwhG1ZX8UVb4wn1aQB5wzMimtFqg7U8"
+        ]
+      },
+      {
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "dataBase64": "DEVaAAAAAAAABg==",
+        "outerInstructionIndex": 7,
+        "innerInstructionIndex": 10,
+        "stackHeight": 3,
+        "accountAddresses": [
+          "8XrtGP8RG33AnrN2yJ6H3gnXPNQ3dYXKqM72bpzhcsd6",
+          "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+          "3rzbbW5Q8MA7sCaowf28hNgACNPecdS2zceWy7Ptzua9",
+          "ARu4n5mFdZogZAravu7CcizaojWnS6oqka37gdLT5SZn"
+        ]
+      },
+      {
+        "programId": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA",
+        "dataBase64": "DNpyAwAAAAAACQ==",
+        "outerInstructionIndex": 7,
+        "innerInstructionIndex": 11,
+        "stackHeight": 3,
+        "accountAddresses": [
+          "7VLUXrnSSDo9BfCa4NWaQs68g7ddDY1sdXBKW6Xswj9Y",
+          "So11111111111111111111111111111111111111112",
+          "DT2krA8vSP96D68nH86eAztZHVM18YB5i4gDXjLBDXm7",
+          "GpMZbSM2GgvTKHJirzeGfMFoaZ8UR2X7F4v8vHTvxFbL"
+        ]
+      }
+    ],
+    "tokenBalances": []
+  },
+  "expected": [
+    {
+      "protocolId": "orcaWhirlpool",
+      "poolAddress": "BSddxwYW73as8852ZTHRH13pbZEmZ96NBjayc5mSVtkZ",
+      "lastTradeCoefficient": "102406182127583350127",
+      "lastTradeScale": 18,
+      "eventId": "3P4F99hqjqN1KkpKoE3FUSrdBSy5rH9j3MzmycpBF6jm7EpNH7VbcRbhp26R3YMDFzKMPiZrD954RRmzJMW8HyMH:7:5:orcaWhirlpoolSwap:BSddxwYW73as8852ZTHRH13pbZEmZ96NBjayc5mSVtkZ"
+    },
+    {
+      "protocolId": "raydiumCpmm",
+      "poolAddress": "7JuwJuNU88gurFnyWeiyGKbFmExMWcmRZntn9imEzdny",
+      "lastTradeCoefficient": "102247688155391354365",
+      "lastTradeScale": 18,
+      "eventId": "3P4F99hqjqN1KkpKoE3FUSrdBSy5rH9j3MzmycpBF6jm7EpNH7VbcRbhp26R3YMDFzKMPiZrD954RRmzJMW8HyMH:7:9:raydiumCpmmSwap:7JuwJuNU88gurFnyWeiyGKbFmExMWcmRZntn9imEzdny"
+    }
+  ]
+}

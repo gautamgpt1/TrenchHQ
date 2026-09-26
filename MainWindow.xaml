@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="TrenchHQ.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TrenchHQ"
+    xmlns:views="using:TrenchHQ.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="TrenchHQ">
+
+    <Grid Background="{StaticResource AppBackgroundBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition x:Name="NavigationPaneColumn" Width="240" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.RowSpan="2" Background="{StaticResource PaneBackgroundBrush}" />
+
+        <NavigationView
+            Grid.Row="0"
+            Grid.RowSpan="2"
+            Grid.ColumnSpan="2"
+            x:Name="RootNav"
+            PaneDisplayMode="Left"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            IsPaneToggleButtonVisible="True"
+            IsPaneOpen="True"
+            CompactPaneLength="64"
+            OpenPaneLength="240"
+            BorderThickness="0"
+            Background="{StaticResource AppBackgroundBrush}"
+            PaneOpened="OnMainNavigationPaneOpened"
+            PaneClosed="OnMainNavigationPaneClosed"
+            SelectionChanged="OnNavSelectionChanged">
+
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="NavGeneral" Content="Dashboard" Tag="General">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Home" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavWidgets" Content="Widgets" Tag="Widgets">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE9D9;" FontFamily="Segoe MDL2 Assets" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavDesktopSetup" Content="Desktop Setup" Tag="DesktopSetup">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="OpenPane" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavProviders" Content="APIs" Tag="Providers">
+                    <NavigationViewItem.Icon>
+                        <FontIcon Glyph="&#xE8D7;" FontFamily="Segoe MDL2 Assets" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="NavHelp" Content="Help and FAQ" Tag="Help">
+                    <NavigationViewItem.Icon>
+                        <SymbolIcon Symbol="Help" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+
+            <NavigationView.Content>
+                <Grid Background="{StaticResource AppBackgroundBrush}" Padding="0,0">
+                    <Grid>
+                        <Grid x:Name="DashboardView" Visibility="Visible">
+                            <views:DashboardTabView x:Name="DashboardTab" />
+                        </Grid>
+                        <Grid x:Name="WidgetsView" Visibility="Collapsed">
+                            <views:WidgetsTabView x:Name="WidgetsTab" />
+                        </Grid>
+                        <Grid x:Name="ProvidersView" Visibility="Collapsed">
+                            <views:ProvidersTabView x:Name="ProvidersTab" />
+                        </Grid>
+                        <Grid x:Name="DesktopSetupView" Visibility="Collapsed">
+                            <views:DesktopSetupTabView x:Name="DesktopSetupTab" />
+                        </Grid>
+                        <Grid x:Name="HelpView" Visibility="Collapsed">
+                            <views:HelpTabView x:Name="HelpTab" />
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </NavigationView.Content>
+        </NavigationView>
+
+        <Grid x:Name="TitleBarDragRegion" Grid.Row="0" Grid.Column="1" Background="Transparent"/>
+    </Grid>
+</Window>

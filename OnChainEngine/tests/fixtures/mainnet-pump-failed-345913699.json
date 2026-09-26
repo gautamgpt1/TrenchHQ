@@ -1,0 +1,51 @@
+{
+  "source": {
+    "rpcUrl": "https://api.mainnet-beta.solana.com",
+    "accessedAtUtc": "2026-09-01T11:45:32Z",
+    "signature": "5xozUcJFvRj4ySpE2epSSs95ySxs6cLjs1rV2uaFNkFgsEMBZW53VUa2uc3CVQLVJRYxfQ5JoSzZLiUvAgM4GEJM",
+    "slot": 345913699,
+    "blockTimeUnixSeconds": 1749573830,
+    "note": "Failed classic SPL-token Pump transaction cited by the official Pump public FAQ. It emitted a TradeEvent before ComputationalBudgetExceeded, and must never update price."
+  },
+  "selections": [
+    {
+      "descriptor": {
+        "poolKey": {
+          "chainNamespace": "solana",
+          "chainId": "mainnet-beta",
+          "protocolId": "pumpBondingCurve",
+          "poolAddress": "failed-fixture-curve"
+        },
+        "poolType": "bondingCurve",
+        "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "baseMint": "3cLSxG6eXcCD9NSMawkhUcrvVCUC8KHKHMCxx6bhpump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseDecimals": 6,
+        "quoteDecimals": 9,
+        "baseVault": null,
+        "quoteVault": null,
+        "supportStatus": "supported",
+        "supportReason": null
+      },
+      "selectedMint": "3cLSxG6eXcCD9NSMawkhUcrvVCUC8KHKHMCxx6bhpump"
+    }
+  ],
+  "transaction": {
+    "signature": "5xozUcJFvRj4ySpE2epSSs95ySxs6cLjs1rV2uaFNkFgsEMBZW53VUa2uc3CVQLVJRYxfQ5JoSzZLiUvAgM4GEJM",
+    "slot": 345913699,
+    "failed": true,
+    "commitment": "confirmed",
+    "sourceId": "solana-public-rpc-golden-fixture",
+    "observedAtUnixMs": 1749573830000,
+    "instructions": [],
+    "programData": [
+      {
+        "programId": "6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P",
+        "dataBase64": "vdt/007mYe4mxLEFKrVu31mWa8aaNlyjBc6s3Vv8I81ssT54cW9yTwDKmjsAAAAAaq6/UssUAAABcal2ZEQkCuIagoswnUVXge2SIwlhCqmNK+aVBMpKzS/GYEhoAAAAAG2sgNoIAAAATZVdQusBAwBtAF3eAQAAAE39SvZZAwIArRHmpPwpRKT6glG++BVCbhv7KMa2ZGZ3YHxq2fVmpkZfAAAAAAAAAGD1kAAAAAAACanCeFjeV7l4Ym+p+TU+HUl4BC2vBsVu9TU0uqP27VEFAAAAAAAAACChBwAAAAAA",
+        "logIndex": 44
+      }
+    ],
+    "tokenBalances": []
+  },
+  "expected": []
+}

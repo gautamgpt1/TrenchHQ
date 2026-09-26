@@ -1,0 +1,59 @@
+{
+  "source": {
+    "rpcUrl": "https://api.mainnet-beta.solana.com",
+    "accessedAtUtc": "2026-09-01T11:45:32Z",
+    "signature": "d8pehu5bwaz7TVz8DN5oVhoWgFMQvP8StPjWPcN1a3V3VGNbmYMX7i8bRTta2FaL13HhKLMC6guq2CJixJX4HjH",
+    "slot": 404654887,
+    "blockTimeUnixSeconds": 1772823390,
+    "note": "Successful classic SPL-token PumpSwap sell reduced to its program-attributed SellEvent log."
+  },
+  "selections": [
+    {
+      "descriptor": {
+        "poolKey": {
+          "chainNamespace": "solana",
+          "chainId": "mainnet-beta",
+          "protocolId": "pumpSwap",
+          "poolAddress": "H739cDUEhbW2ckYhjetYSwxTVT5vd6GrTW5GdfaTQJgB"
+        },
+        "poolType": "cpmm",
+        "programId": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+        "baseMint": "Coyj3LtKn1BNSgWc9HsGK5SKoGfEoDaymig4wrN6pump",
+        "quoteMint": "So11111111111111111111111111111111111111112",
+        "baseDecimals": 6,
+        "quoteDecimals": 9,
+        "baseVault": "EFaHFb1y6tvYAend74ajCgQz7QxNJhWPRViFkevyGu3K",
+        "quoteVault": "J4MnYzQheU4Lc1ziWsEhtAt8NZpe2Q9BTSpoB4Wxfrcb",
+        "supportStatus": "supported",
+        "supportReason": null
+      },
+      "selectedMint": "Coyj3LtKn1BNSgWc9HsGK5SKoGfEoDaymig4wrN6pump"
+    }
+  ],
+  "transaction": {
+    "signature": "d8pehu5bwaz7TVz8DN5oVhoWgFMQvP8StPjWPcN1a3V3VGNbmYMX7i8bRTta2FaL13HhKLMC6guq2CJixJX4HjH",
+    "slot": 404654887,
+    "failed": false,
+    "commitment": "confirmed",
+    "sourceId": "solana-public-rpc-golden-fixture",
+    "observedAtUnixMs": 1772823390000,
+    "instructions": [],
+    "programData": [
+      {
+        "programId": "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA",
+        "dataBase64": "Pi83CqUD3CpeI6tpAAAAAD3uBcc5AAAAAAAAAAAAAAA97gXHOQAAAAAAAAAAAAAA01WtarD8AgDWm0gEBQAAAPcBYQAAAAAAAgAAAAAAAAD4BAAAAAAAAF0AAAAAAAAA9eYAAAAAAAD//GAAAAAAAInLXwAAAAAA70bnpiOxMMnrwLzgUwNyYuIdyLIlJDtFUKy9tqIgMZx0G0fntoEAnsnsxIhnywsmJzeHdrydI74/2pDZI6F/x31gnOB8agCad344N7giUH4aFauaNMU88Vr7VkxnZ+wdFz276QgM30FYmL4ljToToARp2p64aSFP1JYYaOE/hq5KwvjQ3Vy8l+MonBl8tQYqVPPZVrnOblEV+WVnqlyz5nfZFZVfiIBzHOtKdaDMlsF0+kCVxOHZlnrPxChFrmeujPGJIW1/bPRZeY1se2ZX3gPauWwQ5IERds7mLkiL3sUeAAAAAAAAAIFKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "logIndex": 51
+      }
+    ],
+    "tokenBalances": []
+  },
+  "expected": [
+    {
+      "protocolId": "pumpSwap",
+      "poolAddress": "H739cDUEhbW2ckYhjetYSwxTVT5vd6GrTW5GdfaTQJgB",
+      "lastTradeCoefficient": "25299091605",
+      "lastTradeScale": 18,
+      "eventId": "d8pehu5bwaz7TVz8DN5oVhoWgFMQvP8StPjWPcN1a3V3VGNbmYMX7i8bRTta2FaL13HhKLMC6guq2CJixJX4HjH:log:51:pumpSwapTrade:H739cDUEhbW2ckYhjetYSwxTVT5vd6GrTW5GdfaTQJgB"
+    }
+  ]
+}

@@ -1,0 +1,1483 @@
+[
+  {
+    "ecosystem": "cargo",
+    "name": "autocfg",
+    "version": "1.5.1",
+    "license": "Apache-2.0 OR MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/autocfg-1.5.1/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/autocfg-1.5.1/LICENSE-MIT",
+        "sha256": "27995d58ad5c1145c1a8cd86244ce844886958a35eb2b78c6b772748669999ac"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "base64",
+    "version": "0.22.1",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/base64-0.22.1/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/base64-0.22.1/LICENSE-MIT",
+        "sha256": "0dd882e53de11566d50f8e8e2d5a651bcf3fabee4987d70f306233cf39094ba7"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "block-buffer",
+    "version": "0.10.4",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/block-buffer-0.10.4/LICENSE-APACHE",
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/block-buffer-0.10.4/LICENSE-MIT",
+        "sha256": "d5c22aa3118d240e877ad41c5d9fa232f9c77d757d4aac0c2f943afc0a95e0ef"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "bs58",
+    "version": "0.5.1",
+    "license": "MIT/Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/bs58-0.5.1/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/bs58-0.5.1/LICENSE-MIT",
+        "sha256": "42d3bf7e7d4d49d72c0555d14ed99c3ee7ce9ce3cbffbc38bbafe8c103f50969"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "cfg-if",
+    "version": "1.0.4",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/cfg-if-1.0.4/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/cfg-if-1.0.4/LICENSE-MIT",
+        "sha256": "378f5840b258e2779c39418f3f2d7b2ba96f1c7917dd6be0713f88305dbda397"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "cpufeatures",
+    "version": "0.2.17",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/cpufeatures-0.2.17/LICENSE-APACHE",
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/cpufeatures-0.2.17/LICENSE-MIT",
+        "sha256": "ae9baa7beea910273c2f384c2a6b721fb7bd02bda3436074a1072e4ee689f985"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "crypto-common",
+    "version": "0.1.7",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/crypto-common-0.1.7/LICENSE-APACHE",
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/crypto-common-0.1.7/LICENSE-MIT",
+        "sha256": "3521672491a3479422d5fe1aca6645dd2984090f85da6e5205abfb18fb7a6897"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "curve25519-dalek",
+    "version": "4.1.3",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/curve25519-dalek-4.1.3/LICENSE",
+        "sha256": "cca0bd3c4fcdba74145ef9d49c62337e2c9fbf9368288f11d0547f1b0273219f"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "curve25519-dalek-derive",
+    "version": "0.1.1",
+    "license": "MIT/Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/curve25519-dalek-derive-0.1.1/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/curve25519-dalek-derive-0.1.1/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "digest",
+    "version": "0.10.7",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/digest-0.10.7/LICENSE-APACHE",
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/digest-0.10.7/LICENSE-MIT",
+        "sha256": "9e0dfd2dd4173a530e238cb6adb37aa78c34c6bc7444e0e10c1ab5d8881f63ba"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "fiat-crypto",
+    "version": "0.2.9",
+    "license": "MIT OR Apache-2.0 OR BSD-1-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/fiat-crypto-0.2.9/COPYRIGHT",
+        "sha256": "6c935d087a2992d0f092665400a2fa99c98db58d96fbe29368f8f48182bed9aa"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/fiat-crypto-0.2.9/LICENSE-APACHE",
+        "sha256": "9eacbcb81be660840c714a560a9d65ba07913db98dd4baf969f78dd499fdd60f"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/fiat-crypto-0.2.9/LICENSE-BSD-1",
+        "sha256": "0c1240e29b4a2c528bcc3ccc38a98b1dba5e3e6b465da910208935f082e2ced6"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/fiat-crypto-0.2.9/LICENSE-MIT",
+        "sha256": "0034712d5e97a4f5b900a160a5c19d582b740d8e0638b4e44fd07e7b492dcd13"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "generic-array",
+    "version": "0.14.7",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/generic-array-0.14.7/LICENSE",
+        "sha256": "c09aae9d3c77b531f56351a9947bc7446511d6b025b3255312d3e3442a9a7583"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "itoa",
+    "version": "1.0.18",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/itoa-1.0.18/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/itoa-1.0.18/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "libc",
+    "version": "0.2.189",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/libc-0.2.189/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/libc-0.2.189/LICENSE-MIT",
+        "sha256": "123a331b5dbf04c30097fa43b8f858bc85df671fe776de498d01f3d6b7c1f69e"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "memchr",
+    "version": "2.8.3",
+    "license": "Unlicense OR MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/memchr-2.8.3/COPYING",
+        "sha256": "01c266bced4a434da0051174d6bee16a4c82cf634e2679b6155d40d75012390f"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/memchr-2.8.3/LICENSE-MIT",
+        "sha256": "0f96a83840e146e43c0ec96a22ec1f392e0680e6c1226e6f3ba87e0740af850f"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/memchr-2.8.3/UNLICENSE",
+        "sha256": "7e12e5df4bae12cb21581ba157ced20e1986a0508dd10d0e8a4ab9a4cf94e85c"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "num-bigint",
+    "version": "0.4.6",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/num-bigint-0.4.6/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/num-bigint-0.4.6/LICENSE-MIT",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "num-integer",
+    "version": "0.1.47",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/num-integer-0.1.47/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/num-integer-0.1.47/LICENSE-MIT",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "num-traits",
+    "version": "0.2.19",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/num-traits-0.2.19/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/num-traits-0.2.19/LICENSE-MIT",
+        "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "proc-macro2",
+    "version": "1.0.107",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/proc-macro2-1.0.107/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/proc-macro2-1.0.107/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "quote",
+    "version": "1.0.47",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/quote-1.0.47/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/quote-1.0.47/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "rustc_version",
+    "version": "0.4.1",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/rustc_version-0.4.1/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/rustc_version-0.4.1/LICENSE-MIT",
+        "sha256": "c9a75f18b9ab2927829a208fc6aa2cf4e63b8420887ba29cdb265d6619ae82d5"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "ryu",
+    "version": "1.0.23",
+    "license": "Apache-2.0 OR BSL-1.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/ryu-1.0.23/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/ryu-1.0.23/LICENSE-BOOST",
+        "sha256": "c9bff75738922193e67fa726fa225535870d2aa1059f91452c411736284ad566"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "semver",
+    "version": "1.0.28",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/semver-1.0.28/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/semver-1.0.28/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "serde",
+    "version": "1.0.228",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde-1.0.228/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde-1.0.228/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "serde_core",
+    "version": "1.0.228",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde_core-1.0.228/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde_core-1.0.228/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "serde_derive",
+    "version": "1.0.228",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde_derive-1.0.228/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde_derive-1.0.228/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "serde_json",
+    "version": "1.0.145",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde_json-1.0.145/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/serde_json-1.0.145/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "sha2",
+    "version": "0.10.9",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/sha2-0.10.9/LICENSE-APACHE",
+        "sha256": "a9040321c3712d8fd0b09cf52b17445de04a23a10165049ae187cd39e5c86be5"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/sha2-0.10.9/LICENSE-MIT",
+        "sha256": "b4eb00df6e2a4d22518fcaa6a2b4646f249b3a3c9814509b22bd2091f1392ff1"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "subtle",
+    "version": "2.6.1",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/subtle-2.6.1/LICENSE",
+        "sha256": "d1fc1bc0d155df60b2e7705b6b2ae02a05c96f948e1cec6e2fb86360b09f346b"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "syn",
+    "version": "2.0.119",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/syn-2.0.119/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/syn-2.0.119/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "thiserror",
+    "version": "2.0.17",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/thiserror-2.0.17/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/thiserror-2.0.17/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "thiserror-impl",
+    "version": "2.0.17",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/thiserror-impl-2.0.17/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/thiserror-impl-2.0.17/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "tinyvec",
+    "version": "1.12.0",
+    "license": "Zlib OR Apache-2.0 OR MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/tinyvec-1.12.0/LICENSE-APACHE.md",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/tinyvec-1.12.0/LICENSE-MIT.md",
+        "sha256": "fd80a26fbb3f644af1fa994134446702932968519797227e07a1368dea80f0bc"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/tinyvec-1.12.0/LICENSE-ZLIB.md",
+        "sha256": "84b34dd7608f7fb9b17bd588a6bf392bf7de504e2716f024a77d89f1b145a151"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "tinyvec_macros",
+    "version": "0.1.1",
+    "license": "MIT OR Apache-2.0 OR Zlib",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/tinyvec_macros-0.1.1/LICENSE-APACHE.md",
+        "sha256": "4f44572785f35152c1fd2eadf565b7e079c0f300b4324f0af653419f9d76b735"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/tinyvec_macros-0.1.1/LICENSE-MIT.md",
+        "sha256": "1dd8eca0f83669e75fa119e34fb9e1be9d16e3e9b6368962b8019db6e8ae5f7b"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/tinyvec_macros-0.1.1/LICENSE-ZLIB.md",
+        "sha256": "41ace205715d9f19a3214218cc1c01d57c533e02cd0fef7c8e51a49a7fce5ac5"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "typenum",
+    "version": "1.20.1",
+    "license": "MIT OR Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/typenum-1.20.1/LICENSE",
+        "sha256": "db11fec9946737df39ca3898d9cd8c10ec6f6c3a884a6802b0ad0b81b4e8f23a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/typenum-1.20.1/LICENSE-APACHE",
+        "sha256": "516b24e051bf5630880ebbd55c40a25ce9552ebaf8970a53e8976eb70e522406"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/typenum-1.20.1/LICENSE-MIT",
+        "sha256": "a825bd853ab71619a4923d7b4311221427848070ff44d990da39b0b274c1683f"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "unicode-ident",
+    "version": "1.0.24",
+    "license": "(MIT OR Apache-2.0) AND Unicode-3.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/unicode-ident-1.0.24/LICENSE-APACHE",
+        "sha256": "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/unicode-ident-1.0.24/LICENSE-MIT",
+        "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/unicode-ident-1.0.24/LICENSE-UNICODE",
+        "sha256": "f7db81051789b729fea528a63ec4c938fdcb93d9d61d97dc8cc2e9df6d47f2a1"
+      }
+    ]
+  },
+  {
+    "ecosystem": "cargo",
+    "name": "version_check",
+    "version": "0.9.5",
+    "license": "MIT/Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/version_check-0.9.5/LICENSE-APACHE",
+        "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/cargo/version_check-0.9.5/LICENSE-MIT",
+        "sha256": "b7e650f3fce5c53249d1cdc608b54df156a97edd636cf9d23498d0cfe7aec63e"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@esbuild/win32-x64",
+    "version": "0.28.2",
+    "license": "MIT",
+    "buildOnly": true,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@esbuild_win32-x64-0.28.2/LICENSE.txt",
+        "sha256": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@noble/curves",
+    "version": "2.2.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@noble_curves-2.2.0/LICENSE",
+        "sha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@noble/hashes",
+    "version": "2.2.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@noble_hashes-2.2.0/LICENSE",
+        "sha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/aspromise",
+    "version": "1.1.2",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_aspromise-1.1.2/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/base64",
+    "version": "1.1.2",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_base64-1.1.2/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/codegen",
+    "version": "2.0.5",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_codegen-2.0.5/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/eventemitter",
+    "version": "1.1.1",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_eventemitter-1.1.1/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/fetch",
+    "version": "1.1.1",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_fetch-1.1.1/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/float",
+    "version": "1.0.2",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_float-1.0.2/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/path",
+    "version": "1.1.2",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_path-1.1.2/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/pool",
+    "version": "1.1.0",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_pool-1.1.0/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@protobufjs/utf8",
+    "version": "1.1.2",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@protobufjs_utf8-1.1.2/LICENSE",
+        "sha256": "a67b34a24a5daddcce46aea68c5004e4442bbfb63690329fa607bf4de4269794"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@scure/base",
+    "version": "2.2.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@scure_base-2.2.0/LICENSE",
+        "sha256": "3239e134eb6e6d64538ca76498c7fcb08a395249dd9d4af9927bf6d0169ee429"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@scure/starknet",
+    "version": "2.2.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@scure_starknet-2.2.0/LICENSE",
+        "sha256": "4f221aee6e072336700c408c68ab3b96a3fc09f6aebe6f48f1bd99e5ef13faec"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "@types/node",
+    "version": "26.6.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/@types_node-26.6.0/LICENSE",
+        "sha256": "c2cfccb812fe482101a8f04597dfc5a9991a6b2748266c47ac91b6a5aae15383"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "agent-base",
+    "version": "8.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/agent-base-8.0.0/LICENSE",
+        "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "bufferutil",
+    "version": "4.1.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/bufferutil-4.1.0/LICENSE",
+        "sha256": "2b29dcfe0d6471f7e8c92c5fb38c9f93edee10330937055440192f1832b1ecef"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "ccxt",
+    "version": "4.5.78",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/ccxt-4.5.78/LICENSE.txt",
+        "sha256": "1086fddb6d4084c1d5ef1175ff9e524c574a4c5b27255258911a58d8b9efa39c"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "debug",
+    "version": "4.4.3",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/debug-4.4.3/LICENSE",
+        "sha256": "3a61c6c96caf5c1d9b623fb9b04c822b783dfcb78aa7e49c76a3f643e6ed7f95"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "esbuild",
+    "version": "0.28.2",
+    "license": "MIT",
+    "buildOnly": true,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/esbuild-0.28.2/LICENSE.md",
+        "sha256": "b40ec5baec7bb34fa5b1c09521fa3cd52d5fad7adafed74932a2010d3612a681"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "fflate",
+    "version": "0.8.3",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/fflate-0.8.3/LICENSE",
+        "sha256": "0a1df3a083d0c010560aa342e87959c8c1070e6fd54545741f083f22d0c8b551"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "http-proxy-agent",
+    "version": "8.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/http-proxy-agent-8.0.0/LICENSE",
+        "sha256": "71368fd0f5b4129191e9afcd1e1ef2dc89a9090d3e4d80bbab92dafd032b3bef"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "https-proxy-agent",
+    "version": "8.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/https-proxy-agent-8.0.0/LICENSE",
+        "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "ip-address",
+    "version": "10.7.2",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/ip-address-10.7.2/LICENSE",
+        "sha256": "f8d791359a50cbcac82c29cb7b0b1b889b28be76fdd35b8ee33f0f7c8704702a"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "long",
+    "version": "5.3.2",
+    "license": "Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/long-5.3.2/LICENSE",
+        "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "ms",
+    "version": "2.1.3",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/ms-2.1.3/license.md",
+        "sha256": "1662fae9b5314d11cf51284e2dcd1f006a354f7343f08712a730fcff9a359801"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "node-gyp-build",
+    "version": "4.8.4",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/node-gyp-build-4.8.4/LICENSE",
+        "sha256": "7b3638496004b2daed183a91c4ba45d3ef6331db6c9d0eb1dd882a505630c172"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "protobufjs",
+    "version": "7.6.6",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/protobufjs-7.6.6/LICENSE",
+        "sha256": "49d6a1c9a623784c61c6cb70f773f3457faceb1914a13c8560a9823b7631950c"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "smart-buffer",
+    "version": "4.2.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/smart-buffer-4.2.0/LICENSE",
+        "sha256": "c46e2c333e1c9e6fcfd130cf91b8e54bf67b60fabbc04996f7e199b990353ff3"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "socks",
+    "version": "2.8.10",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/socks-2.8.10/LICENSE",
+        "sha256": "4f4f28866154c8d758241a64296e8790d45d7d912ff7b029930778c06d8f2a72"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "socks-proxy-agent",
+    "version": "9.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/socks-proxy-agent-9.0.0/LICENSE",
+        "sha256": "8d8c55319c7729d57be811c747452636688d54f19701ee0752b6b15ad3771d9a"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "undici",
+    "version": "7.29.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/undici-7.29.0/LICENSE",
+        "sha256": "a6db8096b2707bc0102d256917d4d33f298ba36d8c3f25de067a2b5bb379db27"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "undici-types",
+    "version": "8.9.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/undici-types-8.9.0/LICENSE",
+        "sha256": "a6db8096b2707bc0102d256917d4d33f298ba36d8c3f25de067a2b5bb379db27"
+      }
+    ]
+  },
+  {
+    "ecosystem": "npm",
+    "name": "ws",
+    "version": "8.21.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/npm/ws-8.21.0/LICENSE",
+        "sha256": "2b29dcfe0d6471f7e8c92c5fb38c9f93edee10330937055440192f1832b1ecef"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "CommunityToolkit.Common",
+    "version": "8.2.1",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/CommunityToolkit.Common-8.2.1/License.md",
+        "sha256": "651997ef19dbb9ecb8dd660dbc86444a65af21f18cfe08daa69bf201cd5cfdfc"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/CommunityToolkit.Common-8.2.1/ThirdPartyNotices.txt",
+        "sha256": "7774f8b0ab66bfb47ec154ce24a2d6d574febc44a74d940b8a037d1c56756163"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "CommunityToolkit.WinUI.Animations",
+    "version": "8.0.230907",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/CommunityToolkit.WinUI.Animations-8.0.230907/License.md",
+        "sha256": "c12410935503a2c9c4d3d4d14fdfdff49d0a37ad0046dc761b07867e8d499e97"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "CommunityToolkit.WinUI.Extensions",
+    "version": "8.0.230907",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/CommunityToolkit.WinUI.Extensions-8.0.230907/License.md",
+        "sha256": "c12410935503a2c9c4d3d4d14fdfdff49d0a37ad0046dc761b07867e8d499e97"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "CommunityToolkit.WinUI.Media",
+    "version": "8.0.230907",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/CommunityToolkit.WinUI.Media-8.0.230907/License.md",
+        "sha256": "c12410935503a2c9c4d3d4d14fdfdff49d0a37ad0046dc761b07867e8d499e97"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Google.Protobuf",
+    "version": "3.36.0",
+    "license": "BSD-3-Clause",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Google.Protobuf-3.36.0/LICENSE.txt",
+        "sha256": "f1372301569bed09b2b7ec40595698f338c4f721e9f1625eee644499ef13afd9"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Grpc.Core.Api",
+    "version": "2.83.0",
+    "license": "Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Grpc.Core.Api-2.83.0/LICENSE.txt",
+        "sha256": "5f35c7c147d30b73f94776ba58f559de0ac3259c8a25093f36b7a09abfef9061"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Grpc.Net.Client",
+    "version": "2.83.0",
+    "license": "Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Grpc.Net.Client-2.83.0/LICENSE.txt",
+        "sha256": "5f35c7c147d30b73f94776ba58f559de0ac3259c8a25093f36b7a09abfef9061"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Grpc.Net.Common",
+    "version": "2.83.0",
+    "license": "Apache-2.0",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Grpc.Net.Common-2.83.0/LICENSE.txt",
+        "sha256": "5f35c7c147d30b73f94776ba58f559de0ac3259c8a25093f36b7a09abfef9061"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Grpc.Tools",
+    "version": "2.83.0",
+    "license": "Apache-2.0",
+    "buildOnly": true,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Grpc.Tools-2.83.0/LICENSE.txt",
+        "sha256": "5f35c7c147d30b73f94776ba58f559de0ac3259c8a25093f36b7a09abfef9061"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.Extensions.DependencyInjection.Abstractions",
+    "version": "8.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Extensions.DependencyInjection.Abstractions-8.0.0/LICENSE.TXT",
+        "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Extensions.DependencyInjection.Abstractions-8.0.0/THIRD-PARTY-NOTICES.TXT",
+        "sha256": "19c19dcac9f3ee6302cfbc6745bb8e79f08efc4c933eb8dc5509bf14b88347ec"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.Extensions.Logging.Abstractions",
+    "version": "8.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Extensions.Logging.Abstractions-8.0.0/LICENSE.TXT",
+        "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Extensions.Logging.Abstractions-8.0.0/THIRD-PARTY-NOTICES.TXT",
+        "sha256": "19c19dcac9f3ee6302cfbc6745bb8e79f08efc4c933eb8dc5509bf14b88347ec"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.Graphics.Win2D",
+    "version": "1.3.2",
+    "license": "http://www.microsoft.com/web/webpi/eula/eula_win2d_10012014.htm",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Graphics.Win2D-1.3.2/LICENSE.txt",
+        "sha256": "c3ba493105fa52657c4c60d9b1680da7c01b188a8665d7a823c2a187fd259808"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.Web.WebView2",
+    "version": "1.0.3179.45",
+    "license": "LICENSE.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Web.WebView2-1.0.3179.45/LICENSE.txt",
+        "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Web.WebView2-1.0.3179.45/NOTICE.txt",
+        "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.Windows.SDK.BuildTools",
+    "version": "10.0.26100.7175",
+    "license": "https://aka.ms/WinSDKLicenseURL",
+    "buildOnly": true,
+    "notices": []
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.Windows.SDK.BuildTools.MSIX",
+    "version": "1.7.20250829.1",
+    "license": "sdk_license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Windows.SDK.BuildTools.MSIX-1.7.20250829.1/NOTICE.txt",
+        "sha256": "f09ebf5de6a5c8e7ebc900bb2e52af2f75e13610a1cf91e1514530e448d956c3"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.Windows.SDK.BuildTools.MSIX-1.7.20250829.1/sdk_license.txt",
+        "sha256": "a7a5c7e7ff998558983d6aca2702117c328aeb0c6404d298cb275f5623c6fd13"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK",
+    "version": "1.8.251106002",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK-1.8.251106002/license.txt",
+        "sha256": "5b11e6347756e40fe0274bc08c97f89201b94f0d50181a09a00f1f4740840501"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK-1.8.251106002/NOTICE.txt",
+        "sha256": "e25393c0d340a1821827b093fa4dbbfcccd8feb7bf769e7fa773e3955cd5314b"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.AI",
+    "version": "1.8.39",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.AI-1.8.39/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.Base",
+    "version": "1.8.250831001",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.Base-1.8.250831001/license.txt",
+        "sha256": "5b11e6347756e40fe0274bc08c97f89201b94f0d50181a09a00f1f4740840501"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.Base-1.8.250831001/NOTICE.txt",
+        "sha256": "e25393c0d340a1821827b093fa4dbbfcccd8feb7bf769e7fa773e3955cd5314b"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.DWrite",
+    "version": "1.8.25090401",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.DWrite-1.8.25090401/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.Foundation",
+    "version": "1.8.251104000",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.Foundation-1.8.251104000/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.InteractiveExperiences",
+    "version": "1.8.251104001",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.InteractiveExperiences-1.8.251104001/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.ML",
+    "version": "1.8.2109",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.ML-1.8.2109/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.ML-1.8.2109/ThirdPartyNotices.txt",
+        "sha256": "e00f828e0a33de591a355ae6606d2625f5758da7d2c844db7821c9dd3e3647b6"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.Runtime",
+    "version": "1.8.251106002",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.Runtime-1.8.251106002/license.txt",
+        "sha256": "5b11e6347756e40fe0274bc08c97f89201b94f0d50181a09a00f1f4740840501"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.Runtime-1.8.251106002/NOTICE.txt",
+        "sha256": "e25393c0d340a1821827b093fa4dbbfcccd8feb7bf769e7fa773e3955cd5314b"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.Widgets",
+    "version": "1.8.250904007",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.Widgets-1.8.250904007/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "Microsoft.WindowsAppSDK.WinUI",
+    "version": "1.8.251105000",
+    "license": "license.txt",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.WinUI-1.8.251105000/license.txt",
+        "sha256": "f9ed00147604bdc48c7e62d127d73245781ce53903cef9c3863f8a7ef8120cc2"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/Microsoft.WindowsAppSDK.WinUI-1.8.251105000/NOTICE.txt",
+        "sha256": "e25393c0d340a1821827b093fa4dbbfcccd8feb7bf769e7fa773e3955cd5314b"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "System.Numerics.Tensors",
+    "version": "9.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/System.Numerics.Tensors-9.0.0/LICENSE.TXT",
+        "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/System.Numerics.Tensors-9.0.0/THIRD-PARTY-NOTICES.TXT",
+        "sha256": "40686c6447a7d5b5d3693068e4571b5f483d7ed335aeee773ef662440de4c5d5"
+      }
+    ]
+  },
+  {
+    "ecosystem": "nuget",
+    "name": "System.Security.Cryptography.ProtectedData",
+    "version": "8.0.0",
+    "license": "MIT",
+    "buildOnly": false,
+    "notices": [
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/System.Security.Cryptography.ProtectedData-8.0.0/LICENSE.TXT",
+        "sha256": "d7a68596ab69b06f51ca278a6545148e4269a9381c26d597c13df5d88e08cf5b"
+      },
+      {
+        "path": "ThirdParty/Licenses/Dependencies/nuget/System.Security.Cryptography.ProtectedData-8.0.0/THIRD-PARTY-NOTICES.TXT",
+        "sha256": "19c19dcac9f3ee6302cfbc6745bb8e79f08efc4c933eb8dc5509bf14b88347ec"
+      }
+    ]
+  }
+]
