@@ -25,8 +25,8 @@ not a future availability guarantee or private-account certification.
 
 Fresh local development registration also exercised no-key tickers, Help/privacy,
 diagnostic export, panel/quit cleanup and unregistration. It does not establish
-signed clean-machine installation. No official binary, Store acceptance, SignPath
-approval or hosted CI pass is currently claimed.
+signed clean-machine installation. No official binary, Store acceptance or
+SignPath approval is currently claimed.
 
 Source-publication checks on 27 September 2026: a clean 940-file export restored
 locked dependencies and built x64 Release with zero warnings/errors in a separate
@@ -36,7 +36,20 @@ notice files with automatic line-ending conversion enabled and disabled. Relativ
 documentation links and the source allowlist passed. Gitleaks 8.30.1 returned 20
 reviewed public token/mint fixture matches and no credential findings. Historical
 Git metadata, private captures and build outputs were excluded. The exact initial
-commit still needs its own review after repository initialization.
+commit was subsequently reviewed before pushing: 940 tracked files, 150 matching
+dependency-notice hashes and the same 20 public fixture findings, with no credential
+findings or imported development history.
+
+Hosted verification passed on 27 September 2026 (IST) for commit `0bbb4b1`:
+[workflow run](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36266982119).
+Locked restore, Release build, managed/sidecar/on-chain checks, Rust checks, native
+cache checks and unsigned Store-upload build/payload inspection succeeded. No
+binary was published. The initial hosted run exposed a Debug-restore/Release-build
+mismatch; restore now explicitly selects Release so ReadyToRun inputs are present.
+Hosted Windows runs elevated, so `pin-native` and `pin-embedded` are explicitly
+skipped there; the normal local command still requires both on a non-elevated
+interactive desktop. Hosted success does not replace those checks, live provider
+certification, signing, WACK or the clean-Windows matrix.
 
 ## 1. Publish the source repository
 
@@ -47,10 +60,13 @@ commit still needs its own review after repository initialization.
   captures, logs, temporary evidence and generated output.
 - [x] Confirm the destination repository and initial commit author/email:
   `gautamgpt1/TrenchHQ`, Gautam Gupta, GitHub's account-linked no-reply email.
-- [ ] Inspect and scan the exact initial commit before pushing. Ignore rules alone
+- [x] Inspect and scan the exact initial commit before pushing. Ignore rules alone
   do not remove already tracked secrets. Do not import old development history.
 - [x] Enable Issues and private vulnerability reporting.
-- [ ] Publish as pre-release source and observe the first verification workflow run.
+- [x] Publish as pre-release source: initial commit
+  [`f6f77a1`](https://github.com/gautamgpt1/TrenchHQ/commit/f6f77a10ed22470c85d89cbf8988d6d95f4dfa3a).
+- [x] Observe a successful hosted verification workflow run, with the two
+  interactive pin exclusions recorded above.
 - [x] Confirm app/site support links match the final repository URL.
 - [ ] Set Pages source to GitHub Actions, run the manual Pages workflow and verify
   the privacy/support pages publicly. Review deployment permissions first.
