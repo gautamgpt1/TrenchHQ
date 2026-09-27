@@ -3,7 +3,7 @@ param()
 $ErrorActionPreference = 'Stop'
 $root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $lock = Get-Content -Raw -LiteralPath (Join-Path $root 'release\dependencies.json') | ConvertFrom-Json
-$runtime = Join-Path $root 'SidecarRuntime\node.exe'
+$runtime = Join-Path $root 'artifacts\runtime\node.exe'
 if (-not (Test-Path -LiteralPath $runtime) -or
     (Get-FileHash -LiteralPath $runtime -Algorithm SHA256).Hash -ne $lock.node.sha256) {
     $temporary = Join-Path $env:TEMP ('TrenchHQ-node-' + [guid]::NewGuid().ToString('N') + '.exe')
@@ -16,7 +16,7 @@ if (-not (Test-Path -LiteralPath $runtime) -or
     Copy-Item -LiteralPath $temporary -Destination $runtime
     Remove-Item -LiteralPath $temporary
 }
-Push-Location (Join-Path $root 'SidecarApp')
+Push-Location (Join-Path $root 'src\MarketSidecar')
 try {
     $npmCli = Join-Path (Split-Path (Get-Command npm.cmd -ErrorAction Stop).Source) 'node_modules\npm\bin\npm-cli.js'
     if (-not (Test-Path -LiteralPath $npmCli)) { throw 'The npm CLI installation could not be located.' }

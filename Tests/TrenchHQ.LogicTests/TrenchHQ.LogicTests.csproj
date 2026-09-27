@@ -1,63 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <!-- Fixtures deliberately exercise independent cancellation and worker lifetimes. -->
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
+    <IsPackable>false</IsPackable>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\Helpers\ReleaseDiagnostics.cs" Link="Production\ReleaseDiagnostics.cs" />
-    <Compile Include="..\..\Helpers\OnChainPipelineDiagnostics.cs" Link="Production\OnChainPipelineDiagnostics.cs" />
-    <Compile Include="..\..\Helpers\SocialFeedRules.cs" Link="Production\SocialFeedRules.cs" />
-    <Compile Include="..\..\Models\SocialFeedModels.cs" Link="Production\SocialFeedModels.cs" />
-    <Compile Include="..\..\Helpers\CertifiedExchangeCatalog.cs" Link="Production\CertifiedExchangeCatalog.cs" />
-    <Compile Include="..\..\Helpers\CentralizedAssetIconCatalog.cs" Link="Production\CentralizedAssetIconCatalog.cs" />
-    <Compile Include="..\..\Helpers\DockedBarLayoutRules.cs" Link="Production\DockedBarLayoutRules.cs" />
-    <Compile Include="..\..\Helpers\DockedBarPlacementRules.cs" Link="Production\DockedBarPlacementRules.cs" />
-    <Compile Include="..\..\Helpers\EvmAddress.cs" Link="Production\EvmAddress.cs" />
-    <Compile Include="..\..\Helpers\BaseDeploymentRegistry.cs" Link="Production\BaseDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\BnbDeploymentRegistry.cs" Link="Production\BnbDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\RobinhoodDeploymentRegistry.cs" Link="Production\RobinhoodDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\EthereumDeploymentRegistry.cs" Link="Production\EthereumDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\EvmChainDefinition.cs" Link="Production\EvmChainDefinition.cs" />
-    <Compile Include="..\..\Helpers\MarketSidecarState.cs" Link="Production\MarketSidecarState.cs" />
-    <Compile Include="..\..\Helpers\MarketReconnectRules.cs" Link="Production\MarketReconnectRules.cs" />
-    <Compile Include="..\..\Helpers\MarketFeedProtocolParser.cs" Link="Production\MarketFeedProtocolParser.cs" />
-    <Compile Include="..\..\Helpers\PanelWidgetHostRules.cs" Link="Production\PanelWidgetHostRules.cs" />
-    <Compile Include="..\..\Helpers\PanelContentSizeRules.cs" Link="Production\PanelContentSizeRules.cs" />
-    <Compile Include="..\..\Helpers\WidgetContentStateRules.cs" Link="Production\WidgetContentStateRules.cs" />
-    <Compile Include="..\..\Helpers\WebsiteWidgetRules.cs" Link="Production\WebsiteWidgetRules.cs" />
-    <Compile Include="..\..\Helpers\ApplicationWindowPin.cs" Link="Production\ApplicationWindowPin.cs" />
-    <Compile Include="..\..\Helpers\ApplicationWindowNative.cs" Link="Production\ApplicationWindowNative.cs" />
-    <Compile Include="..\..\Helpers\WalletActivityRules.cs" Link="Production\WalletActivityRules.cs" />
-    <Compile Include="..\..\Helpers\WalletActivityAgeRules.cs" Link="Production\WalletActivityAgeRules.cs" />
-    <Compile Include="..\..\Helpers\WalletActivityMetadataRules.cs" Link="Production\WalletActivityMetadataRules.cs" />
-    <Compile Include="..\..\Helpers\WalletActivityPresentationRules.cs" Link="Production\WalletActivityPresentationRules.cs" />
-    <Compile Include="..\..\Helpers\SavedWidgetCatalogRules.cs" Link="Production\SavedWidgetCatalogRules.cs" />
-    <Compile Include="..\..\Helpers\SavedWidgetCatalogStore.cs" Link="Production\SavedWidgetCatalogStore.cs" />
-    <Compile Include="..\..\Helpers\OverlayLayoutRules.cs" Link="Production\OverlayLayoutRules.cs" />
-    <Compile Include="..\..\Helpers\PanelShortcutRules.cs" Link="Production\PanelShortcutRules.cs" />
-    <Compile Include="..\..\Helpers\PanelShortcutCapture.cs" Link="Production\PanelShortcutCapture.cs" />
-    <Compile Include="..\..\Helpers\WidgetSubscriptionPlanner.cs" Link="Production\WidgetSubscriptionPlanner.cs" />
-    <Compile Include="..\..\Helpers\OnChainWidgetSubscriptionPlanner.cs" Link="Production\OnChainWidgetSubscriptionPlanner.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderFailoverRules.cs" Link="Production\OnChainProviderFailoverRules.cs" />
-    <Compile Include="..\..\Helpers\DexScreenerPoolCatalogClient.cs" Link="Production\DexScreenerPoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\PriceFormattingRules.cs" Link="Production\PriceFormattingRules.cs" />
-    <Compile Include="..\..\Helpers\PriceTickRules.cs" Link="Production\PriceTickRules.cs" />
-    <Compile Include="..\..\Helpers\SelectedPairParser.cs" Link="Production\SelectedPairParser.cs" />
-    <Compile Include="..\..\Helpers\SolanaBase58.cs" Link="Production\SolanaBase58.cs" />
-    <Compile Include="..\..\Helpers\WalletWidgetSubscriptionPlanner.cs" Link="Production\WalletWidgetSubscriptionPlanner.cs" />
-    <Compile Include="..\..\Helpers\DesktopSetupRules.cs" Link="Production\DesktopSetupRules.cs" />
-    <Compile Include="..\..\Helpers\DesktopSetupStore.cs" Link="Production\DesktopSetupStore.cs" />
-    <Compile Include="..\..\Models\DesktopPanelDefinitions.cs" Link="Production\DesktopPanelDefinitions.cs" />
-    <Compile Include="..\..\Models\ChainModels.cs" Link="Production\ChainModels.cs" />
-    <Compile Include="..\..\Models\EvmModels.cs" Link="Production\EvmModels.cs" />
-    <Compile Include="..\..\Models\MarketFeedContracts.cs" Link="Production\MarketFeedContracts.cs" />
-    <Compile Include="..\..\Models\OnChainModels.cs" Link="Production\OnChainModels.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderUsage.cs" Link="Production\OnChainProviderUsage.cs" />
-    <Compile Include="..\..\Models\OnChainProviderConfiguration.cs" Link="Production\OnChainProviderConfiguration.cs" />
-    <Compile Include="..\..\Models\PoolCatalogModels.cs" Link="Production\PoolCatalogModels.cs" />
-    <Compile Include="..\..\Models\SavedWidgetDefinitions.cs" Link="Production\SavedWidgetDefinitions.cs" />
-    <Compile Include="..\..\Models\WalletActivityModels.cs" Link="Production\WalletActivityModels.cs" />
+    <ProjectReference Include="..\..\src\TrenchHQ.Infrastructure\TrenchHQ.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" PrivateAssets="all" />
+    <PackageReference Include="xunit.v3" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" PrivateAssets="all" />
   </ItemGroup>
 </Project>

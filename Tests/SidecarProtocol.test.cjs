@@ -5,7 +5,7 @@ const { createInterface } = require('node:readline');
 const path = require('node:path');
 
 test('production sidecar rejects private operations, inherited handlers and malformed frames', async () => {
-  const child = spawn(process.execPath, [path.join(__dirname, '../SidecarApp/dist/sidecar.bundle.cjs')],
+  const child = spawn(process.execPath, [path.join(__dirname, '../src/MarketSidecar/dist/sidecar.bundle.cjs')],
     { stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true });
   const lines = createInterface({ input: child.stdout })[Symbol.asyncIterator]();
   async function next() {

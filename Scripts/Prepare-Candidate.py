@@ -38,7 +38,7 @@ for relative in selected:
     shutil.copy2(source, destination)
     manifest.append({'path': relative, 'sha256': hashlib.sha256(destination.read_bytes()).hexdigest()})
 fingerprint = hashlib.sha256(json.dumps(manifest, separators=(',', ':')).encode()).hexdigest()
-package = ET.parse(output / 'Package.appxmanifest').getroot()
+package = ET.parse(output / 'src/TrenchHQ.App/Package.appxmanifest').getroot()
 identity = next(e.attrib for e in package if e.tag.endswith('}Identity'))
 record = {'schema': 1, 'sourceSha256': fingerprint, 'identity': identity, 'files': manifest,
           'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip(),

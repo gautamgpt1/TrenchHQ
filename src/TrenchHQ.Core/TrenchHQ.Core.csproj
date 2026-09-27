@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="TrenchHQ" />
+    <InternalsVisibleTo Include="TrenchHQ.TestSupport" />
+    <InternalsVisibleTo Include="TrenchHQ.Infrastructure" />
+    <InternalsVisibleTo Include="TrenchHQ.LogicTests" />
+    <InternalsVisibleTo Include="TrenchHQ.IntegrationTests" />
+    <InternalsVisibleTo Include="TrenchHQ.OnChainIntegrationTests" />
+    <InternalsVisibleTo Include="TrenchHQ.SocialTests" />
+    <InternalsVisibleTo Include="TrenchHQ.WindowPinTests" />
+    <InternalsVisibleTo Include="TrenchHQ.ProviderValidation" />
+    <InternalsVisibleTo Include="TrenchHQ.WindowContainmentProbe" />
+    <InternalsVisibleTo Include="TrenchHQ.OnChainValidation" />
+    <InternalsVisibleTo Include="TrenchHQ.SocialValidation" />
+  </ItemGroup>
+</Project>

@@ -14,6 +14,11 @@ Security reports follow [SECURITY.md](SECURITY.md).
 
 Keep unrelated formatting, dependency upgrades and generated files out of a PR.
 Tests should exercise observable behavior and cover a distinct regression.
+Place shared rules/models in Core, acquisition/storage in Infrastructure, and
+WinUI presentation/window work in the app. Add project references for tests; do
+not link production source files into test projects. Live probes belong under
+`tools/`, outside default test execution.
+
 Native window changes also need an interactive Windows check for restoration and
 cleanup. Provider changes must preserve the selected polling/event mode and
 distinguish synthetic fixtures from actual account certification.

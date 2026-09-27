@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="TrenchHQ" />
+    <InternalsVisibleTo Include="TrenchHQ.TestSupport" />
+    <InternalsVisibleTo Include="TrenchHQ.LogicTests" />
+    <InternalsVisibleTo Include="TrenchHQ.IntegrationTests" />
+    <InternalsVisibleTo Include="TrenchHQ.OnChainIntegrationTests" />
+    <InternalsVisibleTo Include="TrenchHQ.SocialTests" />
+    <InternalsVisibleTo Include="TrenchHQ.WindowPinTests" />
+    <InternalsVisibleTo Include="TrenchHQ.ProviderValidation" />
+    <InternalsVisibleTo Include="TrenchHQ.WindowContainmentProbe" />
+    <InternalsVisibleTo Include="TrenchHQ.OnChainValidation" />
+    <InternalsVisibleTo Include="TrenchHQ.SocialValidation" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TrenchHQ.Core\TrenchHQ.Core.csproj" />
+    <ProjectReference Include="..\TrenchHQ.OnChain.Yellowstone\TrenchHQ.OnChain.Yellowstone.csproj" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.83.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+  </ItemGroup>
+</Project>

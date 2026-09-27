@@ -10,5 +10,6 @@ Read-only crypto market panels for your Windows desktop.
 - [Privacy policy](privacy.txt)
 - [Support and known issues](https://github.com/gautamgpt1/TrenchHQ/issues)
 - [Source](https://github.com/gautamgpt1/TrenchHQ)
+- [Code signing policy](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/RELEASE.md#code-signing-policy)
 
 Pre-release: public binaries are available only after signing, clean-machine certification and a small test ring. No wallet custody, signing or trading.

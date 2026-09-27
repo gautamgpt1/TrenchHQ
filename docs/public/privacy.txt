@@ -1,17 +1,37 @@
 TrenchHQ Privacy Policy
-Effective for candidate 1.0.1.0, prepared 25 September 2026
-Publisher: GautamGupta
+Applies to TrenchHQ 1.0.1.0; last updated 27 September 2026
+Publisher: Gautam Gupta (GautamGupta)
 
 TrenchHQ is a local Windows desktop monitor. It does not provide wallet custody, wallet signing, exchange-account access or trading. You can use public exchange prices without an account or provider key. Optional network features contact the services described below.
 
 Credentials
 Optional RPC/data-provider project keys and official X developer bearer tokens are stored locally using Windows DPAPI for the current Windows user. They are decrypted in memory when a configured feature needs them and transmitted to that provider over HTTPS, WSS or encrypted gRPC. DPAPI protects storage; it does not protect against malicious software already running as you. TrenchHQ does not request seed phrases, wallet private keys or exchange-account trading credentials. Credentials are not sent to the TrenchHQ publisher. Provider accounts, quotas, retention and billing are controlled by each provider. Remove a saved provider to stop using it; revoke a token at its provider to invalidate copies. Automatic routing may use other configured eligible providers or public EVM endpoints when a route fails or reaches a local usage guard.
 
+Your choices and retention
+You choose which widgets, addresses, sites and feeds to configure and run. Public exchange prices require no provider credential. On-chain requests use the app's compatible configured routes, including automatic public EVM fallback; saving a provider does not restrict requests to that provider alone. Stop Desktop Display closes its panels. Quit TrenchHQ from its notification-area menu to stop the application and its feeds; closing only the dashboard leaves it running. Turn off launch at startup in Dashboard or Windows Startup Apps to prevent automatic startup. Pause feed in the X API settings stops the X feed but retains its protected token. Delete RPC provider configurations to remove those routes; a protected credential shared by other chain configurations remains until no configuration references it. Local settings, caches and website profiles remain until removed as described under Deletion and uninstall. Revoking access at a provider stops that credential from working but does not delete the provider's existing records.
+
 Wallets and saved configuration
 Public wallet addresses, labels, selected assets/pools, website addresses, X account watches, settings and panel placement are stored in the Windows user's package data. Ordinary configuration is not encrypted as a whole. Read-only wallet queries disclose watched addresses to the selected RPC provider; pool and market searches disclose the requested identifiers to relevant discovery services. Local wallet labels are not needed for these requests. Public addresses can still identify people or financial activity. Only monitor addresses you are entitled to use. Do not put passwords or token-bearing links in Website addresses or labels.
 
 Network services
 Depending on the features you use, the app contacts public exchange market APIs through CCXT; DEX Screener, protocol catalogs, chain explorers, Robinhood Stock Token endpoints and chain RPC services; selected Alchemy, Helius, QuickNode, Chainstack, dRPC, Infura, Shyft, Triton or custom services; public Solana and PublicNode endpoints; and the official X API. Service operators receive your IP address, request timing and requested data, plus credentials only where you configured them. Requests can cross national borders. Their terms and privacy policies apply. TrenchHQ does not operate a data-relay server. Opening a support or documentation link contacts GitHub or your default browser's destination.
+
+Provider and platform privacy notices
+These operators control their own retention, international transfers and account records. Consult the selected exchange's or website's privacy notice, and the service directory at https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/SERVICES.md for the integrations used by this version.
+- Alchemy: https://www.alchemy.com/terms-conditions/privacy-policy
+- Helius: https://www.helius.dev/privacy-policy
+- QuickNode: https://www.quicknode.com/privacy
+- Chainstack: https://chainstack.com/privacy/
+- dRPC: https://drpc.org/privacy-policy
+- Infura / Consensys: https://metamask.io/privacy-notice
+- Shyft: https://shyft.to/privacy-policy
+- Triton: https://www.triton.one/policies
+- PublicNode: https://www.publicnode.com/privacy
+- Solana public services: https://solana.com/privacy-policy
+- DEX Screener: https://docs.dexscreener.com/privacy/privacy-policy
+- X: https://x.com/en/privacy
+- Windows / WebView2: https://www.microsoft.com/en-us/privacy/privacystatement
+- GitHub: https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement
 
 Website panels
 Website uses Microsoft WebView2. Each saved widget has a separate local browser profile; panels sharing a widget share that profile. Cookies, login sessions, cache and site storage persist locally. Your normal browser's profile is not imported. You sign in directly to the website; its scripts, analytics and privacy terms apply. TrenchHQ does not extract posts, passwords or cookies from it. Password autosave and general autofill are disabled, and the wrapper blocks downloads, popups, device-permission requests and external-app launches. Closing a panel, clearing its address or deleting its widget does not delete the retained browser profile. Sign out of the site and revoke sessions with the site if needed. WebView2 and Windows may make their own runtime/security requests under Microsoft's policies and your system settings.
@@ -23,9 +43,9 @@ Diagnostics and telemetry
 TrenchHQ has no publisher analytics, advertising identifier, automatic crash upload or telemetry backend. Optional diagnostic export is initiated by you and saved to a location you choose. It contains the app/Windows/.NET versions, architecture, memory/CPU measurements and aggregate pipeline counts/latencies. It does not include raw logs or errors, provider configuration, keys, wallet addresses/labels, website URLs, X handles, browser profiles, usernames, device names or filesystem paths. Review it before sharing. If you submit it or other information to GitHub Issues, it becomes visible according to that repository's access settings and GitHub's policy. Never post credentials or confidential wallet/browser information. Windows crash reporting and third-party sites are controlled separately.
 
 Deletion and uninstall
-Quit TrenchHQ to stop its feeds and close panels. Delete saved widgets/panels/providers in the app to remove their active configuration; local caches and website profiles can remain. Windows Settings app Reset, where available, removes package app data; Repair is not a data-deletion operation. Standard per-user MSIX uninstall normally removes that package's managed app data, but retention options, other Windows accounts, backups and developer registrations can differ. It does not revoke provider tokens, erase blockchain data, delete third-party accounts or remove diagnostic files you saved elsewhere. Revoke tokens and sessions with their issuers. For explicit manual cleanup after Quit, delete only this app's package-data folder (identified by its package family), plus its WebView2 folders there. The separate %LOCALAPPDATA%/TrenchHQ/WindowPin cache can be removed after all previously pinned target apps exit. Do not delete other apps' or package families' data. Clean-install/uninstall behavior must be verified for the actual signed distribution before release.
+Quit TrenchHQ to stop its feeds and close panels. Delete saved widgets/panels/RPC providers in the app to remove their active configuration; local caches and website profiles can remain. Windows Settings app Reset, where available, removes package app data, including the saved X token; Repair is not a data-deletion operation. Standard per-user MSIX uninstall normally removes that package's managed app data, but retention options, other Windows accounts, backups and developer registrations can differ. It does not revoke provider tokens, erase blockchain data, delete third-party accounts or remove diagnostic files you saved elsewhere. Revoke tokens and sessions with their issuers. For explicit manual cleanup after Quit, delete only this app's package-data folder (identified by its package family), plus its WebView2 folders there. The separate %LOCALAPPDATA%/TrenchHQ/WindowPin cache can be removed after all previously pinned target apps exit. Do not delete other apps' or package families' data. Separate Store/direct installations can have separate package data; removing one does not remove the other's data.
 
 Contact and updates
 Support: https://github.com/gautamgpt1/TrenchHQ/issues
 Privacy page: https://gautamgpt1.github.io/TrenchHQ/privacy.txt
-These are prepared publication destinations; they are not live until the repository and Pages site are published. Do not submit this candidate to the Store until the URLs are reachable. Privacy changes will be published with the affected release. Contact the publisher through support with privacy questions; do not include secrets in a public report.
+The source repository and its Issues are public; the standalone privacy page is awaiting publication. This policy is also available inside the app under Help and FAQ. Privacy changes will be published with the affected release. Contact the publisher through support with privacy questions or requests about information you deliberately shared with the project. Ask for a private contact route before including personal information; never post secrets in a public report. The publisher cannot remotely inspect or delete your local app data or data held by an independent service. For access, correction or deletion of provider, exchange or website records, use that operator's privacy contact. Your applicable data-protection rights are not limited by this policy.

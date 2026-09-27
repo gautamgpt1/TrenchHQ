@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <PlatformTarget>x64</PlatformTarget>
+    <Platform>x64</Platform>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <Import Project="..\..\src\WindowPin\WindowPin.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TrenchHQ.Infrastructure\TrenchHQ.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

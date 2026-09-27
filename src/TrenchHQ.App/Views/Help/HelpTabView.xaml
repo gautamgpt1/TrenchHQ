@@ -1,0 +1,53 @@
+<UserControl
+    x:Class="TrenchHQ.Views.HelpTabView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TrenchHQ.Views"
+    xmlns:controls="using:TrenchHQ.Controls">
+
+    <UserControl.Resources>
+        <DataTemplate x:Key="HelpArticleTemplate" x:DataType="local:HelpArticle">
+            <Expander HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                      IsExpanded="{x:Bind StartExpanded}"
+                      Background="{StaticResource CardBackgroundBrush}"
+                      BorderThickness="0" CornerRadius="8" Margin="0,0,0,8">
+                <Expander.Header>
+                    <TextBlock Text="{x:Bind Question}" TextWrapping="Wrap"
+                               FontSize="14" FontWeight="SemiBold" />
+                </Expander.Header>
+                <TextBlock Text="{x:Bind Answer}" Style="{StaticResource BodyTextStyle}"
+                           IsTextSelectionEnabled="True" Margin="0,0,0,4" />
+            </Expander>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="32,16,32,24" Spacing="16">
+            <TextBlock Text="Help and FAQ" Style="{StaticResource PageTitleStyle}" />
+            <Border BorderBrush="{StaticResource SeparatorBrush}" BorderThickness="0,0,0,1" />
+            <ItemsControl x:Name="HelpSections">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="local:HelpSection">
+                        <StackPanel Spacing="10" Margin="0,0,0,20">
+                            <TextBlock Text="{x:Bind Title}" Style="{StaticResource SectionTitleStyle}"
+                                       AutomationProperties.HeadingLevel="Level2" />
+                            <ItemsControl ItemsSource="{x:Bind Articles}"
+                                          ItemTemplate="{StaticResource HelpArticleTemplate}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Border BorderBrush="{StaticResource SeparatorBrush}" BorderThickness="0,1,0,0" />
+            <controls:WrapPanel HorizontalSpacing="8" VerticalSpacing="8">
+                <Button x:Name="PrivacyButton" Content="Privacy" Click="OnPrivacyClick" />
+                <Button x:Name="ExportDiagnosticsButton" Content="Save diagnostics" Click="OnExportDiagnosticsClick" />
+                <HyperlinkButton Content="Report a problem"
+                                 NavigateUri="https://github.com/gautamgpt1/TrenchHQ/issues" />
+            </controls:WrapPanel>
+            <TextBlock x:Name="VersionText" Style="{StaticResource HintTextStyle}" />
+            <TextBlock x:Name="SupportStatus" Style="{StaticResource HintTextStyle}"
+                       AutomationProperties.LiveSetting="Polite" Visibility="Collapsed" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

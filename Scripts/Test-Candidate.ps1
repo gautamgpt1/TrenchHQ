@@ -35,10 +35,10 @@ try {
     Invoke-Gate 'restore' 'dotnet' @('restore','TrenchHQ.slnx','--locked-mode','-p:Platform=x64','-p:Configuration=Release')
     Invoke-Gate 'release-build' 'dotnet' @('build','TrenchHQ.slnx','-c','Release','-p:Platform=x64','-p:ContinuousIntegrationBuild=true','--no-restore')
     foreach ($name in @('LogicTests','SocialTests','IntegrationTests','OnChainIntegrationTests')) {
-        Invoke-Gate $name 'dotnet' @('run','--project',"Tests/TrenchHQ.$name/TrenchHQ.$name.csproj",'-c','Release','-p:ContinuousIntegrationBuild=true')
+        Invoke-Gate $name 'dotnet' @('test','--project',"Tests/TrenchHQ.$name/TrenchHQ.$name.csproj",'-c','Release','--no-build','--no-restore')
     }
-    Invoke-Gate 'sidecar-protocol' '.\SidecarRuntime\node.exe' @('--test','Tests/SidecarProtocol.test.cjs')
-    Push-Location OnChainEngine
+    Invoke-Gate 'sidecar-protocol' '.\artifacts\runtime\node.exe' @('--test','Tests/SidecarProtocol.test.cjs')
+    Push-Location src/OnChainEngine
     try {
         Invoke-Gate 'rust-format' 'cargo' @('+1.88.0','fmt','--all','--','--check')
         Invoke-Gate 'rust-clippy' 'cargo' @('+1.88.0','clippy','--locked','--all-targets','--','-D','warnings')
@@ -57,7 +57,7 @@ try {
     }
     Invoke-Gate 'pin-cache' 'dotnet' @('run','--project','Tests/TrenchHQ.WindowPinTests','-c','Release','-p:ContinuousIntegrationBuild=true','--','--cache-only')
     if ($LiveExchanges) {
-        Invoke-Gate 'exchanges-live' 'dotnet' @('run','--project','Tests/TrenchHQ.ProviderValidation','-c','Release','-p:ContinuousIntegrationBuild=true')
+        Invoke-Gate 'exchanges-live' 'dotnet' @('run','--project','tools/TrenchHQ.ProviderValidation','-c','Release','-p:ContinuousIntegrationBuild=true')
     }
     if (Test-Path CANDIDATE.json) { Invoke-Gate 'source-after' 'python' @('Scripts/Verify-Candidate.py') }
 } finally { Pop-Location }

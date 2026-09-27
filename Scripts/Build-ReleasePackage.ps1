@@ -7,8 +7,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$project = Join-Path $repoRoot 'TrenchHQ.csproj'
-$manifest = Join-Path $repoRoot 'Package.appxmanifest'
+$project = Join-Path $repoRoot 'src\TrenchHQ.App\TrenchHQ.csproj'
+$manifest = Join-Path $repoRoot 'src\TrenchHQ.App\Package.appxmanifest'
 $packageOutput = [IO.Path]::GetFullPath($OutputPath)
 
 try {

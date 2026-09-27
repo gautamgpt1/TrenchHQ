@@ -38,6 +38,7 @@ artifacts/
 
 # Restored dependencies and rebuilt sidecar/runtime
 node_modules/
+/src/MarketSidecar/dist/
 /SidecarApp/dist/
 /SidecarRuntime/
 __pycache__/

@@ -35,6 +35,8 @@ Application Window is experimental for compatible resizable, non-admin x64 appli
 
 ## Help and data
 
-[Privacy policy](privacy.txt) explains credentials, website sessions, external services and deletion. Export diagnostics in Help, review the saved JSON and attach it to [GitHub Issues](https://github.com/gautamgpt1/TrenchHQ/issues). Include version, Windows version, reproduction steps and expected/actual behavior. Do not attach settings folders, raw logs, screenshots with private data, provider tokens or wallet secrets.
+[Privacy policy](privacy.txt) explains credentials, website sessions, external services and deletion. Select **Save diagnostics** in Help and FAQ, review the saved JSON and attach it to [GitHub Issues](https://github.com/gautamgpt1/TrenchHQ/issues). Include version, Windows version, reproduction steps and expected/actual behavior. Do not attach settings folders, raw logs, screenshots with private data, provider tokens or wallet secrets.
 
 Do not install an unsigned or self-signed package from a public download. Store and direct-signed package identities can differ; cross-channel updates and data transfer are not guaranteed. Rollback is a newly signed higher-version replacement, not forcing an older version over saved data.
+
+The [code signing policy](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/RELEASE.md#code-signing-policy) records the maintainer's approval process and current signing status. No SignPath approval or public signed binary is claimed yet.

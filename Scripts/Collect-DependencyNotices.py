@@ -30,22 +30,22 @@ def record(ecosystem, name, version, license_name, folder, build_only=False):
     rows.append({'ecosystem': ecosystem, 'name': name, 'version': version,
                  'license': license_name, 'buildOnly': build_only, 'notices': copied})
 
-npm = json.loads((root / 'SidecarApp/package-lock.json').read_text(encoding='utf-8'))
+npm = json.loads((root / 'src/MarketSidecar/package-lock.json').read_text(encoding='utf-8'))
 for relative, package in npm['packages'].items():
-    if relative and (root / 'SidecarApp' / relative).is_dir():
+    if relative and (root / 'src/MarketSidecar' / relative).is_dir():
         name = relative.split('node_modules/')[-1]
         record('npm', name, package['version'], package.get('license', 'REVIEW REQUIRED'),
-               root / 'SidecarApp' / relative, package.get('dev', False))
+               root / 'src/MarketSidecar' / relative, package.get('dev', False))
 
 cargo = json.loads(subprocess.check_output(['cargo', '+1.88.0', 'metadata', '--locked', '--format-version', '1'],
-                                         cwd=root / 'OnChainEngine', text=True, encoding='utf-8'))
+                                         cwd=root / 'src/OnChainEngine', text=True, encoding='utf-8'))
 for package in cargo['packages']:
     if package['source']:
         record('cargo', package['name'], package['version'], package['license'] or 'REVIEW REQUIRED',
                Path(package['manifest_path']).parent)
 
 seen = set()
-for assets in [root / 'obj/project.assets.json', root / 'OnChainTransport/obj/project.assets.json']:
+for assets in [root / 'src/TrenchHQ.App/obj/project.assets.json', root / 'src/TrenchHQ.Infrastructure/obj/project.assets.json', root / 'src/TrenchHQ.OnChain.Yellowstone/obj/project.assets.json']:
     data = json.loads(assets.read_text(encoding='utf-8'))
     cache = Path(next(iter(data['packageFolders'])))
     for key, package in data['libraries'].items():
@@ -68,7 +68,7 @@ supplemental = {
     'Grpc.Net.Common': 'ThirdParty/Yellowstone/LICENSE_APACHE2',
     'Grpc.Tools': 'ThirdParty/Yellowstone/LICENSE_APACHE2',
     'Microsoft.Graphics.Win2D': 'ThirdParty/Licenses/Win2D-LICENSE.txt',
-    '@esbuild/win32-x64': 'SidecarApp/node_modules/esbuild/LICENSE.md'
+    '@esbuild/win32-x64': 'src/MarketSidecar/node_modules/esbuild/LICENSE.md'
 }
 for row in rows:
     relative = supplemental.get(row['name'])

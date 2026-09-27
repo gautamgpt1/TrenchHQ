@@ -4,52 +4,82 @@ Current source version: **1.0.1.0**, Windows x64, pre-release. Source publicatio
 signed binaries and Store certification have separate acceptance gates. This
 document is the maintained plan; update it as evidence changes.
 
-## Implemented
+## Current gate
 
-- Shared saved widgets, overlays and panels docked to all screen edges.
-- Public CEX tickers, five-chain on-chain tickers, public Wallet Watcher activity,
-  official X Tracker, Website and explicit Application Window pinning.
-- Automatic compatible-provider selection, local usage guards and recovery while
-  preserving polling/event mode.
-- Startup control, tray recovery, panel shortcuts, sizing and fullscreen behavior.
-- DPAPI credentials, bundled privacy/help/version and aggregate diagnostics export.
-- Locked dependencies, original application artwork, dependency/license inventory,
-  source/candidate tooling, verification workflow and manual Pages workflow.
+The architecture, documentation and logo-source cleanup are complete and locally
+verified. The owner authorized publishing these reviewed source changes on
+27 September 2026. Binary launch, final version tagging, signing and certification
+remain deferred. There is no final binary release candidate yet; a source review
+snapshot or earlier passing build must not be described as that candidate.
 
-Application-code checks recorded on 26 September 2026: zero-warning/error x64
-Release build; 92 logic and 16 social checks; sidecar protocol/lifecycle; full
-on-chain integration including 34 provider presets; Rust format/Clippy/136 tests;
-both native pin modes and six cache checks. Public live validation passed 13/13
-exchanges and all four EVM PublicNode chains at that time. This is dated evidence,
-not a future availability guarantee or private-account certification.
+The privacy text and app Help exist, but GitHub Pages was not configured on
+27 September 2026 (Pages API returned 404). The repository and Issues are public.
+Publish and verify the final policy URL before Store submission; drafting the
+policy alone does not close that gate. New provider credentials, a trusted signing
+route and clean Windows machines will be supplied in the later release phase.
 
-Fresh local development registration also exercised no-key tickers, Help/privacy,
-diagnostic export, panel/quit cleanup and unregistration. It does not establish
-signed clean-machine installation. No official binary, Store acceptance or
-SignPath approval is currently claimed.
+## Implemented and verification scope
 
-Source-publication checks on 27 September 2026: a clean 940-file export restored
-locked dependencies and built x64 Release with zero warnings/errors in a separate
-validation directory. Application source matched the tested source above. All 150
-recorded dependency-notice hashes passed; Git filters preserved all 158 retained
-notice files with automatic line-ending conversion enabled and disabled. Relative
-documentation links and the source allowlist passed. Gitleaks 8.30.1 returned 20
-reviewed public token/mint fixture matches and no credential findings. Historical
-Git metadata, private captures and build outputs were excluded. The exact initial
-commit was subsequently reviewed before pushing: 940 tracked files, 150 matching
-dependency-notice hashes and the same 20 public fixture findings, with no credential
-findings or imported development history.
+The app includes shared saved widgets, floating overlays and panels docked to all
+screen edges; public exchange and five-chain tickers; public-wallet monitoring;
+official X, websites and explicit Application Window pinning. Automatic provider
+selection preserves polling/event mode. Startup, tray recovery, panel shortcuts,
+fullscreen handling, DPAPI credentials, bundled help/privacy/version and local
+aggregate diagnostics are implemented.
 
-Hosted verification passed on 27 September 2026 (IST) for commit `0bbb4b1`:
-[workflow run](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36266982119).
-Locked restore, Release build, managed/sidecar/on-chain checks, Rust checks, native
-cache checks and unsigned Store-upload build/payload inspection succeeded. No
-binary was published. The initial hosted run exposed a Debug-restore/Release-build
-mismatch; restore now explicitly selects Release so ReadyToRun inputs are present.
-Hosted Windows runs elevated, so `pin-native` and `pin-embedded` are explicitly
-skipped there; the normal local command still requires both on a non-elevated
-interactive desktop. Hosted success does not replace those checks, live provider
-certification, signing, WACK or the clean-Windows matrix.
+The source was published with a fresh history starting at `f6f77a1`; the existing
+published head reviewed before restructuring was `1d2314c`. No private development
+history was imported. The maintained documents, public pages, exact dependency
+locks, fixtures, owner-supplied logo and upstream notices form the source export.
+Generated output, personal settings, logs, screenshots and session transcripts are
+excluded. Local source changes still require review and authorization to publish.
+
+The earlier [hosted workflow](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36266982119)
+passed at `0bbb4b1`, including an unsigned Store-upload payload inspection. The
+documented build also passed in a fresh network clone of `1d2314c`. These identify
+the source tested at those times; neither run verifies later edits.
+
+Local checks before the structural refactor covered both native pin modes, cache
+publication, no-key tickers, privacy/diagnostics, panel cleanup and the final merged
+title bar. Wide/narrow UI checks used 125% display scaling. The original 1254-pixel
+logo remains the byte-identical master; Windows resource variants and their
+unchanged-file generation behavior were verified. Public live exchange/PublicNode
+results from 26 September are historical reachability evidence only.
+
+The current restructuring separates the WinUI host, Core, Infrastructure and
+Yellowstone bridge; moves Rust/Node/native production components under `src/`;
+replaces production-source links with project references; and moves live probes
+into `tools/`. Synthetic checks use discoverable xUnit cases. The package inspector
+now requires version metadata for seven owned PE files, including both new class
+libraries. See [BUILD](BUILD.md) for the exact commands and verification boundaries.
+
+Local structural verification on 27 September 2026 passed Debug and Release
+builds, including locked bootstrap/build from a fresh allowlisted source export.
+The managed suites passed 92 logic, 16 social, one sidecar-lifecycle and 42 on-chain
+cases. Rust format/Clippy and all 136 Rust tests passed, as did the production
+sidecar protocol check, six native cache checks and both interactive pin modes.
+The private unsigned Store-upload package passed identity, native architecture,
+seven owned binary versions, 150 dependency-notice hashes, policy/brand files
+and exclusion of test/tool assemblies. This is local source/payload evidence.
+
+An isolated package identity verified page navigation, ticker mode save/cancel,
+panel show/close, provider rows, Usage and Help. The logo master/assets and the
+existing merged title bar were preserved. The unchanged widget layout still clips
+some controls at very narrow widths; see the limitation in [BUILD](BUILD.md).
+Protected configuration and the existing deployed application remained unchanged.
+
+The subsequent logo cleanup retains one original PNG in source and generates
+20 Windows resources under ignored `obj/BrandAssets`. Unused lock-screen images
+and the PNG-in-SVG wrapper were removed. Debug built with zero warnings/errors;
+a fresh source export produced an unsigned Store upload whose inspection verified
+all 24 policy/brand files against the source master and generator. All 20 generated
+resources retain their previous bytes, and the Windows resource index resolves
+their packaged paths. Repeating generation preserves their bytes and timestamps.
+
+No final tag, trusted signature, WACK result, clean-Windows certification or new
+private-provider certification is claimed. Signing, credentials and test machines
+remain deferred by the owner. Resolve the service-use questions in
+[SERVICES](SERVICES.md), including DEX Screener and Bitget, before end-user launch.
 
 ## 1. Publish the source repository
 
@@ -69,7 +99,9 @@ certification, signing, WACK or the clean-Windows matrix.
   interactive pin exclusions recorded above.
 - [x] Confirm app/site support links match the final repository URL.
 - [ ] Set Pages source to GitHub Actions, run the manual Pages workflow and verify
-  the privacy/support pages publicly. Review deployment permissions first.
+  the privacy/support pages publicly after repository finalization. Review the
+  exact site source before deployment; verify HTTP 200 and that the served privacy
+  text matches the file bundled in the candidate.
 
 GitHub documents [Pages configuration](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 Source publication does not grant permission to use third-party services outside
@@ -83,6 +115,8 @@ their terms. Retain and resolve the integration questions in [SERVICES](SERVICES
   in Partner Center. Explain optional RPC project credentials accurately.
 - [ ] Record the exact commit, dependencies, version and artifact hashes. Inspect
   identity, native architectures, licenses, payload and secret-scan findings.
+- [ ] Build both channels from the same approved immutable version tag, using
+  the channel process below. Rerun all gates after any source change.
 - [ ] Obtain Store certification/signing or an approved trusted direct signer.
   SignPath Foundation is conditional; eligibility and acceptance are not assumed.
 - [ ] Inspect the signed artifact and signature chain; repeat Defender scanning.
@@ -94,6 +128,47 @@ their terms. Retain and resolve the integration questions in [SERVICES](SERVICES
 Microsoft Store is the primary binary channel. Direct distribution needs its own
 trusted identity and update path. Different package families/signers cannot be
 assumed to share data or cross-update. Never publish unsigned/self-signed binaries.
+
+### Channels and source identity
+
+| Channel | Signing and updates | Status |
+| --- | --- | --- |
+| Microsoft Store | Microsoft signs an accepted submission; Store manages updates | Reserved identity recorded; submission and acceptance pending |
+| GitHub Releases / direct download | Approved trusted signing, preferably SignPath Foundation; separately validated `.appinstaller` updates | No signer, direct identity, update feed or public binary yet |
+| GitHub repository | Public source, issues, notices and build instructions | Published as pre-release source; binary distribution remains a separate gate |
+
+After final edits, review the complete diff, scan the source and dependency notices,
+commit the intended files and tag that exact commit. Record its SHA, tag, version,
+toolchain, locks and `Prepare-Candidate.py` source fingerprint. Build each channel
+in a separate checkout of that same tag. Record the approved direct identity as a
+reviewed build input; its publisher must match the eventual certificate exactly.
+Do not invent a SignPath publisher or modify the Store identity in the main tree.
+Channel identity, signing and package bytes may differ; application features and
+source provenance must agree. Archive each artifact hash and verification report.
+This identifies reproducible source inputs, not a promise of byte-identical signed
+packages. An `.appinstaller` feed needs the final HTTPS hosting path and signed
+identity, plus install/update/rollback tests before it can be advertised.
+
+### Code signing policy
+
+Maintainer, reviewer and future signing approver: [Gautam Gupta (@gautamgpt1)](https://github.com/gautamgpt1).
+Contributor changes require review; signing requires explicit maintainer approval
+of the verified artifact. Signing and repository accounts must use MFA before
+signing is enabled. Never expose signing credentials to pull-request builds.
+
+SignPath Foundation has not accepted TrenchHQ. Its [conditions](https://signpath.org/terms)
+require maintained, released open-source software, verifiable builds and an
+approved artifact configuration. Disclose the helper, bundled runtimes and vendor
+components for eligibility review; do not assume all qualify as system libraries.
+Add SignPath's required attribution only after approval. Its certificate identifies
+the Foundation; obtain the exact subject and validate direct-package identity then.
+There is no guarantee that a Store rejection can immediately be followed by a
+SignPath-signed download. Confirm the prior-release condition with SignPath;
+Microsoft Store publication is not stated as its sole qualifying route.
+
+The [privacy policy](public/privacy.txt) documents requested network features,
+automatic RPC fallback, third-party recipients and local deletion. Recheck any
+installer disclosure/opt-out obligations for the actual direct distribution.
 
 ## Certification notes
 
@@ -108,8 +183,10 @@ Eligibility checks inspect metadata; do not claim no process inspection. There i
 no input/screen capture, foreign-memory reading, credential extraction or network
 transmission by the helper. Detach/recovery is session-based, but the DLL cache and
 mapped helper can remain. See [ARCHITECTURE](ARCHITECTURE.md#application-window).
-If Store review rejects it, evaluate a separately tested Store variant with the
-feature and helper excluded; that variant does not exist yet.
+Application Window remains part of the product. If Store review rejects this
+feature, retain it and pursue approved trusted direct distribution, including
+SignPath if accepted. Do not create a reduced Store variant solely to remove it.
+Disclose the same behavior to either signer and address genuine security findings.
 
 RPC credentials are optional data-provider project keys; X uses a developer bearer
 token. Neither is a wallet private key or exchange-account secret. Basic public
@@ -118,14 +195,29 @@ Price Ticker in Widgets, choose an exchange/pair, assign it to an overlay in
 Desktop Setup, then Show. Help supplies privacy, recovery, version and diagnostics.
 
 Disclose that bundled CCXT contains unused private/trading/cryptographic code.
-The public sidecar exposes only `getMarkets`, `setSubscriptions`, `ping` and
-`shutdown`, with no arbitrary method invocation. Production-bundle tests reject
-private methods and inherited properties. Reassess bundle size/scope if review
-raises objections; do not describe all of CCXT as public-method-only code.
+The public sidecar uses newline-delimited JSON protocol v1 over local standard
+input/output. It exposes only these requests:
+
+| Request | Exposed operation |
+| --- | --- |
+| `getMarkets` | Public spot-market discovery through `loadMarkets` |
+| `setSubscriptions` | Public ticker subscriptions/seeding using `watchTicker`, `watchTickers`, `fetchTicker` and `fetchTickers` |
+| `ping` | Local acknowledgement; no exchange operation |
+| `shutdown` | Close local subscriptions/workers |
+
+No arbitrary CCXT method dispatch or exchange-account credential input is exposed.
+Unknown/private requests and inherited handler names are rejected by
+`Tests/SidecarProtocol.test.cjs` against the production bundle. Include this result
+and the locked CCXT version in submission evidence. Reassess bundle scope if a
+scanner objects; do not describe all of CCXT as public-method-only code.
 
 Submit exact source/artifact records, dependency inventory, signature/Store
 validation, Defender/WACK results, provider results and clean-machine evidence.
-Privacy/support URLs must be live. Sources: [Store policies](https://learn.microsoft.com/en-us/windows/apps/publish/store-policies),
+Privacy/support URLs must be live. The Store's desktop privacy requirement is
+section 10.5.1; intellectual property is section 11.2. The current optional
+provider-key/account-type question still needs Partner Center review under 10.8.3;
+read-only functionality is not an advance acceptance decision.
+Sources: [Store policies](https://learn.microsoft.com/en-us/windows/apps/publish/store-policies),
 [capabilities](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/app-capability-declarations),
 [SignPath conditions](https://signpath.org/terms).
 

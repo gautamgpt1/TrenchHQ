@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <OnChainEngineSource>$(MSBuildThisFileDirectory)</OnChainEngineSource>
+  </PropertyGroup>
+  <!-- Every worker consumer declares this dependency. Cargo's build lock also
+       serializes concurrent consumers during a parallel solution build. -->
+  <Target Name="BuildOnChainEngine" BeforeTargets="PrepareForBuild"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="cargo +1.88.0 build --release --locked"
+          WorkingDirectory="$(OnChainEngineSource)" />
+    <ItemGroup>
+      <Content Include="$(OnChainEngineSource)target\release\trenchhq-onchain-engine.exe"
+               Link="OnChainEngine\trenchhq-onchain-engine.exe"
+               TargetPath="OnChainEngine\trenchhq-onchain-engine.exe"
+               CopyToOutputDirectory="PreserveNewest"
+               CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+</Project>

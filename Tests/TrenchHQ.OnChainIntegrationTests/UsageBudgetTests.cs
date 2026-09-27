@@ -1,5 +1,7 @@
-using TrenchHQ.Helpers;
-using TrenchHQ.Models;
+using TrenchHQ.Core.Providers;
+using TrenchHQ.Infrastructure.OnChain.Evm;
+using TrenchHQ.Infrastructure.OnChain.Solana;
+using TrenchHQ.Infrastructure.Providers;
 using System.Text;
 using System.Text.Json;
 

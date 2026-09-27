@@ -1,4 +1,4 @@
-<img src="Assets/TrenchHQ.svg" width="64" height="64" alt="TrenchHQ">
+<img src="src/TrenchHQ.App/Assets/TrenchHQ.png" width="64" height="64" alt="TrenchHQ">
 
 # TrenchHQ
 
@@ -63,6 +63,15 @@ This is a WinUI 3 / .NET application with a Rust engine and a Node/CCXT sidecar.
 Start with [build and verification instructions](docs/BUILD.md), including the
 locked toolchain and dependency bootstrap. Open `TrenchHQ.slnx` in Visual Studio.
 
+Production components live under `src/`, synthetic checks under `Tests/`, and
+explicit live validation/diagnostics under `tools/`. The [architecture map](docs/ARCHITECTURE.md#repository-and-project-boundaries)
+explains the project dependencies; Visual Studio Test Explorer runs the managed tests.
+
+This repository contains the complete application source, native helpers, tests,
+fixtures, assets, dependency locks and license notices. No sibling research
+folders or previous development checkout are required. The bootstrap downloads
+the pinned runtime and restores dependencies; generated binaries are not source.
+
 - [Contributing](CONTRIBUTING.md)
 - [Architecture and behavior](docs/ARCHITECTURE.md)
 - [Implementation status and release plan](docs/RELEASE.md)
@@ -72,6 +81,12 @@ locked toolchain and dependency bootstrap. Open `TrenchHQ.slnx` in Visual Studio
 Use this repository's Issues tab for reproducible bugs and feature requests.
 Review diagnostics before attaching them. Security-sensitive reports follow
 `SECURITY.md`; do not post secrets or exploit details in public issues.
+
+## Code signing policy
+
+No public signed binary or SignPath approval is claimed. The maintainer approves
+releases only after verification. See the [code signing policy and channel plan](docs/RELEASE.md#code-signing-policy)
+for roles, signing requirements and the linked privacy policy.
 
 ## License and attribution
 

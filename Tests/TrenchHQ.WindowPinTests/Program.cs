@@ -1,4 +1,4 @@
-using TrenchHQ.Helpers;
+using TrenchHQ.Infrastructure.Windows;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 

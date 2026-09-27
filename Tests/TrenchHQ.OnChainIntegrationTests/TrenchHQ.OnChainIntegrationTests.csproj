@@ -1,80 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
+    <IsTestProject>true</IsTestProject>
+    <!-- Fixtures deliberately exercise independent cancellation and worker lifetimes. -->
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
+    <IsPackable>false</IsPackable>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Protobuf" Version="3.36.0" />
-    <PackageReference Include="Grpc.Net.Client" Version="2.83.0" />
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OnChainTransport\TrenchHQ.OnChain.Yellowstone.csproj" />
+    <ProjectReference Include="..\..\src\TrenchHQ.Infrastructure\TrenchHQ.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Helpers\OnChainEngineClient.cs" Link="Production\OnChainEngineClient.cs" />
-    <Compile Include="..\..\Helpers\BoundedAsyncCache.cs" Link="Production\BoundedAsyncCache.cs" />
-    <Compile Include="..\..\Helpers\DexScreenerPoolCatalogClient.cs" Link="Production\DexScreenerPoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\MeteoraDammV2PoolCatalogClient.cs" Link="Production\MeteoraDammV2PoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\MeteoraDammV1PoolCatalogClient.cs" Link="Production\MeteoraDammV1PoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\ManifestPoolCatalogClient.cs" Link="Production\ManifestPoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\CurvePoolCatalogClient.cs" Link="Production\CurvePoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\EvmAddress.cs" Link="Production\EvmAddress.cs" />
-    <Compile Include="..\..\Helpers\EvmChainDefinition.cs" Link="Production\EvmChainDefinition.cs" />
-    <Compile Include="..\..\Helpers\BaseDeploymentRegistry.cs" Link="Production\BaseDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\BnbDeploymentRegistry.cs" Link="Production\BnbDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\RobinhoodDeploymentRegistry.cs" Link="Production\RobinhoodDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\RobinhoodStockTokenCatalogClient.cs" Link="Production\RobinhoodStockTokenCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\PancakeInfinityPoolCatalogClient.cs" Link="Production\PancakeInfinityPoolCatalogClient.cs" />
-    <Compile Include="..\..\Helpers\EthereumAbi.cs" Link="Production\EthereumAbi.cs" />
-    <Compile Include="..\..\Helpers\EvmMulticall3.cs" Link="Production\EvmMulticall3.cs" />
-    <Compile Include="..\..\Helpers\EthereumDeploymentRegistry.cs" Link="Production\EthereumDeploymentRegistry.cs" />
-    <Compile Include="..\..\Helpers\EthereumPoolDiscoveryService.cs" Link="Production\EthereumPoolDiscoveryService.cs" />
-    <Compile Include="..\..\Helpers\EthereumV4PoolLookupClient.cs" Link="Production\EthereumV4PoolLookupClient.cs" />
-    <Compile Include="..\..\Helpers\EvmCheckpointStore.cs" Link="Production\EvmCheckpointStore.cs" />
-    <Compile Include="..\..\Helpers\EvmHeadTracker.cs" Link="Production\EvmHeadTracker.cs" />
-    <Compile Include="..\..\Helpers\EvmJsonRpcClient.cs" Link="Production\EvmJsonRpcClient.cs" />
-    <Compile Include="..\..\Helpers\EvmLogDeduplicator.cs" Link="Production\EvmLogDeduplicator.cs" />
-    <Compile Include="..\..\Helpers\EvmProviderCapabilityProbe.cs" Link="Production\EvmProviderCapabilityProbe.cs" />
-    <Compile Include="..\..\Helpers\EvmRecoveryPlanner.cs" Link="Production\EvmRecoveryPlanner.cs" />
-    <Compile Include="..\..\Helpers\EvmStreamCoordinator.cs" Link="Production\EvmStreamCoordinator.cs" />
-    <Compile Include="..\..\Helpers\EvmStreamCoordinatorCollection.cs" Link="Production\EvmStreamCoordinatorCollection.cs" />
-    <Compile Include="..\..\Helpers\EvmWebSocketStreamSource.cs" Link="Production\EvmWebSocketStreamSource.cs" />
-    <Compile Include="..\..\Helpers\EvmWalletActivityStreamSource.cs" Link="Production\EvmWalletActivityStreamSource.cs" />
-    <Compile Include="..\..\Helpers\EvmWalletTraceBatch.cs" Link="Production\EvmWalletTraceBatch.cs" />
-    <Compile Include="..\..\Helpers\OnChainCheckpointStore.cs" Link="Production\OnChainCheckpointStore.cs" />
-    <Compile Include="..\..\Helpers\OnChainPoolDiscoveryService.cs" Link="Production\OnChainPoolDiscoveryService.cs" />
-    <Compile Include="..\..\Helpers\OnChainPipelineDiagnostics.cs" Link="Production\OnChainPipelineDiagnostics.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderConfigurationStore.cs" Link="Production\OnChainProviderConfigurationStore.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderConfigurationService.cs" Link="Production\OnChainProviderConfigurationService.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderFailoverRules.cs" Link="Production\OnChainProviderFailoverRules.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderEndpointBuilder.cs" Link="Production\OnChainProviderEndpointBuilder.cs" />
-    <Compile Include="..\..\Helpers\OnChainStreamContracts.cs" Link="Production\OnChainStreamContracts.cs" />
-    <Compile Include="..\..\Helpers\OnChainStreamCoordinator.cs" Link="Production\OnChainStreamCoordinator.cs" />
-    <Compile Include="..\..\Helpers\OnChainSnapshotReconciler.cs" Link="Production\OnChainSnapshotReconciler.cs" />
-    <Compile Include="..\..\Helpers\SolanaBase58.cs" Link="Production\SolanaBase58.cs" />
-    <Compile Include="..\..\Helpers\SolanaProgramDataLogParser.cs" Link="Production\SolanaProgramDataLogParser.cs" />
-    <Compile Include="..\..\Helpers\SolanaRpcClient.cs" Link="Production\SolanaRpcClient.cs" />
-    <Compile Include="..\..\Helpers\SolanaRpcSampleStreamSource.cs" Link="Production\SolanaRpcSampleStreamSource.cs" />
-    <Compile Include="..\..\Helpers\SolanaProviderCapabilityProbe.cs" Link="Production\SolanaProviderCapabilityProbe.cs" />
-    <Compile Include="..\..\Helpers\SolanaWebSocketStreamSource.cs" Link="Production\SolanaWebSocketStreamSource.cs" />
-    <Compile Include="..\..\Helpers\SolanaWalletActivityStreamSource.cs" Link="Production\SolanaWalletActivityStreamSource.cs" />
-    <Compile Include="..\..\Helpers\WalletActivityRules.cs" Link="Production\WalletActivityRules.cs" />
-    <Compile Include="..\..\Helpers\WalletActivityPresentationRules.cs" Link="Production\WalletActivityPresentationRules.cs" />
-    <Compile Include="..\..\Helpers\YellowstoneStreamSource.cs" Link="Production\YellowstoneStreamSource.cs" />
-    <Compile Include="..\..\Models\OnChainModels.cs" Link="Production\OnChainModels.cs" />
-    <Compile Include="..\..\Models\ChainModels.cs" Link="Production\ChainModels.cs" />
-    <Compile Include="..\..\Models\EvmModels.cs" Link="Production\EvmModels.cs" />
-    <Compile Include="..\..\Helpers\OnChainProviderUsage.cs" Link="Production\OnChainProviderUsage.cs" />
-    <Compile Include="..\..\Models\OnChainProviderConfiguration.cs" Link="Production\OnChainProviderConfiguration.cs" />
-    <Compile Include="..\..\Models\PoolCatalogModels.cs" Link="Production\PoolCatalogModels.cs" />
-    <Compile Include="..\..\Models\SavedWidgetDefinitions.cs" Link="Production\SavedWidgetDefinitions.cs" />
-    <Compile Include="..\..\Models\WalletActivityModels.cs" Link="Production\WalletActivityModels.cs" />
-    <Content Include="..\..\OnChainEngine\target\release\trenchhq-onchain-engine.exe"
-             Link="OnChainEngine\trenchhq-onchain-engine.exe"
-             CopyToOutputDirectory="PreserveNewest"
-             Condition="Exists('..\..\OnChainEngine\target\release\trenchhq-onchain-engine.exe')" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" PrivateAssets="all" />
+    <PackageReference Include="xunit.v3" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" PrivateAssets="all" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TrenchHQ.TestSupport\TrenchHQ.TestSupport.csproj" />
+  </ItemGroup>
+  <Import Project="..\..\src\OnChainEngine\OnChainEngine.targets" />
 </Project>

@@ -24,9 +24,20 @@ notice. Win2D 1.3.2's package license URL redirects; its retained MIT text comes
 from the [official upstream license](https://github.com/microsoft/Win2D/blob/0fd4f810be5bf0cb9c981432a6f4ab3954fda08f/LICENSE.txt).
 See `docs/SERVICES.md` for outstanding service/brand review.
 
+## Development test dependencies
+
+The managed tests restore xUnit v3 4.0.1 and its Visual Studio adapter 4.0.0
+(Apache-2.0), plus Microsoft.NET.Test.Sdk 18.3.0 (MIT). Each test project's
+`packages.lock.json` records its complete resolved dependency graph. These packages
+are development tools and are not included in the application payload. Their
+upstream license metadata is retained in the restored NuGet packages:
+[xUnit](https://www.nuget.org/packages/xunit.v3/4.0.1),
+[adapter](https://www.nuget.org/packages/xunit.runner.visualstudio/4.0.0), and
+[test SDK](https://www.nuget.org/packages/Microsoft.NET.Test.Sdk/18.3.0).
+
 ## Cryptocurrency icons
 
-The packaged centralized-market base-asset icons under `Assets/Crypto/` are
+The packaged centralized-market base-asset icons under `src/TrenchHQ.App/Assets/Crypto/` are
 from `cryptocurrency-icons` 0.18.1 by Christopher Downer and contributors.
 They are distributed under CC0-1.0; the exact license text is retained at
 `ThirdParty/Licenses/CryptocurrencyIcons-CC0-1.0.md`. TrenchHQ resolves icons by
@@ -62,7 +73,7 @@ Yellowstone server/plugin workspace is not copied, linked, or shipped.
 
 ## Rust on-chain engine
 
-`OnChainEngine/Cargo.lock` is the authoritative exact version inventory.
+`src/OnChainEngine/Cargo.lock` is the authoritative exact version inventory.
 The locked dependency graph was reviewed on 2026-08-29. The chosen licensing
 paths are:
 
@@ -94,12 +105,13 @@ from those projects is linked into or distributed with TrenchHQ. The inspected
 Doppler repository is Business Source License 1.1; it remained reference-only.
 The pons first-party contracts used for ABI interpretation carry SPDX MIT
 headers; the repository also contains GPL-licensed and third-party vendor files
-that were not copied or used as TrenchHQ source. Research archives are preserved
-in the private development checkout and excluded from the publication snapshot.
+that were not copied or used as TrenchHQ source. Upstream research checkouts are
+not build inputs or runtime dependencies. The source, fixtures and notices needed
+to build and test TrenchHQ are retained in this repository.
 
 ## Chain identification marks
 
-The chain marks under `Assets/Chains/` are unmodified official assets used only
+The chain marks under `src/TrenchHQ.App/Assets/Chains/` are unmodified official assets used only
 to identify the corresponding network in TrenchHQ. Their trademarks and brand
 terms remain with their respective owners:
 
@@ -113,8 +125,12 @@ Pump and Meteora assets are excluded from the package and publication snapshot
 until reuse permission is established. Protocols use text labels; remote protocol
 favicon downloads were removed. No protocol affiliation or endorsement is claimed.
 
-## Original artwork
+## TrenchHQ artwork
 
-`Assets/TrenchHQ.svg` and its derived Windows app/tile/splash assets are original
-TrenchHQ artwork under the root MIT license. `Scripts/Build-BrandAssets.ps1`
-rebuilds the required PNG sizes from that vector source.
+`src/TrenchHQ.App/Assets/TrenchHQ.png` is the logo supplied by the project owner on 27 September
+2026, replacing the earlier placeholder. It and its derived app, tile, splash and
+tray assets use the root MIT license. `Scripts/Build-BrandAssets.ps1` rebuilds the
+Windows PNG sizes and multi-resolution ICO from this unmodified PNG into ignored
+build output; those derivatives are packaged, not maintained as source images.
+The unused SVG wrapper and lock-screen assets were removed. The supplied black
+background, white mark and proportions are preserved.

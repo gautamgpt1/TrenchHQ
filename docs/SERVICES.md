@@ -1,6 +1,7 @@
 # Services and constraints
 
-Review date: 2026-09-26. This records the actual read-only integration boundary
+Integration inventory: 2026-09-26; privacy, signing and key release restrictions
+rechecked 2026-09-27. This records the actual read-only integration boundary
 and official review sources. Public reachability, an open-source SDK license and
 a successful test do not grant redistribution rights. The app makes requests
 from the user's device; it does not resell a shared provider account or data feed.
@@ -83,3 +84,29 @@ separately from permission. No exchange logo permission is inferred from CCXT.
 Before distribution, the publisher must resolve the entries marked open for the
 actual launch scope. Technical certification, license collection and this inventory
 do not replace that decision. No permission request or third-party approval is implied by this review.
+
+## Privacy notices and release decisions
+
+The app's [privacy policy](public/privacy.txt) links the provider/platform privacy
+notices and explains routing, retention and opt-out controls. Infura's Consensys
+privacy URL now redirects to a [notice covering Infura](https://metamask.io/privacy-notice).
+dRPC's [terms](https://drpc.org/terms-of-use) and [privacy](https://drpc.org/privacy-policy)
+still require a rendered/manual review; the text fetch did not expose their body.
+The publisher must obtain service-specific terms for custom or contracted routes.
+
+The release reviewer must record a decision for each open row above against the
+actual distribution territories, account plans and public read-only display use.
+An API documentation link establishes the interface, not permission to redistribute
+data. Keep ordinary per-user API use separate from selling a feed or sharing keys.
+
+| Item | Current evidence and decision needed |
+| --- | --- |
+| DEX Screener | API terms section 1 restrict directly competing products. Discovery use still needs a documented scope determination or permission; commercial use permission does not erase that restriction. |
+| Bitget | API terms 3.2(k)-(m) restrict competing/replacement clients, benchmarking and repackaging. Clarify applicability to unauthenticated spot-price display and release testing; do not claim clearance from a successful request. |
+| Other exchanges and catalogs | The tables identify every integration; territory, data-display and account-specific conditions remain to be resolved for the final launch. |
+| Pump and Meteora marks | Neither SVG is in this source tree; project, source-export and package-inspection exclusions prevent accidental inclusion. No permission is claimed or needed for an absent logo. Protocol support uses text names and public on-chain decoding. Adding either mark later requires recorded permission/brand terms first. |
+| Five chain marks | Official origin/guideline links are retained in THIRD_PARTY_NOTICES. A linked download is not a blanket trademark license; check the final identifying use and screenshots against those guidelines. |
+| X | Official agreement, display requirements, account entitlements and data handling apply independently of CCXT or provider licenses. Fresh account certification remains pending. |
+
+No provider or rights holder has been contacted on the owner's behalf. Store or
+SignPath acceptance would not resolve these independent service-use obligations.

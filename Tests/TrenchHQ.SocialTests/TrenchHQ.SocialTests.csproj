@@ -1,17 +1,20 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <IsTestProject>true</IsTestProject>
+    <!-- Fixtures deliberately exercise independent cancellation and worker lifetimes. -->
+    <NoWarn>$(NoWarn);xUnit1051</NoWarn>
+    <IsPackable>false</IsPackable>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\Models\SocialFeedModels.cs" Link="Production\SocialFeedModels.cs" />
-    <Compile Include="..\..\Helpers\SocialFeedRules.cs" Link="Production\SocialFeedRules.cs" />
-    <Compile Include="..\..\Helpers\SocialPostParser.cs" Link="Production\SocialPostParser.cs" />
-    <Compile Include="..\..\Helpers\SocialFeedSources.cs" Link="Production\SocialFeedSources.cs" />
-    <Compile Include="..\..\Helpers\SocialFeedService.cs" Link="Production\SocialFeedService.cs" />
-    <Compile Include="..\..\Helpers\SocialProviderStore.cs" Link="Production\SocialProviderStore.cs" />
-    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+    <ProjectReference Include="..\..\src\TrenchHQ.Infrastructure\TrenchHQ.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" PrivateAssets="all" />
+    <PackageReference Include="xunit.v3" Version="4.0.1" PrivateAssets="all" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="4.0.0" PrivateAssets="all" />
   </ItemGroup>
 </Project>

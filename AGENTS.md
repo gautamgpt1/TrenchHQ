@@ -4,6 +4,8 @@ Read `README.md`, `docs/ARCHITECTURE.md` and the relevant sections of
 `docs/BUILD.md`, `docs/SERVICES.md` and `docs/RELEASE.md`. These maintained
 documents replace historical development/session reports.
 
+- Treat this checkout as self-contained. Build and development instructions must
+  not depend on private research folders, old checkouts or prior chat history.
 - Keep changes focused; preserve unrelated work and unsaved editor buffers.
 - State assumptions, verify affected behavior and report actual results.
 - Use synthetic fixtures by default. Never recover or reuse saved credentials

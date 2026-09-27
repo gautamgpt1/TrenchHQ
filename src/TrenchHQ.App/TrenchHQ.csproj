@@ -1,0 +1,127 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>TrenchHQ</RootNamespace>
+    <AssemblyName>TrenchHQ</AssemblyName>
+    <Title>TrenchHQ</Title>
+    <OutputPath>bin\$(Platform)\$(Configuration)\TrenchHQ\</OutputPath>
+    <IntermediateOutputPath>obj\$(Platform)\$(Configuration)\TrenchHQ\</IntermediateOutputPath>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <BrandAssetsDirectory>$(MSBuildProjectDirectory)\obj\BrandAssets</BrandAssetsDirectory>
+    <ApplicationIcon>$(BrandAssetsDirectory)\TrenchHQ.ico</ApplicationIcon>
+    <Platform Condition="'$(Platform)' == '' or '$(Platform)' == 'AnyCPU'">x64</Platform>
+    <Platforms>x64</Platforms>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <PublishProfile>win-$(Platform).pubxml</PublishProfile>
+    <UseWinUI>true</UseWinUI>
+    <WinUISDKReferences>false</WinUISDKReferences>
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <WindowsAppSdkDeploymentManagerInitialize>false</WindowsAppSdkDeploymentManagerInitialize>
+    <Nullable>enable</Nullable>
+    <!-- A project-local layout keeps previous deployed helpers intact during development. -->
+    <LayoutDir Condition="'$(Configuration)' == 'Debug'">$(MSBuildProjectDirectory)\bin\$(Platform)\$(Configuration)\TrenchHQAppX</LayoutDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Overlay.xaml" />
+    <Content Remove="Assets\Protocols\pump.svg;Assets\Protocols\meteora.svg" />
+    <None Remove="Assets\Protocols\pump.svg;Assets\Protocols\meteora.svg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(RepositoryRoot)docs\public\privacy.txt" Link="Privacy.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)ThirdParty\DEPENDENCIES.json" Link="ThirdParty\DEPENDENCIES.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)artifacts\runtime\**\*" Link="SidecarRuntime\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="..\MarketSidecar\dist\**\*" Link="SidecarApp\dist\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(RepositoryRoot)LICENSE" Link="LICENSE">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(RepositoryRoot)THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(RepositoryRoot)ThirdParty\Licenses\**\*" Link="ThirdParty\Licenses\%(RecursiveDir)%(Filename)%(Extension)">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="$(RepositoryRoot)ThirdParty\Yellowstone\LICENSE_APACHE2" Link="ThirdParty\Yellowstone\LICENSE_APACHE2">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <Manifest Include="$(ApplicationManifest)" />
+  </ItemGroup>
+
+  <Import Project="..\WindowPin\WindowPin.targets" />
+
+  <ItemGroup>
+    <UpToDateCheckInput Include="Assets\TrenchHQ.png;$(RepositoryRoot)Scripts\Build-BrandAssets.ps1" />
+    <UpToDateCheckOutput Include="$(ApplicationIcon)" />
+  </ItemGroup>
+  <Target Name="GenerateBrandAssets" BeforeTargets="PrepareForBuild" Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepositoryRoot)Scripts\Build-BrandAssets.ps1&quot; -OutputPath &quot;$(BrandAssetsDirectory)&quot;" />
+    <ItemGroup>
+      <_BrandAsset Include="$(BrandAssetsDirectory)\*.png;$(BrandAssetsDirectory)\*.ico" />
+      <FileWrites Include="@(_BrandAsset)" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="@(_BrandAsset)">
+        <Link>Assets\%(_BrandAsset.Filename)%(_BrandAsset.Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+  </Target>
+
+  <!--
+    Defining the "Msix" ProjectCapability here allows the Single-project MSIX Packaging
+    Tools extension to be activated for this project even if the Windows App SDK Nuget
+    package has not yet been restored.
+  -->
+  <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <ProjectCapability Include="Msix" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.WinUI.Media" Version="8.0.230907" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7175" />
+    <PackageReference Include="Microsoft.Graphics.Win2D" Version="1.3.2" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.251106002" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TrenchHQ.Infrastructure\TrenchHQ.Infrastructure.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="Overlay.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+
+  <!--
+    Defining the "HasPackageAndPublishMenuAddedByProject" property here allows the Solution
+    Explorer "Package and Publish" context menu entry to be enabled for this project even if
+    the Windows App SDK Nuget package has not yet been restored.
+  -->
+  <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+    <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+  </PropertyGroup>
+
+  <!-- Publish Properties -->
+  <PropertyGroup>
+    <PublishReadyToRun Condition="'$(Configuration)' == 'Debug'">False</PublishReadyToRun>
+    <PublishReadyToRun Condition="'$(Configuration)' != 'Debug'">True</PublishReadyToRun>
+    <PublishTrimmed Condition="'$(Configuration)' == 'Debug'">False</PublishTrimmed>
+    <PublishTrimmed Condition="'$(Configuration)' != 'Debug'">False</PublishTrimmed>
+  </PropertyGroup>
+  <Import Project="..\OnChainEngine\OnChainEngine.targets" />
+</Project>

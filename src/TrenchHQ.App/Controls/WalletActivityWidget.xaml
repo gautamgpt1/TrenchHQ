@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="TrenchHQ.Controls.WalletActivityWidget"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TrenchHQ.ViewModels">
+
+    <Grid x:Name="WidgetRoot">
+        <Grid.Resources>
+            <SolidColorBrush x:Key="WidgetTextBrush" Color="#F5F5F5" />
+            <SolidColorBrush x:Key="WidgetSecondaryBrush" Color="#A8A8A8" />
+            <SolidColorBrush x:Key="WidgetSeparatorBrush" Color="#665A5A5A" />
+            <DataTemplate x:Key="OverlayRowTemplate" x:DataType="local:WalletActivityRow">
+                <Border Padding="{x:Bind OverlayPadding, Mode=OneWay}" BorderBrush="{StaticResource WidgetSeparatorBrush}" BorderThickness="0,0,0,1" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                    <Grid RowSpacing="{x:Bind OverlayRowSpacing, Mode=OneWay}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid ColumnSpacing="{x:Bind OverlayColumnSpacing, Mode=OneWay}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Orientation="Horizontal" Spacing="{x:Bind OverlayInlineSpacing, Mode=OneWay}">
+                                <TextBlock Text="{x:Bind WalletLabel}" FontSize="{x:Bind OverlayFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource WidgetTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <Ellipse Width="{x:Bind OverlayIconSize, Mode=OneWay}" Height="{x:Bind OverlayIconSize, Mode=OneWay}" Visibility="{x:Bind VenueIconVisibility, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind VenueLabel, Mode=OneWay}">
+                                    <Ellipse.Fill><ImageBrush ImageSource="{x:Bind VenueIconSource, Mode=OneWay}" Stretch="UniformToFill" /></Ellipse.Fill>
+                                </Ellipse>
+                                <Grid Width="{x:Bind OverlayIconSize, Mode=OneWay}" Height="{x:Bind OverlayIconSize, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind ChainLabel}">
+                                    <Ellipse Fill="#28FFFFFF" />
+                                    <Image Margin="{x:Bind OverlayIconMargin, Mode=OneWay}" Source="{x:Bind CoinIconSource, Mode=OneWay}" Stretch="Uniform" />
+                                </Grid>
+                            </StackPanel>
+                            <TextBlock Grid.Column="1" Text="{x:Bind Age, Mode=OneWay}" FontSize="{x:Bind OverlaySecondaryFontSize, Mode=OneWay}" Foreground="{StaticResource WidgetSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                        </Grid>
+                        <Grid Grid.Row="1" ColumnSpacing="{x:Bind OverlayFlowColumnSpacing, Mode=OneWay}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="{x:Bind FlowText, Mode=OneWay}" FontSize="{x:Bind OverlayFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{x:Bind ActionBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Text="{x:Bind MarketCapDisplayText, Mode=OneWay}" FontSize="{x:Bind OverlaySecondaryFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource WidgetTextBrush}" Visibility="{x:Bind MarketCapVisibility, Mode=OneWay}" VerticalAlignment="Center" />
+                        </Grid>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+            <DataTemplate x:Key="HorizontalRowTemplate" x:DataType="local:WalletActivityRow">
+                <Border Width="{x:Bind HorizontalWidth, Mode=OneWay}" Padding="{x:Bind HorizontalPadding, Mode=OneWay}" BorderBrush="{StaticResource WidgetSeparatorBrush}" BorderThickness="0,0,1,0" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                    <Grid RowSpacing="{x:Bind HorizontalRowSpacing, Mode=OneWay}" VerticalAlignment="Center">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid ColumnSpacing="{x:Bind CompactColumnSpacing, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Spacing="{x:Bind CompactInlineSpacing, Mode=OneWay}">
+                                    <TextBlock Text="{x:Bind WalletLabel}" FontSize="{x:Bind CompactFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource WidgetTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <Ellipse Width="{x:Bind CompactIconSize, Mode=OneWay}" Height="{x:Bind CompactIconSize, Mode=OneWay}" Visibility="{x:Bind VenueIconVisibility, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind VenueLabel, Mode=OneWay}">
+                                        <Ellipse.Fill><ImageBrush ImageSource="{x:Bind VenueIconSource, Mode=OneWay}" Stretch="UniformToFill" /></Ellipse.Fill>
+                                    </Ellipse>
+                                    <Grid Width="{x:Bind CompactIconSize, Mode=OneWay}" Height="{x:Bind CompactIconSize, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind ChainLabel}">
+                                        <Ellipse Fill="#28FFFFFF" />
+                                        <Image Margin="{x:Bind CompactIconMargin, Mode=OneWay}" Source="{x:Bind CoinIconSource, Mode=OneWay}" Stretch="Uniform" />
+                                    </Grid>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{x:Bind Age, Mode=OneWay}" FontSize="{x:Bind CompactSecondaryFontSize, Mode=OneWay}" Foreground="{StaticResource WidgetSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Grid.Row="1" ColumnSpacing="{x:Bind CompactFlowColumnSpacing, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind FlowText, Mode=OneWay}" FontSize="{x:Bind CompactFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{x:Bind ActionBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind MarketCapDisplayText, Mode=OneWay}" FontSize="{x:Bind CompactSecondaryFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource WidgetTextBrush}" Visibility="{x:Bind MarketCapVisibility, Mode=OneWay}" VerticalAlignment="Center" />
+                            </Grid>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+
+            <DataTemplate x:Key="VerticalRowTemplate" x:DataType="local:WalletActivityRow">
+                <Border Padding="{x:Bind VerticalPadding, Mode=OneWay}" BorderBrush="{StaticResource WidgetSeparatorBrush}" BorderThickness="0,0,0,1" ToolTipService.ToolTip="{x:Bind ToolTip}">
+                    <Grid RowSpacing="{x:Bind VerticalRowSpacing, Mode=OneWay}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid ColumnSpacing="{x:Bind CompactColumnSpacing, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" Spacing="{x:Bind CompactInlineSpacing, Mode=OneWay}">
+                                    <TextBlock Text="{x:Bind WalletLabel}" FontSize="{x:Bind CompactFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource WidgetTextBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                    <Ellipse Width="{x:Bind CompactIconSize, Mode=OneWay}" Height="{x:Bind CompactIconSize, Mode=OneWay}" Visibility="{x:Bind VenueIconVisibility, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind VenueLabel, Mode=OneWay}">
+                                        <Ellipse.Fill><ImageBrush ImageSource="{x:Bind VenueIconSource, Mode=OneWay}" Stretch="UniformToFill" /></Ellipse.Fill>
+                                    </Ellipse>
+                                    <Grid Width="{x:Bind CompactIconSize, Mode=OneWay}" Height="{x:Bind CompactIconSize, Mode=OneWay}" ToolTipService.ToolTip="{x:Bind ChainLabel}">
+                                        <Ellipse Fill="#28FFFFFF" />
+                                        <Image Margin="{x:Bind CompactIconMargin, Mode=OneWay}" Source="{x:Bind CoinIconSource, Mode=OneWay}" Stretch="Uniform" />
+                                    </Grid>
+                                </StackPanel>
+                                <TextBlock Grid.Column="1" Text="{x:Bind Age, Mode=OneWay}" FontSize="{x:Bind CompactSecondaryFontSize, Mode=OneWay}" Foreground="{StaticResource WidgetSecondaryBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                            </Grid>
+                            <Grid Grid.Row="1" ColumnSpacing="{x:Bind CompactFlowColumnSpacing, Mode=OneWay}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="{x:Bind FlowText, Mode=OneWay}" FontSize="{x:Bind CompactFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{x:Bind ActionBrush}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind MarketCapDisplayText, Mode=OneWay}" FontSize="{x:Bind CompactSecondaryFontSize, Mode=OneWay}" FontWeight="SemiBold" Foreground="{StaticResource WidgetTextBrush}" Visibility="{x:Bind MarketCapVisibility, Mode=OneWay}" VerticalAlignment="Center" />
+                            </Grid>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </Grid.Resources>
+
+        <Grid x:Name="OverlayLayout">
+            <ScrollViewer x:Name="OverlayScroller" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="OverlayRowsControl" ItemsSource="{x:Bind Rows, Mode=OneWay}" ItemTemplate="{StaticResource OverlayRowTemplate}" />
+            </ScrollViewer>
+        </Grid>
+
+        <Grid x:Name="HorizontalBarLayout" Margin="0,0,120,0" Visibility="Collapsed">
+            <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{x:Bind Rows, Mode=OneWay}" ItemTemplate="{StaticResource HorizontalRowTemplate}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate><StackPanel Orientation="Horizontal" /></ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <Grid x:Name="VerticalBarLayout" Visibility="Collapsed">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                <ItemsControl ItemsSource="{x:Bind Rows, Mode=OneWay}" ItemTemplate="{StaticResource VerticalRowTemplate}" />
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

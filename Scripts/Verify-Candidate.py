@@ -13,13 +13,13 @@ expected = {row['path'] for row in record['files']} | {'CANDIDATE.json'}
 generated = {'bin', 'obj', 'target', 'node_modules', '.git', '.vs', 'AppPackages'}
 extra = [p.relative_to(root).as_posix() for p in root.rglob('*') if p.is_file()
          and not any(part in generated for part in p.relative_to(root).parts)
-         and not fnmatch.fnmatch(p.relative_to(root).as_posix(), 'SidecarApp/dist/*')
-         and p.relative_to(root).as_posix() != 'SidecarRuntime/node.exe'
+         and not fnmatch.fnmatch(p.relative_to(root).as_posix(), 'src/MarketSidecar/dist/*')
+         and p.relative_to(root).as_posix() != 'artifacts/runtime/node.exe'
          and p.relative_to(root).as_posix() not in expected]
 fingerprint = hashlib.sha256(json.dumps(record['files'], separators=(',', ':')).encode()).hexdigest()
 if bad or extra or fingerprint != record['sourceSha256']:
     raise SystemExit('Frozen source changed: ' + ', '.join(bad + extra))
-runtime = root / 'SidecarRuntime/node.exe'
+runtime = root / 'artifacts/runtime/node.exe'
 if runtime.exists():
     pinned = json.loads((root / 'release/dependencies.json').read_text(encoding='utf-8'))['node']['sha256']
     if hashlib.sha256(runtime.read_bytes()).hexdigest() != pinned:

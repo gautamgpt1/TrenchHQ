@@ -2,13 +2,31 @@
   <Configurations>
     <Platform Name="x64" />
   </Configurations>
-  <Project Path="TrenchHQ.csproj">
-    <Platform Solution="*|x64" Project="x64" />
-    <Deploy />
-  </Project>
-  <Project Path="OnChainTransport/TrenchHQ.OnChain.Yellowstone.csproj" />
-  <Project Path="Tests/TrenchHQ.LogicTests/TrenchHQ.LogicTests.csproj" />
-  <Project Path="Tests/TrenchHQ.IntegrationTests/TrenchHQ.IntegrationTests.csproj" />
-  <Project Path="Tests/TrenchHQ.OnChainIntegrationTests/TrenchHQ.OnChainIntegrationTests.csproj" />
-  <Project Path="Tests/TrenchHQ.ProviderValidation/TrenchHQ.ProviderValidation.csproj" />
+  <Folder Name="/src/">
+    <Project Path="src/TrenchHQ.App/TrenchHQ.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+      <Deploy />
+    </Project>
+    <Project Path="src/TrenchHQ.Core/TrenchHQ.Core.csproj" />
+    <Project Path="src/TrenchHQ.Infrastructure/TrenchHQ.Infrastructure.csproj" />
+    <Project Path="src/TrenchHQ.OnChain.Yellowstone/TrenchHQ.OnChain.Yellowstone.csproj" />
+  </Folder>
+  <Folder Name="/Tests/">
+    <Project Path="Tests/TrenchHQ.TestSupport/TrenchHQ.TestSupport.csproj" />
+    <Project Path="Tests/TrenchHQ.IntegrationTests/TrenchHQ.IntegrationTests.csproj" />
+    <Project Path="Tests/TrenchHQ.LogicTests/TrenchHQ.LogicTests.csproj" />
+    <Project Path="Tests/TrenchHQ.OnChainIntegrationTests/TrenchHQ.OnChainIntegrationTests.csproj" />
+    <Project Path="Tests/TrenchHQ.SocialTests/TrenchHQ.SocialTests.csproj" />
+    <Project Path="Tests/TrenchHQ.WindowPinTests/TrenchHQ.WindowPinTests.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/TrenchHQ.OnChainValidation/TrenchHQ.OnChainValidation.csproj" />
+    <Project Path="tools/TrenchHQ.SocialValidation/TrenchHQ.SocialValidation.csproj" />
+    <Project Path="tools/TrenchHQ.ProviderValidation/TrenchHQ.ProviderValidation.csproj" />
+    <Project Path="tools/TrenchHQ.WindowContainmentProbe/TrenchHQ.WindowContainmentProbe.csproj">
+      <Platform Solution="*|x64" Project="x64" />
+    </Project>
+  </Folder>
 </Solution>
