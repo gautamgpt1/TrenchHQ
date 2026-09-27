@@ -559,9 +559,20 @@ namespace TrenchHQ.Infrastructure.OnChain
             await _writeLock.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                await input.WriteAsync(prefix, cancellationToken).ConfigureAwait(false);
-                await input.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
-                await input.FlushAsync(cancellationToken).ConfigureAwait(false);
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    await input.WriteAsync(prefix, cancellationToken).ConfigureAwait(false);
+                    await input.WriteAsync(bytes, cancellationToken).ConfigureAwait(false);
+                    await input.FlushAsync(cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // A partial frame cannot be followed by another message on this pipe.
+                    // EOF lets the worker exit and the existing lifecycle recovery restart it.
+                    input.Dispose();
+                    throw;
+                }
             }
             finally
             {

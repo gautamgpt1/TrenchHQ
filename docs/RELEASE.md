@@ -92,11 +92,9 @@ are enabled. Private vulnerability reporting, secret scanning and push protectio
 were already enabled and remain on. Projects and Wiki are disabled. CodeQL's
 [initial run](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36338588132)
 completed for Actions, C/C++, C#, JavaScript/TypeScript, Python and Rust with both
-remote and local input sources. It produced 132 open alerts, predominantly path
-handling in local settings, tests and tools. These have not been dismissed or
-certified as vulnerabilities/false positives; review their actual trust boundaries
-before binary release. Dependabot and secret scanning returned no open alerts at
-the time of this setup check. Scan execution success is not a clean security audit.
+remote and local input sources. Its 132 findings were subsequently reviewed as
+described below. Dependabot and secret scanning returned no open alerts at the
+time of this setup check. Scan execution success is not a clean security audit.
 The active main-branch ruleset blocks deletion and force pushes, including for the
 owner. Normal reviewed source pushes remain available. The public site uses the
 manual Pages workflow; publishing documentation does not publish an app binary.
@@ -105,6 +103,35 @@ No final tag, trusted signature, WACK result, clean-Windows certification or new
 private-provider certification is claimed. Signing, credentials and test machines
 remain deferred by the owner. Resolve the service-use questions in
 [SERVICES](SERVICES.md), including DEX Screener and Bitget, before end-user launch.
+
+### CodeQL review
+
+The 132 findings on baseline `b7db1115` were reviewed using their complete SARIF
+source-to-sink traces and production callers. Each was a false positive under the
+existing caller boundaries; individual explanations are retained on
+[the dismissed alerts](https://github.com/gautamgpt1/TrenchHQ/security/code-scanning?query=is%3Adismissed).
+No query, directory or local-input analysis was disabled to remove findings.
+
+| Findings | Reviewed boundary |
+| --- | --- |
+| 60 C# test paths | Fresh GUID fixtures, plus one test reading its own build-generated helper-version file |
+| 47 C# shared storage/helper paths | Traces originate in fixtures or owner-run validation; production uses app-local storage, fixed names, GUID credential references, validated icon names or the packaged native helper |
+| 10 C# validation-tool paths | Owned temporary roots or a fixed subdirectory of the invoking user's LocalApplicationData |
+| 13 Python release-tool paths | Explicit operator-selected package, report and candidate paths; candidate hashes are compared to the owner-generated record |
+| 2 process-launch findings | Cargo's output path passed to a fixed PowerShell `-File` script, and the optional diagnostic's fixed installed Chrome path with separate arguments |
+
+The exact Rust build script was also compiled and exercised with spaces, `&`,
+`;` and `$(literal)` in its output path. It created the expected version-resource
+files at that literal path. The six native-cache checks passed, including damaged
+cache rejection. These checks used synthetic data, without provider credentials.
+
+Verification exposed a separate worker-pipe cancellation defect: an interrupted
+length-prefixed write could leave the worker waiting for the missing message body.
+The new `CancelledPartialFrameClosesWorkerPipeAndAllowsRestart` regression failed
+before the fix and passed after the client began closing interrupted pipes. The
+full on-chain suite then passed all 43 tests. The Release build completed with
+zero warnings and errors. This review is scoped to these findings and that defect;
+the final signed-candidate gates below still apply.
 
 ## 1. Publish the source repository
 
@@ -140,8 +167,10 @@ their terms. Retain and resolve the integration questions in [SERVICES](SERVICES
 
 ## 2. Prepare a signed binary release
 
-- [ ] Triage the first CodeQL findings, resolve confirmed defects and retain
-  evidence for any false-positive dismissals; rerun against the release source.
+- [x] Triage the first CodeQL findings and retain per-alert dismissal evidence;
+  fix the worker-pipe cancellation defect found during verification.
+- [ ] Rerun security scanning against the final immutable release source and
+  review new findings before signing.
 - [ ] Resolve launch-scope API/data/brand questions, particularly DEX Screener and
   Bitget. Obtain permission or replace affected integrations where required.
 - [ ] Independently validate the reserved Store identity and suitable account type

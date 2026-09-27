@@ -87,6 +87,11 @@ shared Rust engine processes bounded messages, protocol state and price updates.
 The Node/CCXT sidecar serves public exchange catalogs/tickers over local pipes.
 Workers start on demand, recover with bounded retry and stop when unused. Preserve
 IPC size/schema validation, backpressure and equivalent-subscription idempotence.
+If a Rust-engine frame write is interrupted, the client closes that input pipe:
+another message must never be appended to a partial length-prefixed frame. The
+worker exits on EOF and the existing lifecycle logic permits a fresh worker.
+`EngineTransportTests` cancels immediately after the length header and verifies
+worker exit, a successful request after restart and final process cleanup.
 
 The sidecar accepts only `getMarkets`, `setSubscriptions`, `ping` and `shutdown`.
 It constructs exchanges without account credentials. Malformed frames, inherited

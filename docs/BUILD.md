@@ -174,7 +174,7 @@ holds reusable synthetic RPC fixtures shared with the explicit validation tool.
 | `Tests/TrenchHQ.LogicTests` | 92 model, rule, formatting, layout and storage cases |
 | `Tests/TrenchHQ.SocialTests` | 16 synthetic X parsing, stream, ownership and DPAPI cases |
 | `Tests/TrenchHQ.IntegrationTests` | One complete sidecar crash/reconnect/lazy-stop scenario |
-| `Tests/TrenchHQ.OnChainIntegrationTests` | 42 synthetic provider, protocol, engine and recovery scenarios |
+| `Tests/TrenchHQ.OnChainIntegrationTests` | 43 synthetic provider, protocol, engine and recovery scenarios |
 | `Tests/TrenchHQ.WindowPinTests` | Interactive native/embedded scenarios and isolated cache checks |
 | `tools/TrenchHQ.ProviderValidation` | Explicit public exchange validation |
 | `tools/TrenchHQ.OnChainValidation` | Explicit live RPC/provider/polling validation |
@@ -258,6 +258,8 @@ a new external directory. Its `CANDIDATE.json` records hashes and Git provenance
 Keep the generated publication map and evidence outside the public checkout.
 Run `python Scripts/Verify-Candidate.py` inside that frozen candidate before and
 after builds. Editable clones do not need a committed candidate record.
+The verifier compares against that owner-generated record; it does not establish
+the authenticity of an untrusted manifest or sandbox an untrusted source tree.
 
 A public commit and lock files identify source inputs. Compiler versions,
 timestamps and signatures can still affect package bytes. After intentional

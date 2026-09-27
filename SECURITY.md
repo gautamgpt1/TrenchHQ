@@ -42,6 +42,26 @@ Relevant boundaries for researchers:
 See the [privacy policy](docs/public/privacy.txt) and
 [architecture](docs/ARCHITECTURE.md) for the full storage and process boundaries.
 
+## Reviewing local path and process findings
+
+Trace each finding to its caller before deciding whether it crosses a trust
+boundary. Production stores use Windows app-local storage with fixed filenames;
+credential filenames require a GUID. Feed content, wallet addresses, widget
+labels and URLs must never choose a storage root. Tests pass isolated temporary
+roots to the same stores, which can produce findings in production source files.
+
+Build and validation tools run with the invoking user's permissions. Their
+explicit input/output paths, Cargo build directories and OS known folders are
+local tooling inputs. They are not interfaces for accepting remote file paths or
+commands. Native launches must keep executable selection separate from arguments;
+PowerShell build helpers use `-File`, not interpolated command text.
+
+Keep CodeQL's local and remote input analysis enabled. A test location alone is
+not grounds for dismissal: inspect every reported source, path component and
+operation, and record the rationale on the alert. Revisit that decision if a
+caller, privilege level or input source changes. The initial review and its
+verification are recorded in [RELEASE](docs/RELEASE.md#codeql-review).
+
 ## If a credential has been exposed
 
 Revoke or rotate it with the provider immediately. Deleting a file or comment does
