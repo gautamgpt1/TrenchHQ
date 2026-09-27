@@ -1,0 +1,28 @@
+name: Request a feature
+description: Suggest a specific improvement to how you use TrenchHQ.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Still exploring an idea? Start in [Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions/categories/ideas).
+        For a new exchange, chain, protocol or provider, use the integration request form.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do?
+      description: Describe the problem in your workflow and who would benefit.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help?
+      description: Describe the change you would like and how you would use it.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives or examples (optional)
+      description: Include workarounds or relevant examples. Remove private data from screenshots.

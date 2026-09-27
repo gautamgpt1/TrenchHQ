@@ -76,6 +76,28 @@ all 24 policy/brand files against the source master and generator. All 20 genera
 resources retain their previous bytes, and the Windows resource index resolves
 their packaged paths. Repeating generation preserves their bytes and timestamps.
 
+The restructured source and logo pipeline were published as `1dd56f8`.
+[Hosted verification](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36336568044)
+passed the Release build, managed/Node/Rust checks, native cache checks and private
+unsigned Store-upload inspection. The two interactive pin tests remain local gates.
+
+The public presentation pass replaces the technical README opening with product
+examples and setup instructions, and adds issue forms, a PR template, support and
+brand guidance, and Contributor Covenant 3.0 with GitHub's private abuse-reporting
+route. The existing MIT permissions for code and original artwork are unchanged.
+Screenshots, demo video and a social preview remain owner-supplied follow-ups.
+
+GitHub Discussions, Dependabot alerts/security updates and CodeQL default setup
+are enabled. Private vulnerability reporting, secret scanning and push protection
+were already enabled and remain on. Projects and Wiki are disabled. CodeQL's
+[initial run](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36338588132)
+completed for Actions, C/C++, C#, JavaScript/TypeScript, Python and Rust with both
+remote and local input sources. It produced 132 open alerts, predominantly path
+handling in local settings, tests and tools. These have not been dismissed or
+certified as vulnerabilities/false positives; review their actual trust boundaries
+before binary release. Dependabot and secret scanning returned no open alerts at
+the time of this setup check. Scan execution success is not a clean security audit.
+
 No final tag, trusted signature, WACK result, clean-Windows certification or new
 private-provider certification is claimed. Signing, credentials and test machines
 remain deferred by the owner. Resolve the service-use questions in
@@ -98,6 +120,11 @@ remain deferred by the owner. Resolve the service-use questions in
 - [x] Observe a successful hosted verification workflow run, with the two
   interactive pin exclusions recorded above.
 - [x] Confirm app/site support links match the final repository URL.
+- [x] Add product-focused README/help, contribution/security guidance and issue forms.
+- [x] Set repository description/topics and enable Discussions and security tooling.
+- [ ] Reduce Discussions to Announcements, Q&A, Ideas and Show and tell. These four
+  are available; the empty General/Polls defaults still need removal in GitHub's
+  category settings.
 - [ ] Set Pages source to GitHub Actions, run the manual Pages workflow and verify
   the privacy/support pages publicly after repository finalization. Review the
   exact site source before deployment; verify HTTP 200 and that the served privacy
@@ -109,6 +136,8 @@ their terms. Retain and resolve the integration questions in [SERVICES](SERVICES
 
 ## 2. Prepare a signed binary release
 
+- [ ] Triage the first CodeQL findings, resolve confirmed defects and retain
+  evidence for any false-positive dismissals; rerun against the release source.
 - [ ] Resolve launch-scope API/data/brand questions, particularly DEX Screener and
   Bitget. Obtain permission or replace affected integrations where required.
 - [ ] Independently validate the reserved Store identity and suitable account type

@@ -1,64 +1,82 @@
 # Contributing to TrenchHQ
 
-TrenchHQ is pre-release software for read-only Windows desktop monitoring.
-For a substantial feature, open an issue describing the problem and proposed
-scope before implementation. Small, focused fixes can be submitted directly.
-Security reports follow [SECURITY.md](SECURITY.md).
+Thanks for helping improve TrenchHQ. You can contribute without writing code:
+report a reproducible bug, improve a confusing instruction, suggest a better
+workflow or share a useful desktop setup.
 
-## Local development
+Please follow our [Code of Conduct](CODE_OF_CONDUCT.md). For help using the app,
+see [SUPPORT.md](SUPPORT.md); report vulnerabilities through [SECURITY.md](SECURITY.md).
 
-1. Follow [BUILD](docs/BUILD.md) to restore the pinned dependencies.
-2. Read [ARCHITECTURE](docs/ARCHITECTURE.md) and the relevant source/tests.
-3. Make a focused change and run the checks affected by it.
-4. Include the reason, user-visible effect, verification and limitations in the PR.
+## Before you start
 
-Keep unrelated formatting, dependency upgrades and generated files out of a PR.
-Tests should exercise observable behavior and cover a distinct regression.
-Place shared rules/models in Core, acquisition/storage in Infrastructure, and
-WinUI presentation/window work in the app. Add project references for tests; do
-not link production source files into test projects. Live probes belong under
-`tools/`, outside default test execution.
+Search existing [issues](https://github.com/gautamgpt1/TrenchHQ/issues) and
+[discussions](https://github.com/gautamgpt1/TrenchHQ/discussions) first. Use
+Discussions to explore an idea and the issue forms for bugs, concrete features
+or integrations. For a substantial change, agree on the problem and scope in an
+issue before implementing it. Small fixes can go straight to a pull request.
 
-Native window changes also need an interactive Windows check for restoration and
-cleanup. Provider changes must preserve the selected polling/event mode and
-distinguish synthetic fixtures from actual account certification.
+## Set up for development
 
-## Preserve user data and editor work
+Follow [Build and test](docs/BUILD.md) for the Windows toolchain, dependency
+bootstrap and Visual Studio setup. The [architecture guide](docs/ARCHITECTURE.md)
+maps the projects and explains where different kinds of changes belong.
 
-Follow [AGENTS.md](AGENTS.md) when Visual Studio and external tools share a checkout.
-Do not overwrite unsaved buffers or reset unrelated work. Never edit `bin`, `obj`,
-`AppPackages`, Rust `target` or generated sidecar output as source.
+Keep each change focused. Preserve unrelated edits and unsaved editor buffers;
+see [editor coordination](AGENTS.md#editor-coordination) if Visual Studio is open
+while another tool edits files. Generated build output is not source code.
 
-Use synthetic credentials and disposable settings in tests. Live provider tests
-are opt-in and require your own authorized credentials through the protected
-configuration path. Do not use someone else's saved settings, wallets or tokens.
+## Verify your change
 
-## What belongs in a contribution
+Run the checks affected by the change and record what you actually ran. Add a
+regression test when fixing a behavior that could break again. Documentation-only
+changes need link and content checks, not a new app test suite.
 
-- Source, focused tests, necessary assets and dependency lock files.
-- Updates to the relevant maintained document when behavior changes.
-- License/provenance information for new dependencies or copied material.
-- Sanitized reproduction steps and screenshots containing only test data.
+- UI changes: check the affected flow, including display scaling and narrow widths.
+- Window/panel changes: check restoration and cleanup on an interactive Windows desktop.
+- Feed/provider changes: use synthetic fixtures first; preserve the user's selected
+  polling or streaming mode and test relevant failure/recovery behavior.
 
-Do not commit API keys, `.env` files, signing certificates/private keys, browser
-profiles, real wallet labels/addresses, raw logs, dumps, local evidence archives,
-IDE state or machine-specific paths. Public contract/mint fixtures already in
-tests are intentional protocol data; they are not private wallet records.
+Commands and the distinction between automated, interactive and live checks are
+in [BUILD](docs/BUILD.md#verify). A passing fixture does not certify a real provider
+account or a signed installation.
 
-The root [MIT license](LICENSE) applies to project contributions unless a file
-has an identified third-party license. Submit only material you have the right
-to contribute and preserve upstream notices. New integrations also need a
-service-terms review; an open-source client library does not license its data feed.
+## Open a pull request
 
-## Documentation
+Explain the user problem, your change and how you verified it. Link the issue if
+there is one, and note any remaining limitations. Use screenshots only when they
+help explain a visible change, with private information removed.
 
-Maintain the README, community policies and four development references:
+Keep unrelated formatting, dependency upgrades and generated files out of the PR.
+Update the relevant existing document when behavior changes. Maintainers review
+changes before merging; there is no automatic merge of dependency updates.
 
-- `docs/BUILD.md`: toolchain, commands and verification.
-- `docs/ARCHITECTURE.md`: implementation map and important behavior.
-- `docs/SERVICES.md`: integrations, constraints and terms review.
-- `docs/RELEASE.md`: current status, release checks and rollout.
+## Providers and integrations
 
-User-facing support/privacy live under `docs/public/`; attribution lives in
-`THIRD_PARTY_NOTICES.md` and `ThirdParty/`. Summarize durable decisions in these
-files instead of adding session transcripts or dated handoff documents.
+Use the integration request form to identify the service, user need and official
+documentation. Check [SERVICES](docs/SERVICES.md) for current coverage and constraints.
+New dependencies, copied code and assets need license/provenance information;
+new data feeds also need a service-terms review. A library's license does not
+grant permission to use or redistribute its data provider's service.
+
+## Test data and privacy
+
+Use synthetic credentials, public protocol fixtures and disposable settings.
+Live tests are opt-in and require your own authorized credentials through the
+app's protected configuration. Never use someone else's saved keys or settings.
+
+Do not commit API keys, wallet secrets, browser profiles, signing certificates,
+personal wallet labels, raw logs, settings folders, IDE state or private machine
+paths. Review diagnostic exports and screenshots before sharing. Existing public
+contract/mint fixtures are intentional protocol data, not personal wallet records.
+
+## Documentation and licensing
+
+Keep the README focused on using the product. Setup and troubleshooting belong
+in `docs/public/support.md`; implementation details belong in the four maintained
+references: BUILD, ARCHITECTURE, SERVICES and RELEASE. Update those documents
+instead of adding development transcripts or session handoffs.
+
+Contribute only material you have the right to share. Project contributions use
+the [MIT license](LICENSE) unless an identified third-party license applies.
+Preserve upstream notices and the [brand guidelines](TRADEMARKS.md). The Code of
+Conduct has its own attribution and license.

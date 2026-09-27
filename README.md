@@ -1,101 +1,137 @@
-<img src="src/TrenchHQ.App/Assets/TrenchHQ.png" width="64" height="64" alt="TrenchHQ">
+<img src="src/TrenchHQ.App/Assets/TrenchHQ.png" width="80" height="80" alt="TrenchHQ logo">
 
 # TrenchHQ
 
-Read-only crypto market panels for your Windows desktop.
+**Your crypto HQ, always in view.**
 
-Keep prices, public wallet activity, websites and an optional X feed visible in
-floating overlays or panels docked to any screen edge. Configure saved widgets
-once and use them across multiple panels.
+TrenchHQ is a customizable crypto desktop companion for Windows. Keep prices,
+wallet activity, X feeds, websites and other apps visible while you work, browse
+or trade. Arrange them in floating overlays or panels along the edges of your
+screens, across one monitor or several.
 
-**Pre-release source · Windows x64 · version 1.0.1.0**
+[Get started](#get-trenchhq) · [Setup and help](docs/public/support.md) ·
+[Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions)
 
-No public binary is available yet. Microsoft Store is the planned primary binary
-channel; a trusted signed direct download is conditional on signing approval.
-There is no wallet custody, transaction signing, exchange-account access or trading.
+<!-- Add the owner's real desktop screenshot/demo here when available. -->
 
-## What you can use
+## Make room for what you follow
 
-| Content | Purpose | Access |
-| --- | --- | --- |
-| Price Ticker | Public exchange prices and supported on-chain pools | Public exchange prices need no key; on-chain requirements vary |
-| Wallet Watcher | Read-only activity for public wallet addresses | Compatible chain provider |
-| X Tracker | Native feed using the official X Filtered Stream | Your own authorized paid X API access |
-| Website | An HTTPS site in its own local WebView2 profile | The site's own login, subscription and terms |
-| Application Window | Pin a selected app into a panel | Experimental; compatible resizable, non-admin x64 apps |
+Watching crypto can mean jumping between exchange tabs, wallet trackers, X and
+charts. TrenchHQ gives the information you follow a place on your desktop:
 
-Application Window loads a native helper into the selected application. Read the
-[implementation and limitations](docs/ARCHITECTURE.md#application-window) before
-using or changing it.
+- Keep a compact price ticker above your taskbar.
+- Watch a wallet's activity on a second monitor.
+- Put an X feed beside your charts.
+- Keep a useful website or application alongside your workspace.
 
-## Start without an API key
+Choose what stays visible, where it sits and how it looks. Save your layout so
+you can bring it back without arranging everything again.
 
-After building and launching the app:
+## What you can put on your desktop
 
-1. Open **Widgets** and save a **Price Ticker** with a public exchange and spot pair.
-2. In **Desktop Setup**, assign the widget to an overlay or screen-edge panel.
-3. Select **Show**, or start the selected panels from **Dashboard**.
-4. Use **Help and FAQ** for setup, recovery, version, privacy and diagnostics.
+| Content | What you can do |
+| --- | --- |
+| **Price Ticker** | Follow exchange prices or a specific on-chain trading pool. |
+| **Wallet Watcher** | Follow activity from public wallet addresses on supported chains. |
+| **X Tracker** | Watch posts from selected accounts through the official X API. |
+| **Website** | Keep a site open in its own panel, with its own saved login. |
+| **Application Window** | Fit a compatible Windows app into a panel in your layout. |
 
-The integrated chains are **Solana, Ethereum, Base, BNB Smart Chain and Robinhood
-Chain**. PublicNode is a best-effort EVM fallback. Solana live data needs a configured
-provider. Regional restrictions, quotas and outages can affect any public feed.
-See [supported feeds and recovery](docs/public/support.md).
+Price, wallet, X and website widgets are reusable: save one, then place it in the
+overlays or panels you want. Application Window is chosen directly in a panel;
+you select the app to pin each session. Compatibility details are in
+[setup and help](docs/public/support.md#pin-an-application).
 
-## Provider selection and usage
+### Arrange it your way
 
-Enter your provider key and save it. TrenchHQ chooses among compatible configured
-providers for each chain and recovers from failures or exhausted local allowances.
-Some providers also need an account-specific endpoint URL.
+- Float overlays above other windows or dock panels to any screen edge.
+- Use several panels across multiple monitors.
+- Adjust size, placement and appearance to suit your workspace.
+- Save widgets and layouts, and show or hide panels with shortcuts.
+- Choose whether to start with Windows and reopen the dashboard from the tray.
 
-Price Ticker defaults to one-second current-state polling; live events are an
-explicit option. Automatic provider changes preserve that choice. Usage guards
-are local estimates, **not your account's remaining balance**. They cannot account
-for other applications sharing your subscription or guarantee a free allowance
-will last all month. See [services and constraints](docs/SERVICES.md).
+### Follow the market you mean
 
-Credentials stay in the app's protected Windows configuration. Never put API keys,
-wallet secrets, browser profiles or personal configuration in the repository.
+Track spot pairs on exchanges including Binance, Bybit, OKX and more, without
+an exchange login or API key.
 
-## Build and contribute
+For on-chain markets, TrenchHQ supports **Solana, Ethereum, Base, BNB Smart Chain
+and Robinhood Chain**. Choose the supported pool you want to watch, so the price
+comes from that particular market. See the
+[full exchange and chain list](docs/public/support.md#supported-markets).
 
-This is a WinUI 3 / .NET application with a Rust engine and a Node/CCXT sidecar.
-Start with [build and verification instructions](docs/BUILD.md), including the
-locked toolchain and dependency bootstrap. Open `TrenchHQ.slnx` in Visual Studio.
+### Connect your feeds
 
-Production components live under `src/`, synthetic checks under `Tests/`, and
-explicit live validation/diagnostics under `tools/`. The [architecture map](docs/ARCHITECTURE.md#repository-and-project-boundaries)
-explains the project dependencies; Visual Studio Test Explorer runs the managed tests.
+Start with public exchange prices. Add provider details in **API Connections**
+when you need them for on-chain feeds. TrenchHQ selects compatible providers and
+switches to available backups when a connection fails or reaches its configured
+usage limit. Some providers need an endpoint URL as well as a key.
 
-This repository contains the complete application source, native helpers, tests,
-fixtures, assets, dependency locks and license notices. No sibling research
-folders or previous development checkout are required. The bootstrap downloads
-the pinned runtime and restores dependencies; generated binaries are not source.
+On-chain price widgets offer **Every second (polling)** and **Live streaming**
+where supported. Solana feeds need a provider; X Tracker needs your own paid X API
+access. [Setup and help](docs/public/support.md#connect-data-providers) explains
+what each feature needs. Detailed integration behavior lives in
+[Services](docs/SERVICES.md).
 
-- [Contributing](CONTRIBUTING.md)
-- [Architecture and behavior](docs/ARCHITECTURE.md)
-- [Implementation status and release plan](docs/RELEASE.md)
-- [Security reporting](SECURITY.md)
-- [Privacy policy](docs/public/privacy.txt)
+## Get TrenchHQ
 
-Use this repository's Issues tab for reproducible bugs and feature requests.
-Review diagnostics before attaching them. Security-sensitive reports follow
-`SECURITY.md`; do not post secrets or exploit details in public issues.
+The first signed Windows download is being prepared. There is no public installer
+yet. To try the app today, [build from source](docs/BUILD.md) on Windows x64.
 
-## Code signing policy
+### Set up your first ticker
 
-No public signed binary or SignPath approval is claimed. The maintainer approves
-releases only after verification. See the [code signing policy and channel plan](docs/RELEASE.md#code-signing-policy)
-for roles, signing requirements and the linked privacy policy.
+Once the app is running:
 
-## License and attribution
+1. In **Widgets**, create a **Price Ticker**, choose an exchange and spot pair,
+   then save it. No API key is needed.
+2. In **Desktop Setup**, create an overlay or screen-edge panel and assign the
+   widget.
+3. Select **Show**, or select panels on **Dashboard** and choose **Start Desktop
+   Display**.
 
-TrenchHQ source and original artwork use the [MIT license](LICENSE), copyright
-2026 Gautam Gupta. Dependencies and identifying marks retain their own terms:
-[third-party notices](THIRD_PARTY_NOTICES.md) and
-[dependency inventory](ThirdParty/DEPENDENCIES.json).
+See [setup and help](docs/public/support.md) for the other widgets, connections
+and everyday troubleshooting. The app's **Help and FAQ** is also available while
+you set things up.
 
-Software licenses do not grant rights to exchange data, provider accounts or
-third-party branding. Open service-use questions are recorded in
-[services and constraints](docs/SERVICES.md); source availability does not imply
-provider endorsement or certification.
+## Your data and accounts
+
+TrenchHQ monitors information. It does not connect a wallet for signing, hold
+funds or place trades. You can keep using your usual trading apps alongside it.
+
+There is no TrenchHQ account or hosted account service. Feeds connect from your
+device to the exchanges, providers, X and websites you use. Provider and X
+credentials are protected locally by Windows; websites manage their own logins
+and cookies. Read the [privacy policy](docs/public/privacy.txt) for what is stored,
+what is sent and how to delete local data.
+
+## Help and ideas
+
+Use [Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions) for questions,
+ideas and sharing your setup. Found a bug or have a specific feature/integration
+request? [Open an issue](https://github.com/gautamgpt1/TrenchHQ/issues/new/choose).
+The [support guide](SUPPORT.md) explains what to include.
+
+Report security problems privately using the instructions in [SECURITY.md](SECURITY.md).
+
+## Development and contributions
+
+Bug fixes, clearer documentation, usability improvements and integration work
+are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+
+The app uses WinUI 3/.NET with Rust and Node components. This repository contains
+the application, native helpers, tests, assets and dependency locks needed to
+build it; no other development checkout is required.
+
+- [Build and test](docs/BUILD.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Services and integrations](docs/SERVICES.md)
+- [Release status](docs/RELEASE.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+
+## License
+
+TrenchHQ is open source under the [MIT license](LICENSE). The
+[brand guidelines](TRADEMARKS.md) explain use of the TrenchHQ name and logo;
+third-party components retain their own [licenses and notices](THIRD_PARTY_NOTICES.md).
+
+Created and maintained by [Gautam Gupta](https://github.com/gautamgpt1).

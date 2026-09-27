@@ -1,2 +1,31 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{{ page.title | escape }}</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:850px;margin:40px auto;padding:0 22px;background:#10151d;color:#e6edf3}a{color:#8cc8ff}h1,h2{line-height:1.2}nav{margin-bottom:28px}</style></head><body><nav><a href="./">TrenchHQ</a> | <a href="support.html">Support</a> | <a href="privacy.txt">Privacy</a></nav><main>{{ content }}</main></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{{ site.description | escape }}">
+  <title>{{ page.title | escape }}</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { font: 17px/1.65 system-ui, sans-serif; max-width: 850px; margin: 40px auto; padding: 0 22px; background: #10151d; color: #e6edf3; overflow-wrap: break-word; }
+    a { color: #8cc8ff; text-underline-offset: 3px; }
+    a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    h1, h2, h3 { line-height: 1.25; }
+    h2 { margin-top: 2.2em; }
+    nav { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-bottom: 36px; }
+    table { display: block; max-width: 100%; overflow-x: auto; border-collapse: collapse; font-size: 0.95em; }
+    th, td { padding: 10px 12px; border: 1px solid #39424e; text-align: left; vertical-align: top; }
+    li { margin: 6px 0; }
+    @media (max-width: 600px) { body { margin: 24px auto; padding: 0 18px; } h1 { font-size: 2rem; } }
+  </style>
+</head>
+<body>
+  <nav aria-label="Main navigation">
+    <a href="./">TrenchHQ</a>
+    <a href="support.html">Setup and help</a>
+    <a href="privacy.txt">Privacy</a>
+    <a href="https://github.com/gautamgpt1/TrenchHQ">GitHub</a>
+  </nav>
+  <main>{{ content }}</main>
+</body>
+</html>

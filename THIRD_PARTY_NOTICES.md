@@ -24,6 +24,14 @@ notice. Win2D 1.3.2's package license URL redirects; its retained MIT text comes
 from the [official upstream license](https://github.com/microsoft/Win2D/blob/0fd4f810be5bf0cb9c981432a6f4ab3954fda08f/LICENSE.txt).
 See `docs/SERVICES.md` for outstanding service/brand review.
 
+## Community documentation
+
+`CODE_OF_CONDUCT.md` adapts Contributor Covenant 3.0, stewarded by the Organization
+for Ethical Source, under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+Its reporting instructions are customized for this repository. Attribution and
+the upstream source are retained in that document; this text is not relicensed
+under the project's MIT license.
+
 ## Development test dependencies
 
 The managed tests restore xUnit v3 4.0.1 and its Visual Studio adapter 4.0.0
@@ -134,3 +142,5 @@ Windows PNG sizes and multi-resolution ICO from this unmodified PNG into ignored
 build output; those derivatives are packaged, not maintained as source images.
 The unused SVG wrapper and lock-screen assets were removed. The supplied black
 background, white mark and proportions are preserved.
+See [TrenchHQ name and logo](TRADEMARKS.md) for identity and endorsement guidance;
+the existing MIT copyright permissions are unchanged.

@@ -1,0 +1,44 @@
+name: Request an integration
+description: Ask for an exchange, chain, protocol or data provider.
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Check the [supported integrations](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/SERVICES.md) first.
+        Share public documentation only. Never include keys, authenticated endpoint URLs or account screenshots.
+  - type: input
+    id: service
+    attributes:
+      label: Service, chain or protocol name
+    validations:
+      required: true
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Integration type
+      options:
+        - Exchange
+        - Chain
+        - On-chain protocol or pool type
+        - RPC or streaming provider
+        - Another data source
+    validations:
+      required: true
+  - type: textarea
+    id: use
+    attributes:
+      label: What would you use it for?
+      description: Describe the widget or workflow it would enable.
+    validations:
+      required: true
+  - type: textarea
+    id: docs
+    attributes:
+      label: Official links (if known)
+      description: Link the service homepage, API documentation and any public usage/attribution terms.
+  - type: textarea
+    id: access
+    attributes:
+      label: Access requirements (if known)
+      description: Is an account or paid plan needed? Are there regional restrictions? Do not share credentials.

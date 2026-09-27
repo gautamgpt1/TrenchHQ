@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Setup help and questions
+    url: https://github.com/gautamgpt1/TrenchHQ/discussions/categories/q-a
+    about: Ask the community how to use or configure TrenchHQ.
+  - name: Explore an idea
+    url: https://github.com/gautamgpt1/TrenchHQ/discussions/categories/ideas
+    about: Discuss possibilities before turning them into a specific feature request.
+  - name: Report a security vulnerability privately
+    url: https://github.com/gautamgpt1/TrenchHQ/security/advisories/new
+    about: Keep vulnerability details and sensitive information out of public issues.

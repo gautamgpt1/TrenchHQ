@@ -1,47 +1,49 @@
 # Security policy
 
+## Report a vulnerability privately
+
+Use [GitHub's private vulnerability reporting form](https://github.com/gautamgpt1/TrenchHQ/security/advisories/new).
+Do not open a public issue with security-sensitive details.
+
+Include the affected version or commit, the impact and minimal reproduction
+steps using test data. A suggested fix is welcome but not required. Never send
+real API keys, wallet secrets, browser data or unredacted settings/logs.
+
+Reports are reviewed by the maintainer. Please keep details private while the
+issue is investigated and a fix or disclosure is coordinated. Response times
+depend on maintainer availability; there is no guaranteed response window.
+
 ## Supported versions
 
-TrenchHQ is pre-release. Report issues against the current default branch and
-identify the affected commit or application version. There is no stable public
-binary or long-term support branch yet.
+Report against the current `main` branch and identify the commit you tested.
+There is no stable public binary or long-term support branch yet. This policy
+will identify supported releases when signed downloads become available.
 
-## Reporting a vulnerability
+## What to report
 
-When this repository's **Security → Advisories → Report a vulnerability** option
-is available, use it for a private report. Include affected versions, impact,
-minimal reproduction steps and a proposed fix if you have one.
+Examples include credential exposure, unsafe handling of feed or website data,
+unexpected access across local process boundaries, or failures to validate
+downloaded/native components. Ordinary setup problems and feature requests belong
+in [support](SUPPORT.md).
 
-If private reporting is unavailable, open an issue asking the maintainer for a
-private reporting channel **without disclosing the vulnerability or sensitive
-details**. Do not post exploit code, keys, wallet identifiers, browser data or
-unredacted logs publicly. No response-time guarantee is currently offered.
+Relevant boundaries for researchers:
 
-Maintainers must enable private vulnerability reporting when setting up the
-public repository. GitHub documents the
-[repository setting](https://docs.github.com/en/code-security/how-tos/report-and-fix-vulnerabilities/configure-vulnerability-reporting/configure-for-a-repository).
+- Provider/X credentials use per-user Windows DPAPI. This does not defend against
+  malicious code already running as that Windows user.
+- Wallet addresses, labels, URLs and ordinary settings are local configuration,
+  not an encrypted database.
+- Embedded websites have WebView2 profiles and the sites' own login/session behavior.
+- Application Window deliberately attaches a native helper to a selected supported
+  app. Pinning is not an isolation or security boundary.
+- Node and Rust workers use bounded local protocols. The exchange sidecar exposes
+  public market methods only, with no account or trading credentials.
+- Diagnostic export is local and is never uploaded automatically.
 
-## Relevant boundaries
+See the [privacy policy](docs/public/privacy.txt) and
+[architecture](docs/ARCHITECTURE.md) for the full storage and process boundaries.
 
-- No wallet signing/custody, trading or exchange-account credentials are exposed.
-- Optional provider/X credentials use per-user Windows DPAPI. It does not protect
-  against malicious code already running as the same Windows user.
-- Public wallet addresses, labels, website URLs and ordinary settings are local
-  configuration, not an encrypted database.
-- WebView2 websites and their logins are governed by the website and browser runtime.
-- Application Window deliberately loads a native helper into an explicitly chosen
-  supported app. It is not an isolation/security boundary.
-- Node and Rust workers communicate locally through bounded protocols. The CCXT
-  sidecar rejects arbitrary/private method calls.
-- Help's diagnostics export contains a fixed aggregate schema and is saved locally;
-  it is never uploaded automatically. Review it before sharing.
+## If a credential has been exposed
 
-Read the [privacy policy](docs/public/privacy.txt) and
-[architecture](docs/ARCHITECTURE.md) for storage, native-helper and cleanup details.
-
-## Accidental disclosure
-
-Revoke or rotate an exposed credential at its issuer. Removing a file from a later
-commit does not invalidate copies already published. Inform the maintainer privately
-so affected history/artifacts and notices can be handled. Never copy a real secret
-into a test intended to demonstrate the problem.
+Revoke or rotate it with the provider immediately. Deleting a file or comment does
+not invalidate copies that were already published. Notify the maintainer privately
+with the location of the exposure, not another copy of the secret.
