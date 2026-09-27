@@ -130,7 +130,14 @@ length-prefixed write could leave the worker waiting for the missing message bod
 The new `CancelledPartialFrameClosesWorkerPipeAndAllowsRestart` regression failed
 before the fix and passed after the client began closing interrupted pipes. The
 full on-chain suite then passed all 43 tests. The Release build completed with
-zero warnings and errors. This review is scoped to these findings and that defect;
+zero warnings and errors. Hosted verification also exposed a fixture race: the
+hidden-reference test counted requests before its previous streaming session had
+stopped. It now drains that session before recording the polling-only baseline;
+the zero-history/finality/replay assertions remain intact. Five focused reruns
+passed. Failed candidate gates now print the exception header as well as the log
+tail, so captured fixture output cannot hide the original failure.
+
+This review is scoped to these findings and that defect;
 the final signed-candidate gates below still apply.
 
 ## 1. Publish the source repository

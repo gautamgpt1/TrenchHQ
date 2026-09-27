@@ -769,6 +769,8 @@ public partial class OnChainTests
                        EthereumDeploymentRegistry.WrappedEtherUsdcReferencePool,
                        StringComparison.OrdinalIgnoreCase)) == true,
                 "An explicitly selected reference pool was not included in the live stream.");
+            // Drain the previous stream before measuring polling-only requests.
+            await coordinator.StopAsync();
             var numericReads = handler.NumericBlockRequestCount;
             var finalityReads = handler.FinalizedBlockRequestCount;
             var replayReads = handler.GetLogsCount;
