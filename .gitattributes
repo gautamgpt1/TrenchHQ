@@ -1,5 +1,8 @@
 * text=auto
 
+# Keep the public privacy policy byte-identical in Pages and Windows packages.
+docs/public/privacy.txt text eol=lf
+
 # The dependency inventory records exact upstream bytes, including line endings.
 ThirdParty/Licenses/** -text
 ThirdParty/Yellowstone/LICENSE_APACHE2 -text

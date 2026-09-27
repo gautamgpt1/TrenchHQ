@@ -12,11 +12,11 @@ verified. The owner authorized publishing these reviewed source changes on
 remain deferred. There is no final binary release candidate yet; a source review
 snapshot or earlier passing build must not be described as that candidate.
 
-The privacy text and app Help exist, but GitHub Pages was not configured on
-27 September 2026 (Pages API returned 404). The repository and Issues are public.
-Publish and verify the final policy URL before Store submission; drafting the
-policy alone does not close that gate. New provider credentials, a trusted signing
-route and clean Windows machines will be supplied in the later release phase.
+The [public help site](https://gautamgpt1.github.io/TrenchHQ/) and
+[privacy policy](https://gautamgpt1.github.io/TrenchHQ/privacy.txt) are live. The
+served privacy text must continue to match the file bundled with each candidate.
+New provider credentials, a trusted signing route and clean Windows machines will
+be supplied in the later release phase.
 
 ## Implemented and verification scope
 
@@ -97,6 +97,9 @@ handling in local settings, tests and tools. These have not been dismissed or
 certified as vulnerabilities/false positives; review their actual trust boundaries
 before binary release. Dependabot and secret scanning returned no open alerts at
 the time of this setup check. Scan execution success is not a clean security audit.
+The active main-branch ruleset blocks deletion and force pushes, including for the
+owner. Normal reviewed source pushes remain available. The public site uses the
+manual Pages workflow; publishing documentation does not publish an app binary.
 
 No final tag, trusted signature, WACK result, clean-Windows certification or new
 private-provider certification is claimed. Signing, credentials and test machines
@@ -125,10 +128,11 @@ remain deferred by the owner. Resolve the service-use questions in
 - [ ] Reduce Discussions to Announcements, Q&A, Ideas and Show and tell. These four
   are available; the empty General/Polls defaults still need removal in GitHub's
   category settings.
-- [ ] Set Pages source to GitHub Actions, run the manual Pages workflow and verify
-  the privacy/support pages publicly after repository finalization. Review the
-  exact site source before deployment; verify HTTP 200 and that the served privacy
-  text matches the file bundled in the candidate.
+- [x] Configure Pages for GitHub Actions and deploy the reviewed documentation.
+  [Deployment](https://github.com/gautamgpt1/TrenchHQ/actions/runs/36349009424)
+  on 28 September 2026 served the home, support and privacy URLs with HTTP 200.
+  Privacy text uses pinned LF line endings so Pages and Windows checkouts have
+  identical bytes; verify that equality again for the signed candidate.
 
 GitHub documents [Pages configuration](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 Source publication does not grant permission to use third-party services outside

@@ -9,7 +9,8 @@ wallet activity, X feeds, websites and other apps visible while you work, browse
 or trade. Arrange them in floating overlays or panels along the edges of your
 screens, across one monitor or several.
 
-[Get started](#get-trenchhq) · [Setup and help](docs/public/support.md) ·
+[Get started](#get-trenchhq) · [Website](https://gautamgpt1.github.io/TrenchHQ/) ·
+[Setup and help](https://gautamgpt1.github.io/TrenchHQ/support.html) ·
 [Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions)
 
 <!-- Add the owner's real desktop screenshot/demo here when available. -->
