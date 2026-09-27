@@ -25,6 +25,8 @@ function Invoke-Gate([string]$Name, [string]$Program, [string[]]$Arguments) {
     $script:results | ConvertTo-Json -Depth 3 | Set-Content -Encoding UTF8 (Join-Path $evidence 'gates.json')
     Write-Output "$Name exit=$code"
     if ($code -ne 0) {
+        # Test runners print the exception before captured output; keep that context.
+        Get-Content -LiteralPath $log -Head 40
         Get-Content -LiteralPath $log -Tail 100
         throw "Candidate gate failed: $Name. See its evidence log."
     }
