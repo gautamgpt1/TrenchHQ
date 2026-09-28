@@ -276,12 +276,12 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                     {
                         ProviderFailed?.Invoke(this, new OnChainProviderFailureEventArgs(
                             configuration.Id,
-                            OnChainProviderFailureKind.RateLimited));
+                            OnChainProviderFailureKind.RateLimited, OnChainRequestRetry.RetryAfter(exception)));
                     }
                     var seconds = Math.Min(30, Math.Pow(2, Math.Min(_failures.Count, 5)));
-                    await Task.Delay(
-                        TimeSpan.FromMilliseconds(seconds * 1000 + Random.Shared.Next(0, 500)),
-                        cancellationToken).ConfigureAwait(false);
+                    var delay = OnChainRequestRetry.RetryAfter(exception)
+                        ?? TimeSpan.FromMilliseconds(seconds * 1000 + Random.Shared.Next(0, 500));
+                    await Task.Delay(delay < TimeSpan.Zero ? TimeSpan.Zero : delay, cancellationToken).ConfigureAwait(false);
                 }
                 catch (Exception exception)
                 {

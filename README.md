@@ -65,8 +65,8 @@ comes from that particular market. See the
 
 Start with public exchange prices. Add provider details in **API Connections**
 when you need them for on-chain feeds. TrenchHQ selects compatible providers and
-switches to available backups when a connection fails or reaches its configured
-usage limit. Some providers need an endpoint URL as well as a key.
+switches to available backups when a connection fails or reaches a usage limit
+you have set. Some providers need an endpoint URL as well as a key.
 
 On-chain price widgets offer **Every second (polling)** and **Live streaming**
 where supported. Solana feeds need a provider; X Tracker needs your own paid X API

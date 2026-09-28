@@ -29,8 +29,10 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
     internal sealed class EvmJsonRpcException(
         EvmRpcFailureKind kind,
         string message,
-        int? rpcCode = null) : InvalidOperationException(message)
+        int? rpcCode = null,
+        TimeSpan? retryAfter = null) : InvalidOperationException(message)
     {
+        internal TimeSpan? RetryAfter { get; } = retryAfter;
         internal EvmRpcFailureKind Kind { get; } = kind;
         internal int? RpcCode { get; } = rpcCode;
     }
@@ -580,7 +582,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                 {
                     _usage?.QuotaExceeded(response.Headers.RetryAfter?.Delta
                         ?? (response.Headers.RetryAfter?.Date - DateTimeOffset.UtcNow));
-                    throw new EvmJsonRpcException(EvmRpcFailureKind.RateLimited, "The provider account quota is exhausted.");
+                    throw new EvmJsonRpcException(EvmRpcFailureKind.RateLimited, "The provider account quota is exhausted.", 402);
                 }
                 await using var input = await response.Content.ReadAsStreamAsync(cancellationToken)
                     .ConfigureAwait(false);
@@ -623,7 +625,8 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                         _requiresCredential ? "The EVM provider rejected the credential."
                             : "The EVM provider denied access to the public endpoint.");
                 if ((int)response.StatusCode == 429)
-                    throw new EvmJsonRpcException(EvmRpcFailureKind.RateLimited, "The EVM provider rate limit was reached.");
+                    throw new EvmJsonRpcException(EvmRpcFailureKind.RateLimited, "The EVM provider rate limit was reached.", 429,
+                        response.Headers.RetryAfter?.Delta ?? (response.Headers.RetryAfter?.Date - DateTimeOffset.UtcNow));
                 if (!response.IsSuccessStatusCode)
                     throw new EvmJsonRpcException(EvmRpcFailureKind.RpcError,
                         $"The EVM provider returned HTTP {(int)response.StatusCode} for {operation}.");

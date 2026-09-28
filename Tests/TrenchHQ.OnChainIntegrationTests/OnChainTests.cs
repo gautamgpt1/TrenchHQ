@@ -256,6 +256,36 @@ public partial class OnChainTests
     public Task UsageBudgets() => UsageBudgetTests.RunAsync();
 
     [Fact]
+    public void AlchemyWalletReceiptsKeepSharedSolanaRouteAvailable()
+    {
+        var ethereum = CreateProviderConfiguration(OnChainProviderTypes.AlchemyEthereum,
+            "wss://fixture.invalid", "https://fixture.invalid");
+        var solana = CreateProviderConfiguration(OnChainProviderTypes.AlchemyWebSocket,
+            "wss://fixture.invalid", "https://fixture.invalid");
+        using var usage = new OnChainProviderUsage();
+        usage.Record(ethereum, "eth_getBlockReceipts");
+
+        var snapshot = usage.Snapshot(OnChainProviderUsage.GroupKey(ethereum));
+        AssertEqual(20m, snapshot.Used, "Alchemy block receipts cost changed.");
+        Assert(!snapshot.UnknownCost, "Wallet receipts were treated as an unknown Alchemy method.");
+        Assert(!usage.IsBlocked(solana), "Wallet receipts paused the shared Solana route.");
+
+        usage.Record(solana, "getTokenAccountsByOwner");
+        AssertEqual(30m, usage.Snapshot(OnChainProviderUsage.GroupKey(solana)).Used,
+            "Solana wallet account discovery used the wrong Alchemy CU estimate.");
+
+        usage.Configure(OnChainProviderUsage.GroupKey(ethereum), true, 100, false, DateTimeOffset.UtcNow, 30);
+        Xunit.Assert.Throws<OnChainUsageBudgetException>(() => usage.Record(ethereum, "eth_unknownMethod"));
+        Assert(usage.IsBlocked(solana), "A genuinely unknown method no longer pauses the shared route.");
+    }
+
+    [Fact]
+    public Task LiveSolanaWallets() => LiveWalletTests.RunAsync();
+
+    [Fact]
+    public Task LiveEvmWallets() => LiveWalletTests.EvmAsync();
+
+    [Fact]
     public Task AutomaticRoutes() => AutomaticRoutingTests.RunAsync();
 
     [Fact]

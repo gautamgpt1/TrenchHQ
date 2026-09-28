@@ -362,6 +362,7 @@ namespace TrenchHQ
                     _ => PriceTicker.ContentStatus
                 };
             ContentStatusDot.Fill = new SolidColorBrush(GetContentStatusColor(status.State));
+            ToolTipService.SetToolTip(ContentStatusDot, status.Label);
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(
                 ContentStatusDot,
                 "Content status: " + status.Label);

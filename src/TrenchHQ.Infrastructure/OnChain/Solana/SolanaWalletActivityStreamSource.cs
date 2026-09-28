@@ -18,13 +18,11 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
     internal sealed class SolanaWalletActivityStreamSource
     {
         private const int MaximumMessageBytes = 2 * 1024 * 1024;
-        private const int InitialHistoryCount = 10;
-        private const int MaximumRecoveryCount = 100;
         private const int MaximumDirectTokenAccountSubscriptions = 200;
+        private const int MaximumPendingSubscriptions = 16;
         private const string TokenProgram = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA";
         private const string Token2022Program = "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb";
-        internal static readonly TimeSpan MaintenanceInterval = TimeSpan.FromSeconds(5);
-        internal static readonly TimeSpan TokenAccountRefreshInterval = TimeSpan.FromMinutes(5);
+        internal static readonly TimeSpan MaintenanceInterval = TimeSpan.FromSeconds(30);
 
         private readonly OnChainProviderConfiguration _configuration;
         private readonly string _apiKey;
@@ -41,7 +39,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
             {
                 throw new ArgumentException("The provider is not a standard Solana WebSocket provider.", nameof(configuration));
             }
-            if (string.IsNullOrWhiteSpace(apiKey))
+            if (preset.RequiresCredential && string.IsNullOrWhiteSpace(apiKey))
             {
                 throw new ArgumentException("A Solana provider API key is required.", nameof(apiKey));
             }
@@ -64,9 +62,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
 
         internal async Task RunAsync(
             SavedTrackedWallet[] wallets,
-            IReadOnlyDictionary<string, string> lastSignatures,
             Action<WalletActivityUpdate> onActivity,
-            Action<string, string> onSignatureObserved,
             Action onLive,
             CancellationToken cancellationToken)
         {
@@ -77,9 +73,6 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
 
             using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(12) };
             var rpc = new SolanaRpcClient(httpClient, _configuration, _apiKey);
-            var state = new SubscriptionState();
-            var cursors = new Dictionary<string, string>(lastSignatures, StringComparer.Ordinal);
-            var tracked = new Dictionary<string, WalletActivityUpdate>(StringComparer.Ordinal);
 
             using var socket = new ClientWebSocket();
             socket.Options.KeepAliveInterval = TimeSpan.FromSeconds(20);
@@ -91,545 +84,264 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
                 throw new IOException($"The provider rejected WebSocket access: HTTP {(int)socket.HttpStatusCode}.");
             }
 
+            await RunConnectedAsync(socket, rpc, wallets, onActivity, onLive, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        internal async Task RunConnectedAsync(
+            WebSocket socket, SolanaRpcClient rpc, SavedTrackedWallet[] wallets,
+            Action<WalletActivityUpdate> onActivity, Action onLive, CancellationToken cancellationToken)
+        {
+            using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cancellationToken = lifetime.Token;
+            var state = new SubscriptionState();
+            var tracked = new Dictionary<string, WalletActivityUpdate>(StringComparer.Ordinal);
+            var work = new Queue<Func<Task<Action>>>();
+            var pendingTransactions = new HashSet<string>(StringComparer.Ordinal);
+            var transactions = new Dictionary<string, SolanaWalletTransaction>(StringComparer.Ordinal);
+            var pendingAccounts = new HashSet<string>(StringComparer.Ordinal);
+            var buffered = new Queue<byte[]>();
+            var accountQueues = new List<Queue<string>>();
+            foreach (var wallet in wallets)
+            {
+                var accountQueue = new Queue<string>();
+                accountQueues.Add(accountQueue);
+                foreach (var program in new[] { TokenProgram, Token2022Program })
+                {
+                    var accounts = await rpc.GetTokenAccountAddressesByOwnerAsync(
+                            wallet.Address,
+                            program,
+                            OnChainCommitment.Confirmed,
+                            cancellationToken)
+                        .ConfigureAwait(false);
+                    foreach (var account in accounts)
+                    {
+                        accountQueue.Enqueue(account);
+                    }
+
+                }
+            }
+
             foreach (var wallet in wallets)
             {
                 await AddLogSubscriptionAsync(socket, state, wallet, wallet.Address, true, cancellationToken)
                     .ConfigureAwait(false);
-            }
-            foreach (var wallet in wallets)
-            {
                 foreach (var program in new[] { TokenProgram, Token2022Program })
-                {
-                    var accounts = await rpc.GetTokenAccountAddressesByOwnerAsync(
-                            wallet.Address,
-                            program,
-                            OnChainCommitment.Confirmed,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    foreach (var account in accounts)
-                    {
-                        await AddLogSubscriptionAsync(socket, state, wallet, account, false, cancellationToken)
-                            .ConfigureAwait(false);
-                    }
                     await AddProgramSubscriptionAsync(socket, state, wallet, program, cancellationToken)
                         .ConfigureAwait(false);
-                }
+                if (state.Pending.Count >= MaximumPendingSubscriptions)
+                    await DrainSubscriptionResponsesAsync(socket, state, buffered, cancellationToken).ConfigureAwait(false);
             }
-
-            var buffered = new Queue<byte[]>();
-            while (state.Pending.Count > 0)
+            while (accountQueues.Any(static queue => queue.Count > 0)
+                   && state.OptionalLogCount < MaximumDirectTokenAccountSubscriptions)
             {
-                var message = await ReceiveMessageAsync(socket, cancellationToken).ConfigureAwait(false)
-                              ?? throw new IOException("The Solana wallet WebSocket closed during setup.");
-                using var document = JsonDocument.Parse(message);
-                if (document.RootElement.TryGetProperty("id", out var id))
+                for (var index = 0; index < wallets.Length; index++)
                 {
-                    ProcessSubscriptionResponse(document.RootElement, id, state);
-                }
-                else
-                {
-                    buffered.Enqueue(message);
+                    if (accountQueues[index].Count == 0) continue;
+                    await AddLogSubscriptionAsync(socket, state, wallets[index],
+                            accountQueues[index].Dequeue(), false, cancellationToken)
+                        .ConfigureAwait(false);
+                    if (state.Pending.Count >= MaximumPendingSubscriptions)
+                    {
+                        await DrainSubscriptionResponsesAsync(socket, state, buffered, cancellationToken)
+                            .ConfigureAwait(false);
+                    }
                 }
             }
+            await DrainSubscriptionResponsesAsync(socket, state, buffered, cancellationToken)
+                .ConfigureAwait(false);
 
-            foreach (var target in state.LogTargets.Values)
-            {
-                await RecoverTargetAsync(
-                        rpc,
-                        state,
-                        target,
-                        cursors,
-                        tracked,
-                        onActivity,
-                        onSignatureObserved,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                await Task.Delay(TimeSpan.FromMilliseconds(125), cancellationToken).ConfigureAwait(false);
-            }
             onLive();
 
-            while (buffered.Count > 0)
+            // Only the event loop mutates subscription/tracking state. HTTP work returns an action
+            // applied here, so a slow response or Retry-After never blocks WebSocket reads.
+            void Enqueue(Func<Task<Action>> job)
             {
-                await ProcessMessageAsync(
-                        buffered.Dequeue(),
-                        socket,
-                        rpc,
-                        state,
-                        cursors,
-                        tracked,
-                        onActivity,
-                        onSignatureObserved,
-                        cancellationToken)
-                    .ConfigureAwait(false);
+                if (work.Count >= 1024)
+                    throw new IOException("The provider cannot keep up with this wallet activity. Configure another provider or watch fewer wallets.");
+                work.Enqueue(job);
             }
 
-            var lastTokenAccountRefresh = DateTimeOffset.UtcNow;
+            void PublishDetails(SolanaWalletTransaction transaction, SavedTrackedWallet wallet, long observedAt)
+            {
+                if (state.IsTransactionResolved(wallet.Address, transaction.Signature)) return;
+                state.MarkTransactionResolved(wallet.Address, transaction.Signature);
+                foreach (var update in WalletActivityRules.ParseSolanaTransaction(
+                             transaction, wallet, "confirmed", observedAt, _sourceId + ":transaction"))
+                    PublishAndTrack(update, tracked, onActivity);
+            }
+
+            void Observe(SavedTrackedWallet wallet, string signature, ulong slot, bool failed, long observedAt)
+            {
+                if (state.IsTransactionResolved(wallet.Address, signature)) return;
+                PublishAndTrack(WalletActivityRules.CreateSolanaTransaction(
+                    wallet, signature, slot, failed, "confirmed", observedAt, _sourceId), tracked, onActivity);
+                if (failed)
+                {
+                    state.MarkTransactionResolved(wallet.Address, signature);
+                    return;
+                }
+                if (transactions.TryGetValue(signature, out var cached))
+                {
+                    PublishDetails(cached, wallet, observedAt);
+                    return;
+                }
+                if (!pendingTransactions.Add(signature)) return;
+                Enqueue(async () =>
+                {
+                    SolanaWalletTransaction? transaction = null;
+                    for (var attempt = 0; attempt < 3 && transaction == null; attempt++)
+                    {
+                        if (attempt > 0) await Task.Delay(TimeSpan.FromMilliseconds(500 * attempt), cancellationToken).ConfigureAwait(false);
+                        transaction = await OnChainRequestRetry.RunAsync(
+                            () => rpc.GetWalletTransactionAsync(signature, cancellationToken), cancellationToken).ConfigureAwait(false);
+                    }
+                    return () =>
+                    {
+                        pendingTransactions.Remove(signature);
+                        if (transaction == null) return; // Keep the genuine notification even if details are unavailable.
+                        transactions[signature] = transaction;
+                        if (transactions.Count > 512) transactions.Remove(transactions.Keys.First());
+                        var matches = tracked.Values.Where(item => item.TransactionId == signature)
+                            .GroupBy(item => item.WalletAddress).Select(group => group.First()).ToArray();
+                        foreach (var match in matches)
+                            PublishDetails(transaction, wallets.First(item => item.Address == match.WalletAddress), match.ObservedAtUnixMs);
+                    };
+                });
+            }
+
+            async Task ProcessMessageAsync(byte[] message)
+            {
+                using var document = JsonDocument.Parse(message);
+                var root = document.RootElement;
+                if (root.TryGetProperty("id", out var id))
+                {
+                    ProcessSubscriptionResponse(root, id, state);
+                    return;
+                }
+                if (!root.TryGetProperty("params", out var parameters)
+                    || !parameters.TryGetProperty("subscription", out var subscription)
+                    || !subscription.TryGetUInt64(out var subscriptionId)
+                    || !state.Active.TryGetValue(subscriptionId, out var target)
+                    || !parameters.TryGetProperty("result", out var result)
+                    || !result.TryGetProperty("context", out var context)
+                    || !context.TryGetProperty("slot", out var slot) || !slot.TryGetUInt64(out var slotValue)
+                    || !result.TryGetProperty("value", out var value)) return;
+                var observedAt = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                if (target.Kind == SolanaSubscriptionKind.Logs)
+                {
+                    if (!value.TryGetProperty("signature", out var signature) || signature.ValueKind != JsonValueKind.String
+                        || string.IsNullOrWhiteSpace(signature.GetString())) return;
+                    Observe(target.Wallet, signature.GetString()!, slotValue,
+                        value.TryGetProperty("err", out var error) && error.ValueKind != JsonValueKind.Null, observedAt);
+                    return;
+                }
+                if (!value.TryGetProperty("pubkey", out var pubkey) || pubkey.ValueKind != JsonValueKind.String
+                    || string.IsNullOrWhiteSpace(pubkey.GetString())) return;
+                var address = pubkey.GetString()!;
+                var key = TargetKey(target.Wallet, address);
+                // Active direct logs already supply signatures without an extra HTTP lookup.
+                if (state.Active.Values.Any(item => item.Kind == SolanaSubscriptionKind.Logs
+                    && TargetKey(item.Wallet, item.Address) == key)) return;
+                if (state.Pending.Count < MaximumPendingSubscriptions)
+                    await AddLogSubscriptionAsync(socket, state, target.Wallet, address, false, cancellationToken).ConfigureAwait(false);
+                var accountSlot = key + "|" + slotValue;
+                if (!pendingAccounts.Add(accountSlot)) return;
+                Enqueue(async () =>
+                {
+                    var signatures = await FindLiveSignaturesAsync(rpc, address, slotValue, cancellationToken).ConfigureAwait(false);
+                    return () =>
+                    {
+                        pendingAccounts.Remove(accountSlot);
+                        foreach (var item in signatures)
+                            Observe(target.Wallet, item.Signature, item.Slot, item.Failed, observedAt);
+                    };
+                });
+            }
+
             var receiveTask = ReceiveMessageAsync(socket, cancellationToken);
             var maintenanceTask = Task.Delay(MaintenanceInterval, cancellationToken);
-            while (socket.State == WebSocketState.Open)
+            Task<Action>? detailTask = null;
+            var idleTask = Task.Delay(Timeout.Infinite, cancellationToken);
+            var maintenancePending = false;
+            try
             {
-                var completed = await Task.WhenAny(receiveTask, maintenanceTask).ConfigureAwait(false);
-                if (completed == maintenanceTask)
+                while (socket.State == WebSocketState.Open)
                 {
-                    await RecoverPendingTargetsAsync(
-                            rpc,
-                            state,
-                            cursors,
-                            tracked,
-                            onActivity,
-                            onSignatureObserved,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    await PromoteActivitiesAsync(rpc, state, tracked, onActivity, cancellationToken)
-                        .ConfigureAwait(false);
-                    if (DateTimeOffset.UtcNow - lastTokenAccountRefresh >= TokenAccountRefreshInterval)
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (detailTask == null && work.TryDequeue(out var job)) detailTask = job();
+                    await Task.WhenAny(receiveTask, maintenanceTask, (Task?)detailTask ?? idleTask,
+                        buffered.Count > 0 ? Task.CompletedTask : idleTask).ConfigureAwait(false);
+                    if (detailTask?.IsCompleted == true)
                     {
-                        await RefreshTokenAccountsAsync(
-                                socket,
-                                rpc,
-                                wallets,
-                                state,
-                                cursors,
-                                tracked,
-                                onActivity,
-                                onSignatureObserved,
-                                cancellationToken)
-                            .ConfigureAwait(false);
-                        lastTokenAccountRefresh = DateTimeOffset.UtcNow;
+                        (await detailTask.ConfigureAwait(false))();
+                        detailTask = null;
                     }
-                    maintenanceTask = Task.Delay(MaintenanceInterval, cancellationToken);
-                    continue;
-                }
-
-                var message = await receiveTask.ConfigureAwait(false);
-                if (message == null)
-                {
-                    throw new IOException("The Solana wallet WebSocket closed unexpectedly.");
-                }
-                receiveTask = ReceiveMessageAsync(socket, cancellationToken);
-                await ProcessMessageAsync(
-                        message,
-                        socket,
-                        rpc,
-                        state,
-                        cursors,
-                        tracked,
-                        onActivity,
-                        onSignatureObserved,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            throw new IOException("The Solana wallet WebSocket ended unexpectedly.");
-        }
-
-        private async Task ProcessMessageAsync(
-            byte[] message,
-            ClientWebSocket socket,
-            SolanaRpcClient rpc,
-            SubscriptionState state,
-            IDictionary<string, string> cursors,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            Action<WalletActivityUpdate> onActivity,
-            Action<string, string> onSignatureObserved,
-            CancellationToken cancellationToken)
-        {
-            using var document = JsonDocument.Parse(message);
-            var root = document.RootElement;
-            if (root.TryGetProperty("id", out var responseId))
-            {
-                ProcessSubscriptionResponse(root, responseId, state);
-                return;
-            }
-            if (!root.TryGetProperty("params", out var parameters)
-                || !parameters.TryGetProperty("subscription", out var subscription)
-                || !subscription.TryGetUInt64(out var subscriptionId)
-                || !state.Active.TryGetValue(subscriptionId, out var target)
-                || !parameters.TryGetProperty("result", out var result))
-            {
-                return;
-            }
-
-            if (target.Kind == SolanaSubscriptionKind.ProgramAccounts)
-            {
-                if (!result.TryGetProperty("value", out var value)
-                    || !value.TryGetProperty("pubkey", out var pubkey)
-                    || pubkey.ValueKind != JsonValueKind.String
-                    || string.IsNullOrWhiteSpace(pubkey.GetString()))
-                {
-                    return;
-                }
-                var accountAddress = pubkey.GetString()!;
-                var key = TargetKey(target.Wallet, accountAddress);
-                var added = await AddLogSubscriptionAsync(
-                        socket,
-                        state,
-                        target.Wallet,
-                        accountAddress,
-                        false,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                if (!added && state.LogTargets.ContainsKey(key))
-                {
-                    return;
-                }
-                var accountTarget = added
-                    ? state.LogTargets[key]
-                    : new SolanaSubscriptionTarget(
-                        target.Wallet,
-                        accountAddress,
-                        SolanaSubscriptionKind.Logs,
-                        false);
-                if (!await RecoverTargetAsync(
-                        rpc,
-                        state,
-                        accountTarget,
-                        cursors,
-                        tracked,
-                        onActivity,
-                        onSignatureObserved,
-                        cancellationToken)
-                    .ConfigureAwait(false))
-                {
-                    state.PendingRecovery[key] = accountTarget;
-                }
-                return;
-            }
-
-            if (!result.TryGetProperty("context", out var context)
-                || !context.TryGetProperty("slot", out var slot)
-                || !slot.TryGetUInt64(out var slotValue)
-                || !result.TryGetProperty("value", out var logValue)
-                || !logValue.TryGetProperty("signature", out var signature)
-                || signature.ValueKind != JsonValueKind.String
-                || string.IsNullOrWhiteSpace(signature.GetString()))
-            {
-                return;
-            }
-            var signatureValue = signature.GetString()!;
-            var failed = logValue.TryGetProperty("err", out var error)
-                         && error.ValueKind != JsonValueKind.Null;
-            PublishAndTrack(
-                WalletActivityRules.CreateSolanaTransaction(
-                    target.Wallet,
-                    signatureValue,
-                    slotValue,
-                    failed,
-                    "processed",
-                    DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    _sourceId),
-                tracked,
-                onActivity);
-            if (failed)
-            {
-                state.MarkTransactionResolved(target.Wallet.Address, signatureValue);
-            }
-            else
-            {
-                await TryPublishTransactionAsync(
-                        rpc,
-                        state,
-                        target.Wallet,
-                        signatureValue,
-                        "confirmed",
-                        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                        tracked,
-                        onActivity,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-        }
-
-        private async Task RefreshTokenAccountsAsync(
-            ClientWebSocket socket,
-            SolanaRpcClient rpc,
-            IEnumerable<SavedTrackedWallet> wallets,
-            SubscriptionState state,
-            IDictionary<string, string> cursors,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            Action<WalletActivityUpdate> onActivity,
-            Action<string, string> onSignatureObserved,
-            CancellationToken cancellationToken)
-        {
-            foreach (var wallet in wallets)
-            {
-                foreach (var program in new[] { TokenProgram, Token2022Program })
-                {
-                    var accounts = await rpc.GetTokenAccountAddressesByOwnerAsync(
-                            wallet.Address,
-                            program,
-                            OnChainCommitment.Confirmed,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    foreach (var account in accounts)
+                    if (receiveTask.IsCompleted || buffered.Count > 0)
                     {
-                        var key = TargetKey(wallet, account);
-                        var added = await AddLogSubscriptionAsync(
-                                socket,
-                                state,
-                                wallet,
-                                account,
-                                false,
-                                cancellationToken)
-                            .ConfigureAwait(false);
-                        if (!added && !state.PollTargets.Contains(key))
+                        // Drain setup notifications in arrival order.
+                        var fromBuffer = buffered.Count > 0;
+                        var message = fromBuffer ? buffered.Dequeue() : await receiveTask.ConfigureAwait(false);
+                        if (!fromBuffer)
+                            receiveTask = ReceiveMessageAsync(socket, cancellationToken);
+                        if (message == null) throw new IOException("The Solana wallet WebSocket closed unexpectedly.");
+                        await ProcessMessageAsync(message).ConfigureAwait(false);
+                    }
+                    if (maintenanceTask.IsCompleted)
+                    {
+                        if (!maintenancePending)
                         {
-                            continue;
-                        }
-                        if (!await RecoverTargetAsync(
-                                rpc,
-                                state,
-                                state.LogTargets[key],
-                                cursors,
-                                tracked,
-                                onActivity,
-                                onSignatureObserved,
-                                cancellationToken)
-                            .ConfigureAwait(false) && added)
-                        {
-                            state.PendingRecovery[key] = state.LogTargets[key];
-                        }
-                    }
-                }
-            }
-        }
-
-        private async Task<bool> RecoverTargetAsync(
-            SolanaRpcClient rpc,
-            SubscriptionState state,
-            SolanaSubscriptionTarget target,
-            IDictionary<string, string> cursors,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            Action<WalletActivityUpdate> onActivity,
-            Action<string, string> onSignatureObserved,
-            CancellationToken cancellationToken)
-        {
-            cursors.TryGetValue(target.Address, out var until);
-            if (until != null)
-            {
-                var cursorStatus = (await rpc.GetSignatureStatusesAsync([until], cancellationToken)
-                        .ConfigureAwait(false))[0];
-                if (cursorStatus != null)
-                {
-                    PublishAndTrack(
-                        WalletActivityRules.CreateSolanaTransaction(
-                            target.Wallet,
-                            until,
-                            cursorStatus.Slot,
-                            cursorStatus.Failed,
-                            cursorStatus.Confirmation,
-                            DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                            _sourceId + ":status"),
-                        tracked,
-                        onActivity);
-                    if (cursorStatus.Failed)
-                    {
-                        state.MarkTransactionResolved(target.Wallet.Address, until);
-                    }
-                    else
-                    {
-                        await TryPublishTransactionAsync(
-                                rpc,
-                                state,
-                                target.Wallet,
-                                until,
-                                cursorStatus.Confirmation,
-                                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                                tracked,
-                                onActivity,
-                                cancellationToken)
-                            .ConfigureAwait(false);
-                    }
-                }
-            }
-            var history = await rpc.GetSignaturesForAddressAsync(
-                    target.Address,
-                    until,
-                    until == null ? InitialHistoryCount : MaximumRecoveryCount,
-                    cancellationToken)
-                .ConfigureAwait(false);
-            foreach (var signature in history.Reverse())
-            {
-                PublishAndTrack(
-                    WalletActivityRules.CreateSolanaTransaction(
-                        target.Wallet,
-                        signature.Signature,
-                        signature.Slot,
-                        signature.Failed,
-                        signature.Confirmation,
-                        signature.BlockTimeUnixSeconds.HasValue
-                            ? DateTimeOffset.FromUnixTimeSeconds(signature.BlockTimeUnixSeconds.Value)
-                                .ToUnixTimeMilliseconds()
-                            : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                        _sourceId + ":rpc"),
-                    tracked,
-                    onActivity);
-                if (signature.Failed)
-                {
-                    state.MarkTransactionResolved(target.Wallet.Address, signature.Signature);
-                }
-                else
-                {
-                    await TryPublishTransactionAsync(
-                            rpc,
-                            state,
-                            target.Wallet,
-                            signature.Signature,
-                            signature.Confirmation,
-                            signature.BlockTimeUnixSeconds.HasValue
-                                ? DateTimeOffset.FromUnixTimeSeconds(signature.BlockTimeUnixSeconds.Value)
-                                    .ToUnixTimeMilliseconds()
-                                : DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                            tracked,
-                            onActivity,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                cursors[target.Address] = signature.Signature;
-                onSignatureObserved(target.Address, signature.Signature);
-            }
-            return history.Count > 0;
-        }
-
-        private async Task RecoverPendingTargetsAsync(
-            SolanaRpcClient rpc,
-            SubscriptionState state,
-            IDictionary<string, string> cursors,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            Action<WalletActivityUpdate> onActivity,
-            Action<string, string> onSignatureObserved,
-            CancellationToken cancellationToken)
-        {
-            foreach (var item in state.PendingRecovery.ToArray())
-            {
-                if (await RecoverTargetAsync(
-                            rpc,
-                            state,
-                            item.Value,
-                            cursors,
-                            tracked,
-                            onActivity,
-                            onSignatureObserved,
-                            cancellationToken)
-                        .ConfigureAwait(false))
-                {
-                    state.PendingRecovery.Remove(item.Key);
-                }
-            }
-        }
-
-        private async Task PromoteActivitiesAsync(
-            SolanaRpcClient rpc,
-            SubscriptionState state,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            Action<WalletActivityUpdate> onActivity,
-            CancellationToken cancellationToken)
-        {
-            var signatures = tracked.Values
-                .Where(static activity => activity.Confirmation != "finalized")
-                .OrderByDescending(static activity => activity.ObservedAtUnixMs)
-                .Select(static activity => activity.TransactionId)
-                .Distinct(StringComparer.Ordinal)
-                .Take(256)
-                .ToArray();
-            if (signatures.Length == 0)
-            {
-                return;
-            }
-            var statuses = await rpc.GetSignatureStatusesAsync(signatures, cancellationToken)
-                .ConfigureAwait(false);
-            var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            for (var index = 0; index < signatures.Length; index++)
-            {
-                var matching = tracked.Values
-                    .Where(activity => activity.TransactionId == signatures[index])
-                    .ToArray();
-                var status = statuses[index];
-                foreach (var activity in matching)
-                {
-                    if (status != null
-                        && WalletActivityRules.IsConfirmationUpgrade(activity.Confirmation, status.Confirmation))
-                    {
-                        var promoted = WalletActivityRules.WithConfirmation(
-                            activity,
-                            status.Confirmation,
-                            status.Failed);
-                        tracked[activity.EventId] = promoted;
-                        onActivity(promoted);
-                        if (status.Confirmation == "finalized")
-                        {
-                            tracked.Remove(activity.EventId);
-                        }
-                    }
-                    else if (status == null
-                             && activity.Confirmation == "processed"
-                             && now - activity.ObservedAtUnixMs >= TimeSpan.FromMinutes(2).TotalMilliseconds)
-                    {
-                        var removed = WalletActivityRules.WithConfirmation(activity, activity.Confirmation);
-                        removed.Removed = true;
-                        tracked.Remove(activity.EventId);
-                        onActivity(removed);
-                    }
-                }
-                if (status != null && !status.Failed)
-                {
-                    foreach (var walletGroup in matching.GroupBy(
-                                 static activity => activity.WalletAddress,
-                                 StringComparer.Ordinal))
-                    {
-                        var sample = walletGroup.First();
-                        await TryPublishTransactionAsync(
-                                rpc,
-                                state,
-                                new SavedTrackedWallet
+                            var signatures = tracked.Values.Where(item => item.Confirmation != "finalized")
+                                .Select(item => item.TransactionId).Distinct(StringComparer.Ordinal).Take(256).ToArray();
+                            if (signatures.Length > 0)
+                            {
+                                maintenancePending = true;
+                                Enqueue(async () =>
                                 {
-                                    ChainNamespace = ChainNamespaces.Solana,
-                                    ChainId = "mainnet-beta",
-                                    Address = sample.WalletAddress,
-                                    Label = sample.WalletLabel
-                                },
-                                signatures[index],
-                                status.Confirmation,
-                                sample.ObservedAtUnixMs,
-                                tracked,
-                                onActivity,
-                                cancellationToken)
-                            .ConfigureAwait(false);
+                                    var statuses = await OnChainRequestRetry.RunAsync(
+                                        () => rpc.GetSignatureStatusesAsync(signatures, cancellationToken), cancellationToken).ConfigureAwait(false);
+                                    return () =>
+                                    {
+                                        maintenancePending = false;
+                                        for (var index = 0; index < signatures.Length; index++)
+                                        {
+                                            var status = statuses[index];
+                                            if (status == null) continue;
+                                            foreach (var item in tracked.Values.Where(item => item.TransactionId == signatures[index]).ToArray())
+                                                if (WalletActivityRules.IsConfirmationUpgrade(item.Confirmation, status.Confirmation))
+                                                    PublishAndTrack(WalletActivityRules.WithConfirmation(item, status.Confirmation, status.Failed), tracked, onActivity);
+                                        }
+                                    };
+                                });
+                            }
+                        }
+                        maintenanceTask = Task.Delay(MaintenanceInterval, cancellationToken);
                     }
                 }
+                throw new IOException("The Solana wallet WebSocket ended unexpectedly.");
+            }
+            finally
+            {
+                lifetime.Cancel();
+                try { if (detailTask != null) await detailTask.ConfigureAwait(false); } catch { }
+                try { await receiveTask.ConfigureAwait(false); } catch { }
             }
         }
 
-        private async Task TryPublishTransactionAsync(
-            SolanaRpcClient rpc,
-            SubscriptionState state,
-            SavedTrackedWallet wallet,
-            string signature,
-            string confirmation,
-            long observedAtUnixMs,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            Action<WalletActivityUpdate> onActivity,
-            CancellationToken cancellationToken)
+        // programSubscribe supplies a slot, not a signature. Resolve only that live slot;
+        // never replay earlier history, including on a newly discovered token account.
+        internal static async Task<SolanaWalletSignature[]> FindLiveSignaturesAsync(
+            SolanaRpcClient rpc, string address, ulong slot, CancellationToken cancellationToken)
         {
-            if (state.IsTransactionResolved(wallet.Address, signature))
+            for (var attempt = 0; attempt < 3; attempt++)
             {
-                return;
+                if (attempt > 0) await Task.Delay(TimeSpan.FromMilliseconds(500 * attempt), cancellationToken).ConfigureAwait(false);
+                var recent = await OnChainRequestRetry.RunAsync(
+                    () => rpc.GetSignaturesForAddressAsync(address, null, 100, cancellationToken), cancellationToken).ConfigureAwait(false);
+                var matches = recent.Where(item => item.Slot == slot).ToArray();
+                if (matches.Length > 0) return matches;
             }
-            var transaction = await rpc.GetWalletTransactionAsync(signature, cancellationToken)
-                .ConfigureAwait(false);
-            if (transaction == null)
-            {
-                return;
-            }
-            state.MarkTransactionResolved(wallet.Address, signature);
-            foreach (var update in WalletActivityRules.ParseSolanaTransaction(
-                         transaction,
-                         wallet,
-                         confirmation,
-                         observedAtUnixMs,
-                         _sourceId + ":transaction"))
-            {
-                PublishAndTrack(update, tracked, onActivity);
-            }
+            return [];
         }
 
         private static void PublishAndTrack(
@@ -643,6 +355,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
                 return;
             }
             tracked[update.EventId] = update;
+            if (tracked.Count > 2048) tracked.Remove(tracked.Keys.First());
             onActivity(update);
             if (update.Confirmation == "finalized")
             {
@@ -651,7 +364,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
         }
 
         private async Task<bool> AddLogSubscriptionAsync(
-            ClientWebSocket socket,
+            WebSocket socket,
             SubscriptionState state,
             SavedTrackedWallet wallet,
             string address,
@@ -685,7 +398,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
                     new object[]
                     {
                         new { mentions = new[] { address } },
-                        new { commitment = "processed" }
+                        new { commitment = "confirmed" }
                     },
                     cancellationToken)
                 .ConfigureAwait(false);
@@ -693,7 +406,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
         }
 
         private async Task AddProgramSubscriptionAsync(
-            ClientWebSocket socket,
+            WebSocket socket,
             SubscriptionState state,
             SavedTrackedWallet wallet,
             string program,
@@ -719,7 +432,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
                         program,
                         new
                         {
-                            commitment = "processed",
+                            commitment = "confirmed",
                             encoding = "base64",
                             dataSlice = new { offset = 0, length = 0 },
                             filters = new object[]
@@ -733,7 +446,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
         }
 
         private async Task SendSubscriptionAsync(
-            ClientWebSocket socket,
+            WebSocket socket,
             SubscriptionState state,
             SolanaSubscriptionTarget target,
             string method,
@@ -766,14 +479,6 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
             }
             if (root.TryGetProperty("error", out var error))
             {
-                if (!target.Required)
-                {
-                    if (target.Kind == SolanaSubscriptionKind.Logs)
-                    {
-                        state.PollTargets.Add(TargetKey(target.Wallet, target.Address));
-                    }
-                    return;
-                }
                 var message = error.TryGetProperty("message", out var value)
                     ? value.GetString()
                     : "Unknown subscription error";
@@ -782,13 +487,35 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
             state.Active[root.GetProperty("result").GetUInt64()] = target;
         }
 
+        private async Task DrainSubscriptionResponsesAsync(
+            WebSocket socket,
+            SubscriptionState state,
+            Queue<byte[]> buffered,
+            CancellationToken cancellationToken)
+        {
+            while (state.Pending.Count > 0)
+            {
+                var message = await ReceiveMessageAsync(socket, cancellationToken).ConfigureAwait(false)
+                              ?? throw new IOException("The Solana wallet WebSocket closed during setup.");
+                using var document = JsonDocument.Parse(message);
+                if (document.RootElement.TryGetProperty("id", out var id))
+                    ProcessSubscriptionResponse(document.RootElement, id, state);
+                else
+                {
+                    if (buffered.Count >= 256 || buffered.Sum(item => item.Length) + message.Length > 8 * 1024 * 1024)
+                        throw new IOException("The Solana wallet setup exceeded its notification buffer.");
+                    buffered.Enqueue(message);
+                }
+            }
+        }
+
         private static string TargetKey(SavedTrackedWallet wallet, string address)
         {
             return wallet.Address + "|" + address;
         }
 
         private async Task<byte[]?> ReceiveMessageAsync(
-            ClientWebSocket socket,
+            WebSocket socket,
             CancellationToken cancellationToken)
         {
             using var output = new MemoryStream();
@@ -840,8 +567,6 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
             internal Dictionary<ulong, SolanaSubscriptionTarget> Active { get; } = [];
             internal Dictionary<string, SolanaSubscriptionTarget> LogTargets { get; } = new(StringComparer.Ordinal);
             internal HashSet<string> ProgramTargets { get; } = new(StringComparer.Ordinal);
-            internal Dictionary<string, SolanaSubscriptionTarget> PendingRecovery { get; } = new(StringComparer.Ordinal);
-            internal HashSet<string> PollTargets { get; } = new(StringComparer.Ordinal);
             private HashSet<string> ResolvedTransactions { get; } = new(StringComparer.Ordinal);
             private Queue<string> ResolvedTransactionOrder { get; } = new();
 

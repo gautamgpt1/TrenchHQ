@@ -1,17 +1,16 @@
 # Build and verify
 
 TrenchHQ is a packaged WinUI 3 application for Windows x64. Open `TrenchHQ.slnx`.
-Version 1.0.1.0 and the public Store identity are recorded in the manifest and
-`release/store-identity.json`; those identifiers are not signing credentials.
+The manifest and `release/store-identity.json` hold package identity;
+`Directory.Build.props` holds the managed version metadata.
 
 ## Toolchain
 
-- Windows with Visual Studio, WinUI/MSIX tooling and the x64 C++ build tools.
-  The verified local toolchain used Visual Studio 2026.
+- Windows with Visual Studio 2026, WinUI/MSIX tooling and the x64 C++ build tools.
 - Windows SDK and SDK BuildTools 10.0.26100.7175.
 - .NET SDK 10.0.401, pinned by `global.json`.
 - Rust 1.88.0 with rustfmt and Clippy.
-- Python 3.11+, Git, ripgrep, curl and npm on PATH; verified local npm: 11.7.0.
+- Python 3.11+, Git, ripgrep, curl and npm on PATH.
 - An interactive Windows desktop for native window tests.
 
 `release/dependencies.json` pins the official Node 22.23.3 runtime hash. Downloaded
@@ -20,11 +19,8 @@ locally from locked inputs. Do not copy them from an old installation.
 
 ## Restore and build
 
-Start from a fresh clone when checking that published source is sufficient:
-Use a short checkout/export path, such as `C:/src/TrenchHQ`. The Windows build
-tools can still hit the 260-character path limit when copying deeply nested
-package notices. Enabling long paths alone is not a substitute for checking the
-actual toolchain; a deeply nested local QA export hit this limit during verification.
+Use a short checkout path, such as `C:/src/TrenchHQ`, to avoid Windows path
+limits when packaging nested dependency notices.
 
 ```powershell
 git clone https://github.com/gautamgpt1/TrenchHQ.git
@@ -50,16 +46,8 @@ dotnet build TrenchHQ.slnx -c Release -p:Platform=x64 -p:ContinuousIntegrationBu
 Bootstrap verifies Node, runs `npm ci --ignore-scripts` with that runtime and
 invokes esbuild explicitly. MSBuild builds the locked Rust engine and native
 WindowPin helper. NuGet/Cargo/npm lock files belong in source control.
-The app, on-chain tests and live on-chain tool each import
-`src/OnChainEngine/OnChainEngine.targets`. That target builds the worker before
-including it in the consumer's output; parallel solution builds do not depend
-on a previous app build or an already-existing executable.
-
-`Directory.Build.props` supplies product/version metadata for all managed production assemblies. Keep its version aligned with `src/TrenchHQ.App/Package.appxmanifest`. The Rust build script
-and WindowPin build use `Scripts/Build-VersionResource.ps1` and the manifest version
-to embed Windows version resources with the SDK's `rc.exe`; no extra Cargo package
-is needed. WindowPin's immutable filename also covers the resource script and
-manifest inputs, so a version change cannot overwrite a helper loaded in a target.
+Keep `Directory.Build.props` and `src/TrenchHQ.App/Package.appxmanifest` versions
+aligned. The build embeds that version in managed and native product binaries.
 
 Restore and build must use the same configuration. Release enables ReadyToRun;
 restoring with Debug defaults can omit its compiler package and fail with
@@ -102,27 +90,14 @@ To export them separately for inspection or Store listing preparation, run:
 powershell -NoProfile -File Scripts/Build-BrandAssets.ps1 -OutputPath C:/TrenchHQ-BrandAssets
 ```
 
-Resizing preserves the black background, proportions and original padding; wide assets center the logo
-on black. The ICO contains 16, 20, 24, 32, 40, 48, 64, 128 and 256 pixel frames.
-Windows package icons/tiles/splash include 100%, 200% and 400% variants; shell
-target-size variants include 256 pixels. These are generated directly from the
-master, never enlarged from a small icon. Windows chooses the matching size or
-downscales a larger one. The ICO's smaller frames serve native tray/caption sizes.
+All variants come directly from the master, preserving its proportions and
+padding. Small Windows tray/title-bar resources are generated output, not
+additional source artwork. Rebuild and deploy to see a changed logo.
 
-`StoreLogo.png` is the manifest's 50-pixel package-logo resource, with 100- and
-200-pixel qualified variants. It is not the master or the Store listing upload.
-For Partner Center's **1:1 App tile icon**, use
-the generated `Square150x150Logo.scale-200.png` (300 x 300, made from the master).
-Microsoft specifies this listing size; uploading a larger image does not replace
-that requirement. See [Windows icon sizes](https://learn.microsoft.com/en-us/windows/apps/design/iconography/app-icon-construction)
-and [Store listing images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images).
-
-The generator uses Windows PowerShell/WPF already available on the build machine;
-no separate image editor is needed. The unused lock-screen images and the SVG
-that merely wrapped the PNG are removed. Rebuild and deploy the packaged app to
-see master-logo changes; an already-running instance retains its loaded icons.
-The generator writes only changed bytes. Package inspection independently
-regenerates these assets and checks their packaged bytes against the master.
+For Partner Center's **1:1 App tile icon**, use the generated
+`Square150x150Logo.scale-200.png` (300 x 300). The package's `StoreLogo.png` is a
+separate Windows resource. See [Store listing images](https://learn.microsoft.com/en-us/windows/apps/publish/publish-your-app/msix/screenshots-and-images)
+for upload requirements.
 
 ## Verify
 
@@ -171,10 +146,10 @@ holds reusable synthetic RPC fixtures shared with the explicit validation tool.
 
 | Location | Purpose |
 | --- | --- |
-| `Tests/TrenchHQ.LogicTests` | 92 model, rule, formatting, layout and storage cases |
-| `Tests/TrenchHQ.SocialTests` | 16 synthetic X parsing, stream, ownership and DPAPI cases |
-| `Tests/TrenchHQ.IntegrationTests` | One complete sidecar crash/reconnect/lazy-stop scenario |
-| `Tests/TrenchHQ.OnChainIntegrationTests` | 43 synthetic provider, protocol, engine and recovery scenarios |
+| `Tests/TrenchHQ.LogicTests` | Model, rule, formatting, layout and storage tests |
+| `Tests/TrenchHQ.SocialTests` | Synthetic X parsing, stream, ownership and DPAPI tests |
+| `Tests/TrenchHQ.IntegrationTests` | Sidecar crash, reconnect and idle shutdown |
+| `Tests/TrenchHQ.OnChainIntegrationTests` | Synthetic provider, protocol, engine, live-wallet and recovery tests |
 | `Tests/TrenchHQ.WindowPinTests` | Interactive native/embedded scenarios and isolated cache checks |
 | `tools/TrenchHQ.ProviderValidation` | Explicit public exchange validation |
 | `tools/TrenchHQ.OnChainValidation` | Explicit live RPC/provider/polling validation |
@@ -193,11 +168,9 @@ credentials without fresh authorization. These tools are excluded from the MSIX.
 
 ### Focused editor UI checks
 
-Known layout limitation: the current widget editor can clip controls in very
-narrow windows (observed at 920 physical pixels and 125% scaling, especially with
-the navigation pane expanded). The structural refactor retained that layout;
-the local navigation/save/cancel smoke check is not a full responsive-layout pass.
-Use a wider window until this is addressed in a focused UI change.
+Known limitation: the widget editor can clip controls in very narrow windows,
+especially with display scaling and the navigation pane expanded. Use a wider
+window until a focused layout fix is available.
 
 Use isolated package data for UI work. Check wide and narrow windows at fractional
 display scaling, with the navigation pane open and collapsed. Verify that page
@@ -209,8 +182,7 @@ a short window. Exercise slider labels, all widget editors and API sections.
 Save a Website URL without a scheme and X handles with commas, then let deferred
 UI events finish: both editors must still show Saved with Save/Cancel disabled.
 A subsequent edit must enable them; Cancel must restore the saved values. Use
-synthetic content with no active feeds. Help must retain six inline sections and
-31 expandable questions, with working scrolling and bundled privacy.
+synthetic content with no active feeds. Check Help scrolling, inline sections and bundled privacy.
 
 ### Optional window-containment diagnostic
 
@@ -252,7 +224,7 @@ verifies the final signature. Never publish unsigned or self-signed binaries.
 
 ## Source and dependency integrity
 
-After Git initialization, run `python Scripts/Prepare-Candidate.py --output
+Run `python Scripts/Prepare-Candidate.py --output
 C:/TrenchHQ-Candidates/candidate-name` as one command to copy reviewed source into
 a new external directory. Its `CANDIDATE.json` records hashes and Git provenance.
 Keep the generated publication map and evidence outside the public checkout.

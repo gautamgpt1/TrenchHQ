@@ -50,7 +50,6 @@ internal static partial class Validation
         };
         var updates = new ConcurrentQueue<WalletActivityUpdate>();
         var reachedLive = false;
-        ulong? lastObservedBlock = null;
         for (var attempt = 1; attempt <= 3 && !reachedLive; attempt++)
         {
             using var cancellation = new CancellationTokenSource(TimeSpan.FromSeconds(90));
@@ -59,13 +58,11 @@ internal static partial class Validation
             {
                 await source.RunAsync(
                     wallets,
-                    lastObservedBlock,
                     updates.Enqueue,
-                    block => lastObservedBlock = block,
                     _ =>
                     {
                         reachedLive = true;
-                        cancellation.Cancel();
+                        cancellation.CancelAfter(TimeSpan.FromSeconds(30));
                     },
                     cancellation.Token);
             }
@@ -84,7 +81,7 @@ internal static partial class Validation
                 await Task.Delay(TimeSpan.FromSeconds(attempt));
             }
         }
-        Assert(reachedLive, "The live PublicNode wallet recovery did not reach Live.");
+        Assert(reachedLive, "The PublicNode wallet connection did not reach Live.");
         var presentations = updates
             .GroupBy(static update => new
             {
@@ -97,7 +94,7 @@ internal static partial class Validation
         Console.WriteLine(
             $"LIVE WALLET | events={updates.Count} | rows={presentations.Length} | actions="
             + (presentations.Length == 0
-                ? "none in the bounded recovery window"
+                ? "none in the live observation window"
                 : string.Join(", ", presentations.Select(static item => item.Summary).Distinct())));
     }
 }

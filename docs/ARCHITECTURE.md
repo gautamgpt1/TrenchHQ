@@ -1,6 +1,6 @@
 # Architecture and behavior
 
-TrenchHQ is a read-only desktop monitor. Saved widgets describe content; panel
+TrenchHQ is a customizable crypto desktop companion. Saved widgets describe content; panel
 definitions describe placement/presentation. Application Window is panel content,
 not a saved market widget. Shared content shares acquisition/cache state; each
 visible panel owns its rendering and lifecycle.
@@ -82,180 +82,116 @@ under `Assets`; they are not separate artwork to maintain in the source tree.
 
 ## Process boundaries
 
-The WinUI host owns user configuration and network/provider coordination. One
-shared Rust engine processes bounded messages, protocol state and price updates.
-The Node/CCXT sidecar serves public exchange catalogs/tickers over local pipes.
-Workers start on demand, recover with bounded retry and stop when unused. Preserve
-IPC size/schema validation, backpressure and equivalent-subscription idempotence.
-If a Rust-engine frame write is interrupted, the client closes that input pipe:
-another message must never be appended to a partial length-prefixed frame. The
-worker exits on EOF and the existing lifecycle logic permits a fresh worker.
-`EngineTransportTests` cancels immediately after the length header and verifies
-worker exit, a successful request after restart and final process cleanup.
+The WinUI host owns configuration, windows and provider connections. A shared
+Rust worker decodes on-chain state and calculates prices. A Node/CCXT worker
+supplies public exchange markets and tickers. Workers start on demand and stop
+when unused. Their local protocols validate message sizes and schemas, reject
+unsupported operations and recover from worker failures.
 
-The sidecar accepts only `getMarkets`, `setSubscriptions`, `ping` and `shutdown`.
-It constructs exchanges without account credentials. Malformed frames, inherited
-handler names and arbitrary/private methods are rejected. CCXT includes unused
-trading/cryptographic code; the production-bundle regression verifies that it is
-not exposed through IPC.
+The exchange worker exposes public market methods only. Credentials stay in the
+managed provider layer and never enter the Rust worker. See [Security](../SECURITY.md)
+and the [certification notes](RELEASE.md#certification-notes) for these boundaries.
 
-### Feed contracts and fixture maintenance
-
-The CEX boundary is protocol v1, newline-delimited JSON. See
-`src/TrenchHQ.Core/Markets/MarketFeedContracts.cs`, `src/TrenchHQ.Core/Markets/MarketFeedProtocolParser.cs` and
-`src/MarketSidecar/main.cjs`. Market identity includes venue, kind and pair; asset
-identity is venue-scoped. A matching symbol does not establish that two assets
-are the same. Keep venue identity separate from the adapter that supplies it.
-Updates require a positive finite price, matching source/market venue, and a
-received timestamp. An unavailable upstream timestamp stays absent rather than
-being invented. Unsupported protocol versions are rejected.
-
-The Rust boundary is a separate protocol v2 (`trenchhq.onchain`): a four-byte
-little-endian length followed by JSON, capped at 4 MiB. The host implementation
-is `src/TrenchHQ.Infrastructure/OnChain/OnChainEngineClient.cs`; the engine envelope/framing is in
-`src/OnChainEngine/src/ipc.rs` and dispatch is in `engine.rs`. Stdout carries only
-framed messages. Credentials stay in the managed transport layer and never enter
-the engine. One lazy shared engine handles all active on-chain instruments.
-
-On-chain asset/pool identity includes the chain and validated protocol/deployment.
-The same EVM address on different chains is a different identity. Manager-based
-pools retain their manager and PoolId. Discovery metadata is only a candidate;
-validate actual on-chain state before accepting it. Preserve exact-decimal price
-math, failure/reorg handling and the distinction between spot and execution price.
-
-Reduced public mainnet fixtures and their collection/source/block provenance are
-committed under `src/OnChainEngine/tests/fixtures`; their Rust tests load them locally.
-Managed synthetic transport/provider cases live in `Tests/`. Running those checks
-requires no research checkout or account credentials. When changing a decoder,
-add a focused positive case and relevant malformed/unsupported-state rejection;
-retain provenance for recorded public data and keep expected prices independently
-checkable. A captured historical fixture does not certify live account access.
+Tests reference production assemblies. Use synthetic transport fixtures for
+routing and recovery; protocol fixtures retain their public-data provenance.
+Decoder changes need independently checkable prices and malformed-state cases.
+Commands and live-test requirements are in [Build and verify](BUILD.md#verify).
 
 ## Price Ticker
 
-- The editor toolbar labels the modes **Every second (polling)** and **Live
-  streaming**, beside Cancel/Save/Delete. The selector appears only for Price
-  Ticker widgets and keeps the existing saved mode values and staged edits.
-- Current-state polling defaults to one second on all five chains. Each sample
-  completes before the next delay; no overlapping backlog.
-- Solana keeps a pool's accounts together and publishes complete snapshots
-  atomically. One account uses `getAccountInfo`; larger batches use
-  `getMultipleAccounts`. Standard pricing does not also request the discarded
-  `slotSubscribe` feed.
-- EVM polling batches due pool/reference reads through Multicall3, up to 256
-  subcalls. Smaller limits are learned only after explicit size/gas rejection.
-  Pure polling does not request event history, replay or wallet-finality work.
-- Alchemy uses discounted number probes and a full header on the first tick
-  at/after five seconds. Other providers use one full header per due tick.
-  This optimization must not change displayed-price semantics.
-- Live events are an explicit choice with their own replay/fork recovery rules.
-  Execution-price-only pools require events. Polling does not include every trade.
-- UI updates are coalesced, up to 15 per second. That display bound alone cannot
-  limit provider billing; acquisition needs its own controls.
-- Public CEX streaming uses CCXT; its polling fallback is five seconds.
-- Prices require validated protocol state, decimals and references. Unsupported
-  pools/hooks must fail clearly rather than display guessed prices.
+- An exchange market is identified by its venue and pair. An on-chain market is
+  identified by chain, protocol and pool. Matching token symbols do not establish
+  that two markets or assets are the same.
+- **Every second (polling)** reads current pool state. Reads are shared and batched
+  where supported, and samples never overlap or accumulate a backlog.
+- **Live streaming** follows supported source events. Recovery must preserve the
+  correct pool state after a reconnect or chain reorganization. Pools that require
+  execution events cannot silently switch to polling.
+- Acquisition is shared across panels showing the same content. Rendering is
+  coalesced independently; a display refresh limit does not reduce traffic that a
+  provider has already delivered.
+- Prices require validated state, decimals and references. Unsupported pools must
+  fail clearly rather than display a guessed price.
 
-## Editor layout and shared controls
+## Wallet Watcher
 
-The transparent custom title bar blends into the black page surface. The main
-NavigationView's internal content border and corner radius are disabled so no
-line divides the caption area from the page. Page headings extend into the
-caption area with a 16-DIP top margin; do not add a separate top spacer. The
-top-right Usage and desktop-display actions span the title/subtitle rows with
-their own 16-DIP inset, clearing the 32-DIP caption controls. The subtitle's
-lettering aligns visually with the bottom of the adjacent action. Widget and
-panel titles share a
-centered row with their actions at wide widths. Compact layouts move the actions
-below the title. Save/error status occupies a separate row only when nonempty.
-Toolbar wrapping must tolerate fractional display scaling without placing an
-action over the following content.
-Loading a saved widget suppresses deferred text-change notifications through the
-UI queue, so normalized Website URLs and X handles do not re-enable Save/Cancel.
+Wallet Watcher follows new activity while connected. It does not load transaction
+history at startup or replay missed activity after reconnection. Existing rows
+can remain visible while the connection recovers.
 
-`src/TrenchHQ.App/App.xaml` supplies shared typography, 36-DIP standard controls, dark surfaces,
-mint accents and visible focus/hover/pressed/disabled states, including dialogs.
-Compact chip actions remain smaller; destructive actions remain red. Use native
-control templates for standard primary/secondary buttons. Form fields, provider
-badges and wallet/X entry controls must remain reachable at narrow editor widths.
-Panel slider values share the label row above each track.
+Incoming notifications are handled independently of slower transaction-detail
+requests. Duplicate notifications share detail requests. Optional enrichment and
+confirmation updates must not hold up new rows. Queues and retries are bounded;
+an endpoint that cannot keep up is reported rather than hiding a growing delay.
 
-## Help
+These are confirmed/block-based feeds, not mempool feeds. Transactions from one
+block can arrive together. Available transfer details depend on the chain and
+provider, including support for internal EVM transfers.
 
-Help keeps one scrolling page with expandable questions under Getting started,
-Widgets, Desktop panels, Connections & usage, Troubleshooting, and Privacy &
-support. These are inline subheadings, not separate navigation destinations.
-Questions follow setup, everyday use and recovery; implementation history does
-not belong in user-facing answers. Privacy, local diagnostics and support follow
-the FAQ. Keep instructions aligned with actual control labels and supported scope.
+## Providers and usage
 
-## Providers and budgets
+Saving a compatible provider makes it available for automatic selection on its
+supported chains. Where supported, linked chains share the protected key. Users
+do not need to pick the active connection. Healthy connections remain stable;
+failures trigger retry or another eligible route without changing ticker mode.
 
-Every saved compatible profile enters automatic per-chain selection. Supported
-families share protected credentials while endpoint capabilities stay specific
-to each chain. Healthy routes use hysteresis. Transient failures retry after
-1/2/4/5-minute cooldowns while online. Rejected credentials wait for correction;
-quota pauses recover on reset/cooldown. Idle chains generate no health probes.
+PublicNode is the final fallback for supported EVM chains. Solana live feeds
+require a configured provider. When no eligible route remains, the affected feed
+pauses and reports its status. Idle chains do not generate health-check traffic.
 
-PublicNode is the final EVM route and may yield to a recovered private provider.
-Solana has no equivalent key-free live fallback. Exhaustion pauses an unavailable
-chain without changing polling/event mode.
+Usage counters are estimates, not provider account balances. TrenchHQ imposes no
+local allowance by default. Users can enable a limit and choose its reset cycle;
+usage by other apps is not visible to TrenchHQ. Actual provider limits still apply.
+Temporary throttling respects provider retry instructions; rejected credentials
+and exhausted quotas are handled separately. A quota failure affects that key and
+its linked chains, not unrelated credentials from the same provider.
 
-Known free allowances seed conservative local guards: 90% of a monthly allowance
-divided by 31, or 90% of a daily allowance. Explicit overrides remain. Unknown
-plans use health/quota-response handling without inventing a balance. Preserve
-shared counters, persistence, pre-send checks and reset boundaries. Local estimates
-cannot measure other applications' account usage.
+## Editors and help
 
-Wallet Watcher has a separate exact-activity contract. Never apply ticker sampling
-to wallet transfers/full-block requirements. Preserve bounded trace ranges,
-one-minute EVM wallet finality and five-minute Solana token-account repair.
+The custom title bar blends into the page. Headings and actions align at wide
+widths and wrap at compact widths. Shared styles in `TrenchHQ.App/App.xaml`
+define typography, controls and focus/hover states. Preserve staged edits:
+loading or normalizing saved values must not turn them into unsaved changes.
+
+Help is one scrolling FAQ with inline section headings. Explain setup, everyday
+use and recovery in the user's terms. Keep implementation history out of the
+interface and help text. Known layout limitations are listed in [BUILD](BUILD.md#focused-editor-ui-checks).
 
 ## Panels and fullscreen
 
 Minimize and the panel shortcut toggle the same running instance. Close disposes
 it; Show or Start recreates it. Stop closes panels and blocks their shortcuts.
-Hidden/minimized docked panels release reserved work area.
+Hidden or minimized docked panels release their reserved work area.
 
-Screen-edge thickness is capped at 30% of its monitor. Website/Application Window
-enforce viable minimums. X, Website, Wallet and Application overlays use saved
-content width/height; Price Ticker derives height from rows. Layout uses DIP and
-must stay reachable after monitor/DPI changes.
-
-Normal/maximized windows respect appbars. During genuine fullscreen, appbars stay
-registered and panels lower behind the fullscreen app. Restore only after DWM
-confirms fullscreen ended. Never resize or exit the external application to expose
-a panel.
+Layouts use display-independent sizes and must remain reachable after monitor or
+scaling changes. Normal and maximized windows respect docked panels. During true
+fullscreen, panels stay registered but lower behind the fullscreen app. Restore
+them only after Windows confirms fullscreen ended; never resize or exit another
+application to expose a panel.
 
 ## Application Window
 
 Native lock and experimental Embedded + lock use `SetWindowsHookEx` to load the
-versioned x64 helper into the explicitly selected app's UI thread. Eligibility
-checks inspect window/process metadata, architecture, responsiveness, resize
-support and integrity. Admin/system and unsupported targets are excluded.
+x64 helper into the explicitly selected app's UI thread. Eligibility checks
+inspect window/process metadata, architecture, responsiveness, resize support and
+integrity. Elevated, system and unsupported targets are excluded.
 
 The helper does not capture input/screens, read foreign memory, extract credentials
-or transmit data. Temporary attachment hooks are removed; subclass/CBT callbacks
-and timers maintain bounds and recover on lease/owner loss. Hung targets must
-resume message processing for recovery to complete.
+or transmit data. Detach and recovery restore the original window state; hung
+targets must resume message processing for recovery to finish. No target is saved
+or automatically repinned.
 
-Unpin, minimize, close and Quit detach and restore original window state. No target
-is saved or automatically repinned. The module can stay mapped until target exit;
-its verified DLL cache remains outside package data. Do not claim complete module
-unload or absence of all retained files.
-
-Cache publication is atomic. Verification shares read/delete access while denying
-writes, tolerating a publisher's rename handle. Changed bytes get a new path;
-damaged cached binaries are rejected before loading. Preserve concurrent-publication
-and held-rename-handle regressions.
+The helper can remain mapped until the target exits, and its verified DLL cache
+remains outside package data. Cache publication is atomic and changed binaries
+receive a new path; damaged cached binaries must be rejected before loading.
+Do not promise complete module unload or deletion of every retained file.
 
 ## X, websites and local data
 
-X Tracker uses only the official paid Filtered Stream. Website embeds the site's
-UI with a separate WebView2 profile per widget; shared-widget panels share its
-login. Hidden views request lower memory use without claiming script suspension.
-Close releases the WebView; widget deletion does not erase its browser profile.
+X Tracker uses the official paid Filtered Stream. Website widgets have separate
+WebView2 profiles; panels sharing a widget share its login. Closing a view releases
+it, but deleting the widget does not erase its browser profile.
 
-Provider/X tokens use per-user DPAPI. Ordinary settings and public wallet labels/
-addresses are not encrypted as a whole. Read [privacy](public/privacy.txt) for
-network requests, cached helpers, diagnostics and deletion behavior.
+Provider and X credentials use per-user Windows DPAPI. Ordinary settings and
+public wallet labels/addresses are not encrypted as a whole. The [privacy policy](public/privacy.txt)
+describes network requests, diagnostics, retained data and deletion.

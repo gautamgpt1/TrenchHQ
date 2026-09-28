@@ -843,16 +843,6 @@ public partial class OnChainTests
                     "HTTP 402 did not expose an retryable account-quota failure for automatic failover.");
             }
         }
-        Assert(
-            EvmWalletActivityStreamSource.CanContinueWithoutTokenLogReplay(
-                new EvmJsonRpcException(EvmRpcFailureKind.RpcError, "Address-scoped logs required.")),
-            "A provider-specific eth_getLogs restriction still disabled native and live wallet activity.");
-        Assert(
-            !EvmWalletActivityStreamSource.CanContinueWithoutTokenLogReplay(
-                new EvmJsonRpcException(EvmRpcFailureKind.RateLimited, "Rate limited."))
-            && !EvmWalletActivityStreamSource.CanContinueWithoutTokenLogReplay(
-                new EvmJsonRpcException(EvmRpcFailureKind.AuthenticationRejected, "Rejected.")),
-            "Wallet recovery incorrectly swallowed rate-limit or authentication failures.");
         var recoveryBuffer = new EvmWalletRecoveryBuffer();
         for (var index = 0; index < EvmWalletRecoveryBuffer.MaximumMessages; index++)
         {
@@ -907,16 +897,6 @@ public partial class OnChainTests
                                      + Convert.ToHexString(misleadingSymbolBytes).ToLowerInvariant().PadRight(64, '0');
         Assert(!EthereumAbi.TryDecodeString(misleadingSymbolValue, out _),
             "An ERC-20 symbol containing an unassigned Unicode character was accepted.");
-        using (var transferLog = JsonDocument.Parse(
-                   $$"""{"topics":["{{WalletActivityRules.TransferTopic}}"]}"""))
-        using (var unrelatedLog = JsonDocument.Parse("""{"topics":[]}"""))
-        {
-            Assert(EvmWalletActivityStreamSource.IsTransferLog(transferLog.RootElement),
-                "Receipt recovery rejected an ERC transfer topic.");
-            Assert(!EvmWalletActivityStreamSource.IsTransferLog(unrelatedLog.RootElement),
-                "Receipt recovery accepted an unrelated anonymous event.");
-        }
-
         var baseAlchemy = CreateProviderConfiguration(
             OnChainProviderTypes.AlchemyBase,
             "wss://base-mainnet.g.alchemy.com/v2",

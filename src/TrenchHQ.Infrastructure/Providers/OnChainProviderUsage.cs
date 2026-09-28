@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 
@@ -17,7 +19,7 @@ namespace TrenchHQ.Infrastructure.Providers
         public string Name { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public bool? Automatic { get; set; }
-        public DateTimeOffset? QuotaPauseUntilUtc { get; set; }
+        public Dictionary<string, DateTimeOffset> QuotaPauses { get; set; } = new(StringComparer.Ordinal);
         public bool Enabled { get; set; }
         public decimal Limit { get; set; }
         public bool Daily { get; set; }
@@ -91,7 +93,14 @@ namespace TrenchHQ.Infrastructure.Providers
                     if (_groups.TryGetValue(key, out var existing))
                     {
                         existing.Automatic ??= !existing.Enabled;
-                        if (existing.Automatic == true && !existing.Enabled) ApplyAutomaticAllowance(existing, preset, key);
+                        if (existing.Automatic == true)
+                        {
+                            existing.Enabled = false;
+                            existing.Blocked = false;
+                            existing.Limit = 0;
+                            existing.Automatic = false;
+                            _dirty = true;
+                        }
                         continue;
                     }
                     var bandwidth = key.EndsWith(":grpc", StringComparison.Ordinal);
@@ -107,35 +116,14 @@ namespace TrenchHQ.Infrastructure.Providers
                         Name = (string.IsNullOrEmpty(preset.ProviderFamily) || preset.ProviderFamily == "custom"
                             ? preset.DisplayName : preset.ProviderFamily) + (bandwidth ? " gRPC" : string.Empty),
                         Unit = unit,
-                        Automatic = true,
+                        Automatic = false,
                         AnchorUtc = _now(),
                         PeriodStartUtc = _now()
                     };
-                    ApplyAutomaticAllowance(_groups[key], preset, key);
+                    _dirty = true;
                 }
             }
             return keys;
-        }
-
-        private void ApplyAutomaticAllowance(OnChainUsageGroup group, OnChainProviderPreset preset, string key)
-        {
-            if (key.EndsWith(":grpc", StringComparison.Ordinal)) return;
-            var daily = preset.ProviderFamily switch
-            {
-                "alchemy" => 30_000_000m / 31,
-                "helius" => 1_000_000m / 31,
-                "chainstack" => 3_000_000m / 31,
-                "drpc" => 210_000_000m / 31,
-                "infura" => 3_000_000m,
-                _ => 0
-            };
-            if (daily == 0) return; // No account allowance is invented for unknown/custom/trial plans.
-            group.Enabled = true;
-            group.Limit = decimal.Floor(daily * 0.9m);
-            group.Daily = true;
-            group.AnchorUtc = new DateTimeOffset(_now().UtcDateTime.Date, TimeSpan.Zero);
-            group.PeriodStartUtc = group.AnchorUtc;
-            _dirty = true;
         }
 
         internal decimal Headroom(OnChainProviderConfiguration configuration)
@@ -148,11 +136,31 @@ namespace TrenchHQ.Infrastructure.Providers
         {
             var preset = OnChainProviderCatalog.Get(configuration.ProviderType);
             var group = Snapshot(Register(configuration)[0]);
-            if (!group.Enabled) return preset.ProviderFamily == "shyft" ? decimal.MaxValue : 0;
+            if (!group.Enabled) return 0;
             var cost = preset.ChainNamespace == ChainNamespaces.Solana
                 ? RpcCost(preset, "getMultipleAccounts")
                 : RpcCost(preset, "eth_getBlockByNumber") + RpcCost(preset, "eth_call");
             return cost > 0 ? Math.Max(0, group.Limit - group.Used) / cost.Value : 0;
+        }
+
+        private static string QuotaKey(OnChainProviderConfiguration configuration)
+        {
+            // Linked chains reuse a credential reference; unrelated keys at the same company do not.
+            // Store only its hash, never the credential reference or endpoint.
+            var identity = OnChainProviderCatalog.IsPublicEvaluationProvider(configuration.ProviderType)
+                ? configuration.ProviderType
+                : string.IsNullOrEmpty(configuration.CredentialReference) ? configuration.Id : configuration.CredentialReference;
+            return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(identity)));
+        }
+
+        internal DateTimeOffset? QuotaPauseUntil(OnChainProviderConfiguration configuration)
+        {
+            lock (_sync)
+            {
+                var pauses = Register(configuration).Select(key => Snapshot(key).QuotaPauses.GetValueOrDefault(QuotaKey(configuration)))
+                    .Where(until => until > _now()).ToArray();
+                return pauses.Length == 0 ? null : pauses.Max();
+            }
         }
 
         internal void PauseForQuota(OnChainProviderConfiguration configuration, TimeSpan? retryAfter)
@@ -161,12 +169,11 @@ namespace TrenchHQ.Infrastructure.Providers
             {
                 foreach (var key in Register(configuration))
                 {
-                    var group = _groups[key];
                     // Infura documents a UTC-midnight daily reset. Other billing periods are unknown.
                     var delay = retryAfter ?? (OnChainProviderCatalog.Get(configuration.ProviderType).ProviderFamily == "infura"
                         ? new DateTimeOffset(_now().UtcDateTime.Date.AddDays(1), TimeSpan.Zero) - _now()
                         : TimeSpan.FromHours(1));
-                    group.QuotaPauseUntilUtc = _now() + TimeSpan.FromSeconds(Math.Clamp(delay.TotalSeconds, 60, 86400));
+                    _groups[key].QuotaPauses[QuotaKey(configuration)] = _now() + (delay > TimeSpan.Zero ? delay : TimeSpan.Zero);
                     _dirty = true;
                 }
             }
@@ -178,10 +185,7 @@ namespace TrenchHQ.Infrastructure.Providers
             lock (_sync)
             {
                 foreach (var key in Register(configuration))
-                {
-                    _groups[key].QuotaPauseUntilUtc = null;
-                    _dirty = true;
-                }
+                    _dirty |= _groups[key].QuotaPauses.Remove(QuotaKey(configuration));
             }
         }
 
@@ -247,7 +251,7 @@ namespace TrenchHQ.Infrastructure.Providers
                 {
                     AdvancePeriod(key);
                     var group = _groups[key];
-                    return group.QuotaPauseUntilUtc > _now() || group.Enabled && (group.Blocked || group.UnknownCost || group.Used >= group.Limit
+                    return group.QuotaPauses.GetValueOrDefault(QuotaKey(configuration)) > _now() || group.Enabled && (group.Blocked || group.UnknownCost || group.Used >= group.Limit
                         || PersistenceError != null);
                 });
             }
@@ -317,15 +321,16 @@ namespace TrenchHQ.Infrastructure.Providers
             {
                 "alchemy" when solana => subscription ? 0 : method switch
                 {
-                    "getAccountInfo" => 10, "getTransaction" or "getSignaturesForAddress" => 40,
-                    "getMultipleAccounts" or "getSlot" or "getProgramAccounts" or "getTokenAccountsByOwner"
+                    "getAccountInfo" or "getTokenAccountsByOwner" => 10,
+                    "getTransaction" or "getSignaturesForAddress" => 40,
+                    "getMultipleAccounts" or "getSlot" or "getProgramAccounts"
                         or "getSignatureStatuses" => 20, _ => null
                 },
                 "alchemy" => method switch
                 {
                     "eth_chainId" => 0, "eth_blockNumber" or "eth_subscribe" => 10,
                     "eth_call" => 26, "eth_getLogs" => 60, "trace_filter" => 40,
-                    "eth_getBlockByNumber" or "eth_getBlockByHash" or "eth_getCode" or "eth_getBalance"
+                    "eth_getBlockByNumber" or "eth_getBlockByHash" or "eth_getBlockReceipts" or "eth_getCode" or "eth_getBalance"
                         or "eth_getTransactionReceipt" or "eth_getTransactionByHash" => 20, _ => null
                 },
                 "helius" => subscription ? 0 : method == "getProgramAccounts" ? 10 : 1,
@@ -333,10 +338,10 @@ namespace TrenchHQ.Infrastructure.Providers
                 "infura" => method switch
                 {
                     "eth_chainId" or "eth_subscribe" => 5, "eth_getLogs" => 255,
-                    "trace_filter" => 300, _ => 80
+                    "trace_filter" => 300, "eth_getBlockReceipts" => 1000, _ => 80
                 },
                 "chainstack" => archive || method.StartsWith("trace_", StringComparison.Ordinal)
-                    || method is "getSignaturesForAddress" or "getTransaction" or "getSignatureStatuses" ? 2 : 1,
+                    || method == "getSignaturesForAddress" ? 2 : 1,
                 "quicknode" => solana ? (subscription ? 0 : 30) : method == "trace_filter" ? 40 : 20,
                 _ => 1
             };
@@ -362,11 +367,12 @@ namespace TrenchHQ.Infrastructure.Providers
         {
             var group = _groups[key];
             var now = _now();
-            if (group.QuotaPauseUntilUtc <= now)
+            foreach (var expired in group.QuotaPauses.Where(item => item.Value <= now).Select(item => item.Key).ToArray())
             {
-                group.QuotaPauseUntilUtc = null;
+                group.QuotaPauses.Remove(expired);
                 _dirty = _availabilityPending = true;
             }
+            if (!group.Enabled) return false;
             var periods = group.Daily ? Math.Max(0, (int)(now - group.AnchorUtc).TotalDays)
                 : Math.Max(0, (now.Year - group.AnchorUtc.Year) * 12 + now.Month - group.AnchorUtc.Month);
             var start = group.Daily ? group.AnchorUtc.AddDays(periods) : group.AnchorUtc.AddMonths(periods);

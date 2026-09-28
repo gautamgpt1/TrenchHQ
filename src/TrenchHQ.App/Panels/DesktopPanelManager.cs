@@ -981,7 +981,7 @@ namespace TrenchHQ.Panels
 
         private void OnProviderFailed(object? sender, OnChainProviderFailureEventArgs e)
         {
-            _ = _onChainProviders.TryFailoverAsync(e.ConfigurationId, e.Kind);
+            _ = _onChainProviders.TryFailoverAsync(e.ConfigurationId, e.Kind, e.RetryAfter);
         }
 
         private void OnReferencePriceUpdated(object? sender, MarketPriceUpdatedEventArgs e)

@@ -261,8 +261,10 @@ namespace TrenchHQ.Controls
             return _activityService.GetStateFor(_wallets) switch
             {
                 WalletStreamState.Live => new WidgetContentStatus(WidgetContentState.Live, "Live"),
-                WalletStreamState.Reconnecting => new WidgetContentStatus(WidgetContentState.Loading, "Reconnecting"),
-                WalletStreamState.Unavailable => new WidgetContentStatus(WidgetContentState.Unavailable, "Unavailable"),
+                WalletStreamState.Reconnecting => new WidgetContentStatus(WidgetContentState.Loading,
+                    _activityService.GetErrorFor(_wallets) ?? "Reconnecting"),
+                WalletStreamState.Unavailable => new WidgetContentStatus(WidgetContentState.Unavailable,
+                    _activityService.GetErrorFor(_wallets) ?? "Unavailable"),
                 WalletStreamState.Disconnected => new WidgetContentStatus(WidgetContentState.Empty, "Stopped"),
                 _ => new WidgetContentStatus(WidgetContentState.Loading, "Connecting")
             };

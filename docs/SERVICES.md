@@ -1,28 +1,44 @@
-# Services and constraints
+# Services and integrations
 
-Integration inventory: 2026-09-26; privacy, signing and key release restrictions
-rechecked 2026-09-27. This records the actual read-only integration boundary
-and official review sources. Public reachability, an open-source SDK license and
-a successful test do not grant redistribution rights. The app makes requests
-from the user's device; it does not resell a shared provider account or data feed.
-Regional restrictions, account terms, attribution and rate limits still apply.
+TrenchHQ brings exchange prices, on-chain markets, wallet activity and X feeds
+onto the desktop. Requests go directly from the user's device to the services
+needed by their chosen widgets.
 
-## Implemented scope
+## What each feature needs
 
-Networks: Solana, Ethereum, Base, BNB Smart Chain and Robinhood Chain. Production
-fixtures cover 34 on-chain presets. Account entitlements and custom endpoints
-still need actual certification. Public reachability does not prove a paid plan.
+| Feature | Connection |
+| --- | --- |
+| Exchange prices | Public spot feeds; no exchange account or API key |
+| Ethereum, Base, BNB Smart Chain and Robinhood Chain | A compatible provider, with PublicNode as the key-free fallback |
+| Solana prices and wallets | A configured provider with the required RPC/stream access |
+| X Tracker | The user's paid official X API access |
+| Website | The site's normal connection and login, if required |
 
-See [user support](public/support.md) for exchange/protocol coverage and recovery,
-[architecture](ARCHITECTURE.md) for acquisition/failover, and [release status](RELEASE.md)
-for launch gates. This is an integration inventory, not legal clearance.
+See [setup and help](public/support.md) for supported markets and everyday use.
+A provider account may require endpoint URLs as well as a key, and some features
+need a particular plan.
+
+## Connections and usage
+
+Add provider details in **API Connections**. TrenchHQ chooses compatible connections
+and available backups automatically, keeping the selected polling or streaming
+mode. Supported providers share a saved key across their linked chains.
+
+**Usage** shows local estimates. There is no app-imposed allowance or reset cycle;
+you can enable your own limit if you want one. Actual provider quotas and rate
+limits still apply, and TrenchHQ cannot see usage from your other applications.
+If no suitable connection is available, the affected feed pauses visibly.
+
+Price tickers offer **Every second (polling)** or **Live streaming** where supported.
+Polling reads the current price; streaming follows events and its usage depends
+on market activity. Wallet Watcher follows new activity while connected, without
+loading old transactions at startup or replaying an outage.
 
 ## RPC and streaming providers
 
-All configured chains use the same automatic health/local-budget selection policy.
-Only compatible profiles are eligible. Account-specific URLs may be required in
-addition to a key. Account balances are not inferred from local usage estimates.
-Failover must never be represented as permission to evade an account suspension.
+These integrations use the user's own access. TrenchHQ does not supply paid
+subscriptions or resell a shared data feed. Endpoint capabilities and account
+terms determine what is available.
 
 | Service | Exposed use | Official terms and release status |
 | --- | --- | --- |
@@ -30,7 +46,7 @@ Failover must never be represented as permission to evade an account suspension.
 | Helius | Solana HTTP/WebSocket and configured stream services | [Terms](https://www.helius.dev/terms); account/endpoint entitlements must be certified with fresh credentials. |
 | QuickNode | User-configured RPC/stream endpoints | [Terms](https://www.quicknode.com/terms); no bundled subscription or shared account. |
 | Chainstack | User-configured HTTP/WebSocket/gRPC where supported | [Terms](https://chainstack.com/tos/); endpoint and plan restrictions apply. |
-| dRPC | Shared user key across compatible chains | [Terms](https://drpc.org/terms-of-use); page is script-rendered and full text was not retrievable in this review. Manual terms review remains open. |
+| dRPC | Shared user key across compatible chains | [Terms](https://drpc.org/terms-of-use); account terms review remains open. |
 | Infura | User-key supported EVM RPC | [Consensys terms](https://legal.consensys.io/plain/terms-of-use/); project and service-specific terms apply. |
 | Shyft | Solana RPC/gRPC configuration | [Terms](https://shyft.to/terms); website text alone did not establish a specific redistribution grant. Confirm account terms before claiming certification. |
 | Triton | Solana user endpoint/Yellowstone | [Policies](https://triton.one/policies); contracted endpoint entitlements apply. |
@@ -50,7 +66,7 @@ must be reviewed for the release markets; this table is not a blanket legal gran
 | --- | --- | --- |
 | Binance | [Spot API](https://developers.binance.com/en/docs/products/spot/CHANGELOG) | Public spot markets/tickers; API terms and regional access apply. |
 | Bybit | [V5](https://bybit-exchange.github.io/docs/v5/intro) | Public spot markets/tickers; service terms and regional access apply. |
-| OKX | [V5](https://www.okx.com/docs-v5/en/) | Public spot markets/tickers; documentation fetch failed during this review, manual review remains open. |
+| OKX | [V5](https://www.okx.com/docs-v5/en/) | Public spot markets/tickers; data-use/territory review remains open. |
 | Gate | [V4](https://www.gate.com/docs/developers/apiv4/en/) | Public spot markets/tickers; API agreement applies. |
 | KuCoin | [Documentation](https://www.kucoin.com/docs-new) | Public spot markets/tickers; data-use/territory review remains open. |
 | Bitget | [Documentation](https://www.bitget.com/api-doc/common/intro), [API terms](https://www.bitget.com/support/articles/12560603797947) | Public spot markets/tickers; restrictions on competing clients, repackaging and benchmarking need a release-scope decision. Review remains open. |
@@ -79,34 +95,24 @@ separately from permission. No exchange logo permission is inferred from CCXT.
 | On-chain protocols | Decode public state/events via configured RPC | Raydium, Orca, Pump, Meteora, Manifest, Uniswap, Aerodrome, PancakeSwap, Curve, ShibaSwap, Doppler/long.xyz and pons interoperability; no contract transactions are submitted. Third-party contract implementations are not bundled. |
 | X | Official paid Filtered Stream under user's own developer access | [Agreement](https://developer.x.com/developer-terms/agreement), [policy](https://developer.x.com/developer-terms/policy), [display requirements](https://developer.x.com/developer-terms/display-requirements); app display/caching and fresh paid access need release certification. No unofficial X adapter. |
 | Website panels | User-chosen website in local WebView2 profile | Each site's terms, logins, cookies and content permissions apply. No paywall bypass or data redistribution service is provided. |
-| Chain marks / coin icons | Local identifying assets | See [third-party notices](../THIRD_PARTY_NOTICES.md). Protocol favicon downloads are removed. |
+| Chain marks / coin icons | Local identifying assets | See [third-party notices](../THIRD_PARTY_NOTICES.md). Protocol support uses text names; Pump and Meteora logos are not included. |
 
-Before distribution, the publisher must resolve the entries marked open for the
-actual launch scope. Technical certification, license collection and this inventory
-do not replace that decision. No permission request or third-party approval is implied by this review.
+## Before distribution
 
-## Privacy notices and release decisions
+The publisher must resolve service-use and branding questions for the launch
+territories and account plans. API access and an SDK license do not establish
+permission to redistribute data. Keep this review separate from technical tests.
 
-The app's [privacy policy](public/privacy.txt) links the provider/platform privacy
-notices and explains routing, retention and opt-out controls. Infura's Consensys
-privacy URL now redirects to a [notice covering Infura](https://metamask.io/privacy-notice).
-dRPC's [terms](https://drpc.org/terms-of-use) and [privacy](https://drpc.org/privacy-policy)
-still require a rendered/manual review; the text fetch did not expose their body.
-The publisher must obtain service-specific terms for custom or contracted routes.
+- **DEX Screener:** resolve the competing-product restriction for pool discovery,
+  obtain permission if needed, or replace the dependency.
+- **Bitget:** resolve the API restrictions on competing clients, repackaging and
+  benchmarking for public price display and release testing.
+- **Other exchanges, catalogs and providers:** complete the data-display,
+  territory and account-specific reviews identified above.
+- **X:** check the official display, caching and account requirements.
+- **Brand assets:** follow the [third-party notices](../THIRD_PARTY_NOTICES.md).
+  Adding Pump or Meteora logos requires permission or applicable brand terms first.
 
-The release reviewer must record a decision for each open row above against the
-actual distribution territories, account plans and public read-only display use.
-An API documentation link establishes the interface, not permission to redistribute
-data. Keep ordinary per-user API use separate from selling a feed or sharing keys.
-
-| Item | Current evidence and decision needed |
-| --- | --- |
-| DEX Screener | API terms section 1 restrict directly competing products. Discovery use still needs a documented scope determination or permission; commercial use permission does not erase that restriction. |
-| Bitget | API terms 3.2(k)-(m) restrict competing/replacement clients, benchmarking and repackaging. Clarify applicability to unauthenticated spot-price display and release testing; do not claim clearance from a successful request. |
-| Other exchanges and catalogs | The tables identify every integration; territory, data-display and account-specific conditions remain to be resolved for the final launch. |
-| Pump and Meteora marks | Neither SVG is in this source tree; project, source-export and package-inspection exclusions prevent accidental inclusion. No permission is claimed or needed for an absent logo. Protocol support uses text names and public on-chain decoding. Adding either mark later requires recorded permission/brand terms first. |
-| Five chain marks | Official origin/guideline links are retained in THIRD_PARTY_NOTICES. A linked download is not a blanket trademark license; check the final identifying use and screenshots against those guidelines. |
-| X | Official agreement, display requirements, account entitlements and data handling apply independently of CCXT or provider licenses. Fresh account certification remains pending. |
-
-No provider or rights holder has been contacted on the owner's behalf. Store or
-SignPath acceptance would not resolve these independent service-use obligations.
+These reviews remain open; no third-party approval is claimed. See the
+[release plan](RELEASE.md) for distribution gates and the [privacy policy](public/privacy.txt)
+for service recipients, local storage and deletion.

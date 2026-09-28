@@ -20,8 +20,6 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
     internal sealed class EvmWalletActivityStreamSource
     {
         private const int MaximumMessageBytes = 2 * 1024 * 1024;
-        private const ulong InitialHistoryBlocks = 20;
-        private const ulong MaximumRecoveryBlocks = 250;
         internal const int MaximumTokenMetadataEntries = 512;
         internal const int MaximumTraceBatchBlocks = 20;
         internal static readonly TimeSpan FinalityRefreshInterval = TimeSpan.FromMinutes(1);
@@ -66,9 +64,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
 
         internal async Task RunAsync(
             SavedTrackedWallet[] wallets,
-            ulong? lastObservedBlock,
             Action<WalletActivityUpdate> onActivity,
-            Action<ulong> onBlockObserved,
             Action<bool> onLive,
             CancellationToken cancellationToken)
         {
@@ -87,6 +83,19 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                 throw new IOException($"The provider rejected WebSocket access: HTTP {(int)socket.HttpStatusCode}.");
             }
 
+            using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cancellationToken = lifetime.Token;
+            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+            var rpc = new EvmJsonRpcClient(httpClient, _configuration, _apiKey);
+            await RunConnectedAsync(socket, rpc, wallets, onActivity, onLive, cancellationToken).ConfigureAwait(false);
+        }
+
+        internal async Task RunConnectedAsync(WebSocket socket, EvmJsonRpcClient rpc,
+            SavedTrackedWallet[] wallets, Action<WalletActivityUpdate> onActivity,
+            Action<bool> onLive, CancellationToken cancellationToken)
+        {
+            using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            cancellationToken = lifetime.Token;
             var pending = new HashSet<long>();
             var active = new Dictionary<string, SubscriptionKind>(StringComparer.Ordinal);
             var buffered = new EvmWalletRecoveryBuffer();
@@ -119,433 +128,177 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                 }
             }
 
-            using var httpClient = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
-            var rpc = new EvmJsonRpcClient(httpClient, _configuration, _apiKey);
             var tracked = new Dictionary<string, WalletActivityUpdate>(StringComparer.Ordinal);
             var tokenMetadata = new TokenMetadataCache();
             var heads = new EvmHeadTracker();
             var receiveTask = ReceiveMessageAsync(socket, cancellationToken);
-            RecoveryResult recovery;
-            using (var recoveryCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken))
-            {
-                var recoveryTask = RecoverAsync(
-                    rpc,
-                    wallets,
-                    lastObservedBlock,
-                    tracked,
-                    tokenMetadata,
-                    onActivity,
-                    onBlockObserved,
-                    recoveryCancellation.Token);
-                try
-                {
-                    while (!recoveryTask.IsCompleted)
-                    {
-                        var completed = await Task.WhenAny(recoveryTask, receiveTask).ConfigureAwait(false);
-                        if (completed == recoveryTask)
-                        {
-                            break;
-                        }
-
-                        var message = await receiveTask.ConfigureAwait(false)
-                                      ?? throw new IOException("The EVM wallet WebSocket closed during recovery.");
-                        buffered.Enqueue(message);
-                        receiveTask = ReceiveMessageAsync(socket, cancellationToken);
-                    }
-                    recovery = await recoveryTask.ConfigureAwait(false);
-                    while (receiveTask.IsCompleted)
-                    {
-                        var message = await receiveTask.ConfigureAwait(false)
-                                      ?? throw new IOException("The EVM wallet WebSocket closed during recovery.");
-                        buffered.Enqueue(message);
-                        receiveTask = ReceiveMessageAsync(socket, cancellationToken);
-                    }
-                    if (socket.State != WebSocketState.Open)
-                    {
-                        throw new IOException("The EVM wallet WebSocket closed during recovery.");
-                    }
-                }
-                catch
-                {
-                    recoveryCancellation.Cancel();
-                    try
-                    {
-                        await recoveryTask.ConfigureAwait(false);
-                    }
-                    catch
-                    {
-                    }
-                    throw;
-                }
-            }
-            heads.Reset(ToHead(recovery.Latest));
-            var supportsTraceFilter = recovery.SupportsTraceFilter;
-            var safeBlock = recovery.SafeBlock;
-            var finalizedBlock = recovery.FinalizedBlock;
+            var supportsTraceFilter = true;
+            ulong? safeBlock = null;
+            ulong? finalizedBlock = null;
             var lastFinalityRefresh = DateTimeOffset.UtcNow;
             var traceBatch = new EvmWalletTraceBatch(MaximumTraceBatchBlocks);
-            onLive(supportsTraceFilter);
-
-            while (buffered.TryDequeue(out var bufferedMessage))
+            var work = new Queue<Func<Task<Action>>>();
+            Task<Action>? detailTask = null;
+            long revision = 0;
+            void Enqueue(Func<Task<Action>> job)
             {
-                var previouslySupported = supportsTraceFilter;
-                supportsTraceFilter = await ProcessNotificationAsync(
-                        bufferedMessage,
-                        rpc,
-                        wallets,
-                        active,
-                        heads,
-                        tracked,
-                        tokenMetadata,
-                        traceBatch,
-                        supportsTraceFilter,
-                        safeBlock,
-                        finalizedBlock,
-                        onActivity,
-                        onBlockObserved,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                if (previouslySupported && !supportsTraceFilter)
-                {
-                    onLive(false);
-                }
+                if (work.Count >= 1024)
+                    throw new IOException("The provider cannot keep up with this wallet activity. Configure another provider or watch fewer wallets.");
+                work.Enqueue(job);
             }
-
-            var maintenanceTask = Task.Delay(TraceBatchInterval, cancellationToken);
-            while (socket.State == WebSocketState.Open)
+            void QueueTraces()
             {
-                var completed = await Task.WhenAny(receiveTask, maintenanceTask).ConfigureAwait(false);
-                if (completed == maintenanceTask)
+                if (!supportsTraceFilter || traceBatch.Count == 0) return;
+                var batch = new EvmWalletTraceBatch(MaximumTraceBatchBlocks);
+                foreach (var item in traceBatch.ObservedAtByBlock) batch.Add(item.Key, item.Value);
+                traceBatch.Clear();
+                var expectedRevision = revision;
+                Enqueue(async () =>
                 {
-                    var supportedBeforeMaintenance = supportsTraceFilter;
-                    supportsTraceFilter = await FlushTraceBatchAsync(
-                            rpc,
-                            wallets,
-                            traceBatch,
-                            tracked,
-                            supportsTraceFilter,
-                            onActivity,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    if (supportedBeforeMaintenance && !supportsTraceFilter)
+                    var updates = new List<WalletActivityUpdate>();
+                    var supported = await FlushTraceBatchAsync(rpc, wallets, batch,
+                        new Dictionary<string, WalletActivityUpdate>(), true, updates.Add, cancellationToken).ConfigureAwait(false);
+                    return () =>
                     {
-                        onLive(false);
-                    }
-                    if (DateTimeOffset.UtcNow - lastFinalityRefresh >= FinalityRefreshInterval)
-                    {
-                        safeBlock = await TryGetFinalityBlockAsync(rpc, "safe", cancellationToken)
-                            .ConfigureAwait(false) ?? safeBlock;
-                        finalizedBlock = await TryGetFinalityBlockAsync(rpc, "finalized", cancellationToken)
-                            .ConfigureAwait(false) ?? finalizedBlock;
-                        PromoteActivities(tracked, heads.Tip?.Number ?? 0, safeBlock, finalizedBlock, onActivity);
-                        lastFinalityRefresh = DateTimeOffset.UtcNow;
-                    }
-                    maintenanceTask = Task.Delay(TraceBatchInterval, cancellationToken);
-                    continue;
-                }
-
-                var message = await receiveTask.ConfigureAwait(false);
-                if (message == null)
-                {
-                    throw new IOException("The EVM wallet WebSocket closed unexpectedly.");
-                }
-                receiveTask = ReceiveMessageAsync(socket, cancellationToken);
-                var previouslySupported = supportsTraceFilter;
-                supportsTraceFilter = await ProcessNotificationAsync(
-                        message,
-                        rpc,
-                        wallets,
-                        active,
-                        heads,
-                        tracked,
-                        tokenMetadata,
-                        traceBatch,
-                        supportsTraceFilter,
-                        safeBlock,
-                        finalizedBlock,
-                        onActivity,
-                        onBlockObserved,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                if (previouslySupported && !supportsTraceFilter)
-                {
-                    onLive(false);
-                }
-                if (supportsTraceFilter && traceBatch.Count >= MaximumTraceBatchBlocks)
-                {
-                    supportsTraceFilter = await FlushTraceBatchAsync(
-                            rpc,
-                            wallets,
-                            traceBatch,
-                            tracked,
-                            supportsTraceFilter,
-                            onActivity,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    if (!supportsTraceFilter)
-                    {
-                        onLive(false);
-                    }
-                }
+                        if (!supported && supportsTraceFilter) { supportsTraceFilter = false; onLive(false); }
+                        if (revision == expectedRevision)
+                            foreach (var update in updates) PublishAndTrack(update, tracked, onActivity);
+                    };
+                });
             }
-            throw new IOException("The EVM wallet WebSocket ended unexpectedly.");
-        }
-
-        private async Task<RecoveryResult> RecoverAsync(
-            EvmJsonRpcClient rpc,
-            SavedTrackedWallet[] wallets,
-            ulong? lastObservedBlock,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            TokenMetadataCache tokenMetadata,
-            Action<WalletActivityUpdate> onActivity,
-            Action<ulong> onBlockObserved,
-            CancellationToken cancellationToken)
-        {
-            var latest = await rpc.GetBlockAsync("latest", cancellationToken).ConfigureAwait(false);
-            var first = lastObservedBlock.HasValue
-                ? Math.Min(
-                    lastObservedBlock.Value >= InitialHistoryBlocks - 1
-                        ? lastObservedBlock.Value - InitialHistoryBlocks + 1
-                        : 0,
-                    latest.Number)
-                : latest.Number >= InitialHistoryBlocks
-                    ? latest.Number - InitialHistoryBlocks + 1
-                    : 0;
-            if (latest.Number - first + 1 > MaximumRecoveryBlocks)
+            void ProcessMessage(byte[] message)
             {
-                first = latest.Number - MaximumRecoveryBlocks + 1;
-            }
-
-            var recoveredTokenLogs = false;
-            if (first <= latest.Number)
-            {
-                try
+                using var document = JsonDocument.Parse(message);
+                var root = document.RootElement;
+                if (!root.TryGetProperty("params", out var parameters)
+                    || !parameters.TryGetProperty("subscription", out var subscription)
+                    || subscription.ValueKind != JsonValueKind.String
+                    || !active.TryGetValue(subscription.GetString()!, out var kind)
+                    || !parameters.TryGetProperty("result", out var result)) return;
+                var expectedRevision = revision;
+                if (kind == SubscriptionKind.Logs)
                 {
-                    foreach (var filter in WalletActivityRules.CreateEvmLogFilters(
-                                 wallets,
-                                 $"0x{first:x}",
-                                 $"0x{latest.Number:x}"))
+                    var log = EvmWebSocketStreamSource.ParseLog(result, _configuration.ChainId, 0,
+                        DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                    var updates = WalletActivityRules.ParseEvmTransfer(log, wallets, _sourceId).ToArray();
+                    foreach (var update in updates)
                     {
-                        var result = await rpc.GetLogsAsync(filter, cancellationToken).ConfigureAwait(false);
-                        if (result.ValueKind != JsonValueKind.Array)
+                        if (update.Removed) { tracked.Remove(update.EventId); onActivity(update); continue; }
+                        if (tracked.ContainsKey(update.EventId)) continue;
+                        // Show the transfer immediately; token metadata is optional enrichment.
+                        PublishAndTrack(update, tracked, onActivity);
+                        if (update.AssetId != null || update.AssetAddress == null) continue;
+                        Enqueue(async () =>
                         {
-                            throw new InvalidDataException("The EVM wallet log replay response is invalid.");
-                        }
-                        foreach (var item in result.EnumerateArray())
-                        {
-                            await PublishLogAsync(
-                                    item,
-                                    rpc,
-                                    wallets,
-                                    tracked,
-                                    tokenMetadata,
-                                    onActivity,
-                                    cancellationToken)
-                                .ConfigureAwait(false);
-                        }
+                            var metadata = await GetTokenMetadataAsync(rpc, update.AssetAddress,
+                                tokenMetadata, cancellationToken).ConfigureAwait(false);
+                            return () =>
+                            {
+                                if (revision != expectedRevision || !tracked.TryGetValue(update.EventId, out var current)) return;
+                                var enriched = WalletActivityRules.WithConfirmation(current, current.Confirmation);
+                                enriched.AssetSymbol = metadata.Symbol;
+                                enriched.AssetDecimals = metadata.Decimals;
+                                tracked[enriched.EventId] = enriched;
+                                onActivity(enriched);
+                            };
+                        });
                     }
-                    recoveredTokenLogs = true;
+                    return;
                 }
-                catch (Exception exception) when (CanContinueWithoutTokenLogReplay(exception))
+                var head = EvmWebSocketStreamSource.ParseHead(result, _configuration.ChainId, 0,
+                    DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+                var transition = heads.Apply(head);
+                if (transition.Kind == EvmHeadTransitionKind.Duplicate) return;
+                if (transition.Kind == EvmHeadTransitionKind.Reorg)
                 {
-                    // Some key-free endpoints require an address in eth_getLogs. Live topic
-                    // subscriptions and full-block native activity remain available.
-                }
-            }
-
-            var supportsTraceFilter = true;
-            if (first <= latest.Number)
-            {
-                if (!recoveredTokenLogs)
-                {
-                    for (var blockNumber = first; blockNumber <= latest.Number; blockNumber++)
-                    {
-                        if (!await TryRecoverBlockReceiptLogsAsync(
-                                rpc,
-                                wallets,
-                                blockNumber,
-                                tracked,
-                                tokenMetadata,
-                                onActivity,
-                                cancellationToken).ConfigureAwait(false))
-                        {
-                            break;
-                        }
-                        if (blockNumber == latest.Number)
-                        {
-                            break;
-                        }
-                    }
-                }
-                var observedAtByBlock = new Dictionary<ulong, long>();
-                for (var blockNumber = first; blockNumber <= latest.Number; blockNumber++)
-                {
-                    observedAtByBlock[blockNumber] = await ScanBlockTransactionsAsync(
-                            rpc,
-                            wallets,
-                            blockNumber,
-                            tracked,
-                            onActivity,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    if (blockNumber == latest.Number)
-                    {
-                        break;
-                    }
-                }
-                supportsTraceFilter = await TryPublishTracesAsync(
-                        rpc,
-                        wallets,
-                        first,
-                        latest.Number,
-                        observedAtByBlock,
-                        tracked,
-                        onActivity,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            var safeBlock = await TryGetFinalityBlockAsync(rpc, "safe", cancellationToken).ConfigureAwait(false);
-            var finalizedBlock = await TryGetFinalityBlockAsync(rpc, "finalized", cancellationToken)
-                .ConfigureAwait(false);
-            PromoteActivities(tracked, latest.Number, safeBlock, finalizedBlock, onActivity);
-            onBlockObserved(latest.Number);
-            return new RecoveryResult(latest, supportsTraceFilter, safeBlock, finalizedBlock);
-        }
-
-        internal static bool CanContinueWithoutTokenLogReplay(Exception exception) =>
-            exception is EvmJsonRpcException { Kind: EvmRpcFailureKind.RpcError };
-
-        private async Task<bool> ProcessNotificationAsync(
-            byte[] message,
-            EvmJsonRpcClient rpc,
-            SavedTrackedWallet[] wallets,
-            IReadOnlyDictionary<string, SubscriptionKind> active,
-            EvmHeadTracker heads,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            TokenMetadataCache tokenMetadata,
-            EvmWalletTraceBatch traceBatch,
-            bool supportsTraceFilter,
-            ulong? safeBlock,
-            ulong? finalizedBlock,
-            Action<WalletActivityUpdate> onActivity,
-            Action<ulong> onBlockObserved,
-            CancellationToken cancellationToken)
-        {
-            using var document = JsonDocument.Parse(message);
-            var root = document.RootElement;
-            if (!root.TryGetProperty("method", out var method)
-                || method.GetString() != "eth_subscription"
-                || !root.TryGetProperty("params", out var parameters)
-                || !parameters.TryGetProperty("subscription", out var subscription)
-                || subscription.ValueKind != JsonValueKind.String
-                || !active.TryGetValue(subscription.GetString()!, out var kind)
-                || !parameters.TryGetProperty("result", out var result))
-            {
-                return supportsTraceFilter;
-            }
-
-            if (kind == SubscriptionKind.Logs)
-            {
-                await PublishLogAsync(
-                        result,
-                        rpc,
-                        wallets,
-                        tracked,
-                        tokenMetadata,
-                        onActivity,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                return supportsTraceFilter;
-            }
-
-            var head = EvmWebSocketStreamSource.ParseHead(
-                result,
-                _configuration.ChainId,
-                0,
-                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-            if (heads.Tip != null && head.Number <= heads.Tip.Number && !heads.Contains(head.Number, head.Hash))
-            {
-                return supportsTraceFilter;
-            }
-            var transition = heads.Apply(head);
-            ulong scanFrom;
-            switch (transition.Kind)
-            {
-                case EvmHeadTransitionKind.Duplicate:
-                    return supportsTraceFilter;
-                case EvmHeadTransitionKind.Reorg:
-                    scanFrom = transition.CommonAncestorNumber!.Value + 1;
-                    RemoveActivitiesAfter(tracked, transition.CommonAncestorNumber.Value, onActivity);
+                    revision++;
+                    RemoveActivitiesAfter(tracked, transition.CommonAncestorNumber!.Value, onActivity);
                     traceBatch.RemoveAfter(transition.CommonAncestorNumber.Value);
-                    break;
-                case EvmHeadTransitionKind.Gap:
-                    scanFrom = transition.MissingFrom!.Value;
-                    heads.Reset(head);
-                    break;
-                case EvmHeadTransitionKind.SnapshotRequired:
-                    RemoveUnfinalizedActivities(tracked, onActivity);
-                    traceBatch.Clear();
-                    scanFrom = head.Number >= MaximumRecoveryBlocks
-                        ? head.Number - MaximumRecoveryBlocks + 1
-                        : 0;
-                    heads.Reset(head);
-                    break;
-                default:
-                    scanFrom = head.Number;
-                    break;
-            }
-
-            if (supportsTraceFilter
-                && traceBatch.Count > 0
-                && !traceBatch.CanAdd(scanFrom, head.Number))
-            {
-                supportsTraceFilter = await FlushTraceBatchAsync(
-                        rpc,
-                        wallets,
-                        traceBatch,
-                        tracked,
-                        supportsTraceFilter,
-                        onActivity,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-            }
-            for (var blockNumber = scanFrom; blockNumber <= head.Number; blockNumber++)
-            {
-                var observedAt = await ScanBlockTransactionsAsync(
-                        rpc,
-                        wallets,
-                        blockNumber,
-                        tracked,
-                        onActivity,
-                        cancellationToken)
-                    .ConfigureAwait(false);
-                if (supportsTraceFilter)
+                }
+                else if (transition.Kind is EvmHeadTransitionKind.Gap or EvmHeadTransitionKind.SnapshotRequired)
                 {
-                    if (!traceBatch.CanAdd(blockNumber, blockNumber))
+                    if (transition.Kind == EvmHeadTransitionKind.SnapshotRequired)
                     {
-                        supportsTraceFilter = await FlushTraceBatchAsync(
-                                rpc,
-                                wallets,
-                                traceBatch,
-                                tracked,
-                                supportsTraceFilter,
-                                onActivity,
-                                cancellationToken)
-                            .ConfigureAwait(false);
+                        revision++;
+                        RemoveUnfinalizedActivities(tracked, onActivity);
+                        traceBatch.Clear();
+                    }
+                    heads.Reset(head);
+                }
+                expectedRevision = revision;
+                // Scan only the head actually received, never fill a reconnect/gap with old blocks.
+                Enqueue(async () =>
+                {
+                    if (revision != expectedRevision) return () => { };
+                    var updates = new List<WalletActivityUpdate>();
+                    var observedAt = await ScanBlockTransactionsAsync(rpc, wallets, head.Number, head.Hash,
+                        new Dictionary<string, WalletActivityUpdate>(), updates.Add, cancellationToken).ConfigureAwait(false);
+                    return () =>
+                    {
+                        if (revision != expectedRevision) return;
+                        foreach (var update in updates) PublishAndTrack(update, tracked, onActivity);
+                        if (supportsTraceFilter)
+                        {
+                            if (!traceBatch.CanAdd(head.Number, head.Number)) QueueTraces();
+                            traceBatch.Add(head.Number, observedAt);
+                        }
+                        PromoteActivities(tracked, heads.Tip?.Number ?? head.Number, safeBlock, finalizedBlock, onActivity);
+                    };
+                });
+            }
+            onLive(supportsTraceFilter);
+            var maintenanceTask = Task.Delay(TraceBatchInterval, cancellationToken);
+            var idleTask = Task.Delay(Timeout.Infinite, cancellationToken);
+            try
+            {
+                while (socket.State == WebSocketState.Open)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (detailTask == null && work.TryDequeue(out var job)) detailTask = job();
+                    await Task.WhenAny(receiveTask, maintenanceTask, (Task?)detailTask ?? idleTask,
+                        buffered.Count > 0 ? Task.CompletedTask : idleTask).ConfigureAwait(false);
+                    if (detailTask?.IsCompleted == true)
+                    {
+                        (await detailTask.ConfigureAwait(false))();
+                        detailTask = null;
+                    }
+                    if (buffered.Count > 0) { buffered.TryDequeue(out var message); ProcessMessage(message); }
+                    else if (receiveTask.IsCompleted)
+                    {
+                        var message = await receiveTask.ConfigureAwait(false)
+                            ?? throw new IOException("The EVM wallet WebSocket closed unexpectedly.");
+                        receiveTask = ReceiveMessageAsync(socket, cancellationToken);
+                        ProcessMessage(message);
+                    }
+                    if (maintenanceTask.IsCompleted)
+                    {
+                        QueueTraces();
+                        if (DateTimeOffset.UtcNow - lastFinalityRefresh >= FinalityRefreshInterval)
+                        {
+                            lastFinalityRefresh = DateTimeOffset.UtcNow;
+                            Enqueue(async () =>
+                            {
+                                var safe = await TryGetFinalityBlockAsync(rpc, "safe", cancellationToken).ConfigureAwait(false);
+                                var finalized = await TryGetFinalityBlockAsync(rpc, "finalized", cancellationToken).ConfigureAwait(false);
+                                return () =>
+                                {
+                                    safeBlock = safe ?? safeBlock;
+                                    finalizedBlock = finalized ?? finalizedBlock;
+                                    PromoteActivities(tracked, heads.Tip?.Number ?? 0, safeBlock, finalizedBlock, onActivity);
+                                };
+                            });
+                        }
+                        maintenanceTask = Task.Delay(TraceBatchInterval, cancellationToken);
                     }
                 }
-                if (supportsTraceFilter)
-                {
-                    traceBatch.Add(blockNumber, observedAt);
-                }
-                onBlockObserved(blockNumber);
-                if (blockNumber == head.Number)
-                {
-                    break;
-                }
+                throw new IOException("The EVM wallet WebSocket ended unexpectedly.");
             }
-            PromoteActivities(tracked, head.Number, safeBlock, finalizedBlock, onActivity);
-            return supportsTraceFilter;
+            finally
+            {
+                lifetime.Cancel();
+                try { if (detailTask != null) await detailTask.ConfigureAwait(false); } catch { }
+                try { await receiveTask.ConfigureAwait(false); } catch { }
+            }
         }
 
         private async Task<bool> FlushTraceBatchAsync(
@@ -585,13 +338,14 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
             EvmJsonRpcClient rpc,
             SavedTrackedWallet[] wallets,
             ulong blockNumber,
+            string expectedHash,
             IDictionary<string, WalletActivityUpdate> tracked,
             Action<WalletActivityUpdate> onActivity,
             CancellationToken cancellationToken)
         {
-            var block = await rpc.GetWalletBlockAsync($"0x{blockNumber:x}", cancellationToken)
+            var block = await OnChainRequestRetry.RunAsync(() => rpc.GetWalletBlockAsync($"0x{blockNumber:x}", cancellationToken), cancellationToken)
                 .ConfigureAwait(false);
-            if (block.Number != blockNumber)
+            if (block.Number != blockNumber || !string.Equals(block.Hash, expectedHash, StringComparison.OrdinalIgnoreCase))
             {
                 throw new InvalidDataException("The EVM provider returned the wrong wallet block.");
             }
@@ -627,12 +381,12 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                 var addresses = wallets.Select(static wallet => wallet.Address).ToArray();
                 foreach (var outgoing in new[] { true, false })
                 {
-                    var traces = await rpc.GetAddressTracesAsync(
+                    var traces = await OnChainRequestRetry.RunAsync(() => rpc.GetAddressTracesAsync(
                             fromBlock,
                             toBlock,
                             addresses,
                             outgoing,
-                            cancellationToken)
+                            cancellationToken), cancellationToken)
                         .ConfigureAwait(false);
                     foreach (var trace in traces)
                     {
@@ -653,117 +407,10 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                 }
                 return true;
             }
-            catch (EvmJsonRpcException)
-            {
-                return false;
-            }
-        }
-
-        private async Task PublishLogAsync(
-            JsonElement result,
-            EvmJsonRpcClient rpc,
-            SavedTrackedWallet[] wallets,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            TokenMetadataCache tokenMetadata,
-            Action<WalletActivityUpdate> onActivity,
-            CancellationToken cancellationToken)
-        {
-            var log = EvmWebSocketStreamSource.ParseLog(
-                result,
-                _configuration.ChainId,
-                0,
-                DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
-            foreach (var update in WalletActivityRules.ParseEvmTransfer(log, wallets, _sourceId))
-            {
-                if (update.AssetId == null && update.AssetAddress != null)
-                {
-                    var metadata = await GetTokenMetadataAsync(
-                            rpc,
-                            update.AssetAddress,
-                            tokenMetadata,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                    update.AssetSymbol = metadata.Symbol;
-                    update.AssetDecimals = metadata.Decimals;
-                }
-                if (update.Removed)
-                {
-                    tracked.Remove(update.EventId);
-                    onActivity(update);
-                }
-                else
-                {
-                    PublishAndTrack(update, tracked, onActivity);
-                }
-            }
-        }
-
-        private async Task<bool> TryRecoverBlockReceiptLogsAsync(
-            EvmJsonRpcClient rpc,
-            SavedTrackedWallet[] wallets,
-            ulong blockNumber,
-            IDictionary<string, WalletActivityUpdate> tracked,
-            TokenMetadataCache tokenMetadata,
-            Action<WalletActivityUpdate> onActivity,
-            CancellationToken cancellationToken)
-        {
-            JsonElement receipts;
-            try
-            {
-                receipts = await rpc.GetBlockReceiptsAsync(blockNumber, cancellationToken).ConfigureAwait(false);
-            }
             catch (EvmJsonRpcException exception) when (exception.Kind == EvmRpcFailureKind.RpcError)
             {
                 return false;
             }
-            if (receipts.ValueKind != JsonValueKind.Array)
-            {
-                return false;
-            }
-            foreach (var receipt in receipts.EnumerateArray())
-            {
-                if (!receipt.TryGetProperty("logs", out var logs) || logs.ValueKind != JsonValueKind.Array)
-                {
-                    continue;
-                }
-                foreach (var log in logs.EnumerateArray())
-                {
-                    if (!IsTransferLog(log))
-                    {
-                        continue;
-                    }
-                    await PublishLogAsync(
-                            log,
-                            rpc,
-                            wallets,
-                            tracked,
-                            tokenMetadata,
-                            onActivity,
-                            cancellationToken)
-                        .ConfigureAwait(false);
-                }
-            }
-            return true;
-        }
-
-        internal static bool IsTransferLog(JsonElement log)
-        {
-            if (log.ValueKind != JsonValueKind.Object
-                || !log.TryGetProperty("topics", out var topics)
-                || topics.ValueKind != JsonValueKind.Array
-                || topics.GetArrayLength() == 0)
-            {
-                return false;
-            }
-            var topic = topics[0];
-            if (topic.ValueKind != JsonValueKind.String)
-            {
-                return false;
-            }
-            return topic.GetString() is { } value
-                   && (value.Equals(WalletActivityRules.TransferTopic, StringComparison.OrdinalIgnoreCase)
-                       || value.Equals(WalletActivityRules.TransferSingleTopic, StringComparison.OrdinalIgnoreCase)
-                       || value.Equals(WalletActivityRules.TransferBatchTopic, StringComparison.OrdinalIgnoreCase));
         }
 
         private async Task<TokenMetadata> GetTokenMetadataAsync(
@@ -780,7 +427,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
             byte? decimals = null;
             try
             {
-                var result = await rpc.CallAsync(address, EthereumAbi.SymbolSelector, "latest", cancellationToken)
+                var result = await OnChainRequestRetry.RunAsync(() => rpc.CallAsync(address, EthereumAbi.SymbolSelector, "latest", cancellationToken), cancellationToken)
                     .ConfigureAwait(false);
                 if (result.ValueKind == JsonValueKind.String
                     && EthereumAbi.TryDecodeString(result.GetString(), out var decoded))
@@ -788,12 +435,13 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                     symbol = decoded;
                 }
             }
-            catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is not OnChainUsageBudgetException)
+            catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is not OnChainUsageBudgetException
+                && exception is not EvmJsonRpcException { Kind: EvmRpcFailureKind.RateLimited or EvmRpcFailureKind.AuthenticationRejected })
             {
             }
             try
             {
-                var result = await rpc.CallAsync(address, EthereumAbi.DecimalsSelector, "latest", cancellationToken)
+                var result = await OnChainRequestRetry.RunAsync(() => rpc.CallAsync(address, EthereumAbi.DecimalsSelector, "latest", cancellationToken), cancellationToken)
                     .ConfigureAwait(false);
                 if (result.ValueKind == JsonValueKind.String
                     && EthereumAbi.TryDecodeByte(result.GetString(), out var decoded))
@@ -801,7 +449,8 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                     decimals = decoded;
                 }
             }
-            catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is not OnChainUsageBudgetException)
+            catch (Exception exception) when (!cancellationToken.IsCancellationRequested && exception is not OnChainUsageBudgetException
+                && exception is not EvmJsonRpcException { Kind: EvmRpcFailureKind.RateLimited or EvmRpcFailureKind.AuthenticationRejected })
             {
             }
             var metadata = new TokenMetadata(symbol, decimals);
@@ -820,6 +469,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
                 return;
             }
             tracked[update.EventId] = update;
+            if (tracked.Count > 2048) tracked.Remove(tracked.Keys.First());
             onActivity(update);
         }
 
@@ -887,28 +537,16 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
         {
             try
             {
-                return (await rpc.GetBlockAsync(blockTag, cancellationToken).ConfigureAwait(false)).Number;
+                return (await OnChainRequestRetry.RunAsync(() => rpc.GetBlockAsync(blockTag, cancellationToken), cancellationToken).ConfigureAwait(false)).Number;
             }
-            catch (EvmJsonRpcException)
+            catch (EvmJsonRpcException exception) when (exception.Kind == EvmRpcFailureKind.RpcError)
             {
                 return null;
             }
         }
 
-        private static EvmHeadUpdate ToHead(EvmRpcBlockHeader block)
-        {
-            return new EvmHeadUpdate
-            {
-                ChainId = string.Empty,
-                Number = block.Number,
-                Hash = block.Hash,
-                ParentHash = block.ParentHash,
-                Timestamp = block.Timestamp
-            };
-        }
-
         private async Task SendSubscriptionAsync(
-            ClientWebSocket socket,
+            WebSocket socket,
             long requestId,
             object[] parameters,
             ISet<long> pending,
@@ -951,7 +589,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
         }
 
         private async Task<byte[]?> ReceiveMessageAsync(
-            ClientWebSocket socket,
+            WebSocket socket,
             CancellationToken cancellationToken)
         {
             using var output = new MemoryStream();
@@ -986,12 +624,6 @@ namespace TrenchHQ.Infrastructure.OnChain.Evm
             Heads,
             Logs
         }
-
-        private sealed record RecoveryResult(
-            EvmRpcBlockHeader Latest,
-            bool SupportsTraceFilter,
-            ulong? SafeBlock,
-            ulong? FinalizedBlock);
 
         private sealed record TokenMetadata(string? Symbol, byte? Decimals);
 

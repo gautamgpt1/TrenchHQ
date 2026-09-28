@@ -139,15 +139,6 @@
                                          PlaceholderText="{Binding CredentialPlaceholder}"
                                          PasswordRevealMode="Peek"
                                          Style="{StaticResource InputPasswordBoxStyle}" />
-                            <Button Tag="{Binding}"
-                                    Content="{Binding ReuseCredentialText}"
-                                    Visibility="{Binding ReuseCredentialVisibility}"
-                                    Style="{StaticResource SecondaryButtonStyle}"
-                                    HorizontalAlignment="Left"
-                                    Click="OnReuseCredentialClick" />
-                            <TextBlock Text="{Binding CredentialStorageText}"
-                                       Style="{StaticResource HintTextStyle}"
-                                       TextWrapping="Wrap" />
 
                             <ComboBox Header="Commitment"
                                       ItemsSource="{Binding CommitmentOptions}"

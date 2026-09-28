@@ -4,6 +4,7 @@ using TrenchHQ.Core.Providers;
 using TrenchHQ.Core.Wallets;
 using TrenchHQ.Core.Widgets;
 using TrenchHQ.Infrastructure.OnChain.Evm;
+using TrenchHQ.Infrastructure.OnChain;
 using TrenchHQ.Infrastructure.OnChain.Solana;
 using TrenchHQ.Infrastructure.Providers;
 using System;
@@ -23,8 +24,6 @@ namespace TrenchHQ.Infrastructure.Wallets
         private readonly object _stateLock = new();
         private readonly Dictionary<string, WalletStreamState> _states = new(StringComparer.Ordinal);
         private readonly Dictionary<string, string> _errors = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, ulong> _evmCheckpoints = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, string> _solanaCheckpoints = new(StringComparer.Ordinal);
         private readonly Dictionary<string, WalletActivityUpdate> _cache = new(StringComparer.Ordinal);
         private readonly LinkedList<string> _cacheOrder = [];
         private CancellationTokenSource? _runCts;
@@ -53,6 +52,7 @@ namespace TrenchHQ.Infrastructure.Wallets
                     .Select(static group => group.First())
                     .ToArray();
                 var plans = new List<NetworkPlan>();
+                var unavailable = new List<(string ChainNamespace, string ChainId, string Reason)>();
                 foreach (var group in wallets.GroupBy(static wallet =>
                              WalletActivityRules.GetNetworkKey(wallet.ChainNamespace, wallet.ChainId)))
                 {
@@ -60,16 +60,21 @@ namespace TrenchHQ.Infrastructure.Wallets
                     var configuration = _providers.GetSelectedConfiguration(first.ChainNamespace, first.ChainId);
                     if (configuration == null)
                     {
+                        var reason = GetErrorFor(group)
+                                     ?? "No compatible API connection is available. Check API Connections.";
                         SetState(first.ChainNamespace, first.ChainId, WalletStreamState.Unavailable,
-                            "No active API connection is configured for this chain.");
+                            reason);
+                        unavailable.Add((first.ChainNamespace, first.ChainId, reason));
                         continue;
                     }
                     var preset = OnChainProviderCatalog.Get(configuration.ProviderType);
                     if (first.ChainNamespace == ChainNamespaces.Solana
                         && preset.StreamTransport != OnChainStreamTransport.SolanaWebSocket)
                     {
+                        const string reason = "Wallet Watcher V1 requires a standard Solana WebSocket API connection.";
                         SetState(first.ChainNamespace, first.ChainId, WalletStreamState.Unavailable,
-                            "Wallet Watcher V1 requires a standard Solana WebSocket API connection.");
+                            reason);
+                        unavailable.Add((first.ChainNamespace, first.ChainId, reason));
                         continue;
                     }
                     try
@@ -77,9 +82,12 @@ namespace TrenchHQ.Infrastructure.Wallets
                         var apiKey = await _providers.GetCredentialAsync(configuration).ConfigureAwait(false);
                         plans.Add(new NetworkPlan(configuration, apiKey, group.ToArray()));
                     }
-                    catch (Exception exception)
+                    catch (Exception)
                     {
-                        SetState(first.ChainNamespace, first.ChainId, WalletStreamState.Unavailable, exception.Message);
+                        const string reason = "The saved API credential could not be read. Update API Connections.";
+                        SetState(first.ChainNamespace, first.ChainId, WalletStreamState.Unavailable,
+                            reason);
+                        unavailable.Add((first.ChainNamespace, first.ChainId, reason));
                         await _providers.TryFailoverAsync(
                                 configuration.Id,
                                 OnChainProviderFailureKind.Authentication)
@@ -88,12 +96,15 @@ namespace TrenchHQ.Infrastructure.Wallets
                 }
 
                 var signature = BuildSignature(plans);
-                if (string.Equals(signature, _activeSignature, StringComparison.Ordinal))
+                if (string.Equals(signature, _activeSignature, StringComparison.Ordinal)
+                    && _workers.All(worker => !worker.IsCompleted))
                 {
                     return;
                 }
 
                 await StopWorkersAsync().ConfigureAwait(false);
+                foreach (var item in unavailable)
+                    SetState(item.ChainNamespace, item.ChainId, WalletStreamState.Unavailable, item.Reason);
                 _activeSignature = signature;
                 if (plans.Count == 0)
                 {
@@ -146,6 +157,7 @@ namespace TrenchHQ.Infrastructure.Wallets
                               + "|" + NormalizeAddress(update)
                     })
                     .Where(item => walletLabels.ContainsKey(item.Key))
+                    .OrderByDescending(item => item.Update.ObservedAtUnixMs)
                     .Take(maximumCount)
                     .Select(item =>
                     {
@@ -205,23 +217,22 @@ namespace TrenchHQ.Infrastructure.Wallets
         private async Task RunNetworkAsync(NetworkPlan plan, CancellationToken cancellationToken)
         {
             var attempt = 0;
+            string? lastError = null;
             while (!cancellationToken.IsCancellationRequested)
             {
                 SetState(
                     plan.Configuration.ChainNamespace,
                     plan.Configuration.ChainId,
-                    attempt == 0 ? WalletStreamState.Connecting : WalletStreamState.Reconnecting);
+                    attempt == 0 ? WalletStreamState.Connecting : WalletStreamState.Reconnecting,
+                    attempt == 0 ? null : lastError);
                 try
                 {
                     if (plan.Configuration.ChainNamespace == ChainNamespaces.Solana)
                     {
-                        var checkpoints = GetSolanaCheckpoints();
                         var source = new SolanaWalletActivityStreamSource(plan.Configuration, plan.ApiKey);
                         await source.RunAsync(
                                 plan.Wallets,
-                                checkpoints,
                                 Publish,
-                                SetSolanaCheckpoint,
                                 () => SetState(
                                     plan.Configuration.ChainNamespace,
                                     plan.Configuration.ChainId,
@@ -232,20 +243,10 @@ namespace TrenchHQ.Infrastructure.Wallets
                     }
                     else
                     {
-                        var networkKey = WalletActivityRules.GetNetworkKey(
-                            plan.Configuration.ChainNamespace,
-                            plan.Configuration.ChainId);
-                        ulong? checkpoint;
-                        lock (_stateLock)
-                        {
-                            checkpoint = _evmCheckpoints.TryGetValue(networkKey, out var value) ? value : null;
-                        }
                         var source = new EvmWalletActivityStreamSource(plan.Configuration, plan.ApiKey);
                         await source.RunAsync(
                                 plan.Wallets,
-                                checkpoint,
                                 Publish,
-                                block => SetEvmCheckpoint(networkKey, block),
                                 internalTransfers => SetState(
                                     plan.Configuration.ChainNamespace,
                                     plan.Configuration.ChainId,
@@ -269,27 +270,29 @@ namespace TrenchHQ.Infrastructure.Wallets
                 catch (Exception exception)
                 {
                     attempt++;
+                    lastError = SanitizeError(exception);
                     SetState(
                         plan.Configuration.ChainNamespace,
                         plan.Configuration.ChainId,
                         WalletStreamState.Reconnecting,
-                        SanitizeError(exception));
+                        lastError);
                     var failureKind = ClassifyProviderFailure(exception);
                     var shouldFailover = failureKind == OnChainProviderFailureKind.Authentication
-                                         || (failureKind == OnChainProviderFailureKind.RateLimited && attempt >= 2)
+                                         || failureKind == OnChainProviderFailureKind.RateLimited
                                          || attempt >= 3;
                     if (shouldFailover)
                     {
                         var outcome = await _providers.TryFailoverAsync(
                                 plan.Configuration.Id,
-                                failureKind)
+                                failureKind, OnChainRequestRetry.RetryAfter(exception))
                             .ConfigureAwait(false);
                         if (outcome != OnChainProviderFailoverOutcome.Ignored)
                         {
                             break;
                         }
                     }
-                    var delay = MarketReconnectRules.GetDelay(attempt - 1);
+                    var delay = OnChainRequestRetry.RetryAfter(exception) ?? MarketReconnectRules.GetDelay(attempt - 1);
+                    if (delay < TimeSpan.Zero) delay = TimeSpan.Zero;
                     try
                     {
                         await Task.Delay(delay, cancellationToken).ConfigureAwait(false);
@@ -300,7 +303,9 @@ namespace TrenchHQ.Infrastructure.Wallets
                     }
                 }
             }
-            SetState(plan.Configuration.ChainNamespace, plan.Configuration.ChainId, WalletStreamState.Disconnected);
+            SetState(plan.Configuration.ChainNamespace, plan.Configuration.ChainId,
+                cancellationToken.IsCancellationRequested ? WalletStreamState.Disconnected : WalletStreamState.Unavailable,
+                cancellationToken.IsCancellationRequested ? null : lastError);
         }
 
         private void Publish(WalletActivityUpdate update)
@@ -318,7 +323,9 @@ namespace TrenchHQ.Infrastructure.Wallets
                 }
                 else if (_cache.TryGetValue(update.EventId, out var existing))
                 {
-                    if (WalletActivityRules.IsConfirmationUpgrade(existing.Confirmation, update.Confirmation))
+                    if (WalletActivityRules.IsConfirmationUpgrade(existing.Confirmation, update.Confirmation)
+                        || update.Confirmation == existing.Confirmation
+                        && (existing.AssetDecimals != update.AssetDecimals || existing.AssetSymbol != update.AssetSymbol))
                     {
                         var replacement = Clone(update);
                         replacement.ObservedAtUnixMs = Math.Min(
@@ -380,33 +387,6 @@ namespace TrenchHQ.Infrastructure.Wallets
             }
         }
 
-        private void SetEvmCheckpoint(string networkKey, ulong block)
-        {
-            lock (_stateLock)
-            {
-                if (!_evmCheckpoints.TryGetValue(networkKey, out var current) || block > current)
-                {
-                    _evmCheckpoints[networkKey] = block;
-                }
-            }
-        }
-
-        private void SetSolanaCheckpoint(string address, string signature)
-        {
-            lock (_stateLock)
-            {
-                _solanaCheckpoints[address] = signature;
-            }
-        }
-
-        private IReadOnlyDictionary<string, string> GetSolanaCheckpoints()
-        {
-            lock (_stateLock)
-            {
-                return new Dictionary<string, string>(_solanaCheckpoints, StringComparer.Ordinal);
-            }
-        }
-
         private async Task StopWorkersAsync()
         {
             if (_runCts == null)
@@ -460,6 +440,11 @@ namespace TrenchHQ.Infrastructure.Wallets
 
         private static string SanitizeError(Exception exception)
         {
+            var failureKind = ClassifyProviderFailure(exception);
+            if (failureKind == OnChainProviderFailureKind.Authentication)
+                return "The API connection rejected its credential. Update API Connections.";
+            if (failureKind == OnChainProviderFailureKind.RateLimited)
+                return "The API connection is rate limited. Retrying automatically.";
             return exception is InvalidOperationException { Message: var message }
                    && message.StartsWith("EVM wallet subscription failed:", StringComparison.Ordinal)
                 ? "The active EVM API rejected a wallet subscription. Retrying."

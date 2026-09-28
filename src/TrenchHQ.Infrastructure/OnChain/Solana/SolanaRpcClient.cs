@@ -20,8 +20,10 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
     internal sealed class SolanaRpcException(
         string message,
         int? rpcCode = null,
-        int? httpStatusCode = null) : Exception(message)
+        int? httpStatusCode = null,
+        TimeSpan? retryAfter = null) : Exception(message)
     {
+        internal TimeSpan? RetryAfter { get; } = retryAfter;
         internal int? RpcCode { get; } = rpcCode;
         internal int? HttpStatusCode { get; } = httpStatusCode;
         internal bool IsRateLimited => RpcCode is 402 or 429 || HttpStatusCode is 402 or 429;
@@ -546,6 +548,8 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
                 request,
                 HttpCompletionOption.ResponseHeadersRead,
                 cancellationToken).ConfigureAwait(false);
+            var retryAfter = response.Headers.RetryAfter?.Delta
+                ?? (response.Headers.RetryAfter?.Date - DateTimeOffset.UtcNow);
             if ((int)response.StatusCode == 402)
             {
                 _usage?.QuotaExceeded(response.Headers.RetryAfter?.Delta
@@ -564,7 +568,7 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
             {
                 throw new SolanaRpcException(
                     $"The Solana RPC returned HTTP {(int)response.StatusCode}.",
-                    httpStatusCode: (int)response.StatusCode);
+                    httpStatusCode: (int)response.StatusCode, retryAfter: retryAfter);
             }
             using (document)
             {
@@ -583,13 +587,13 @@ namespace TrenchHQ.Infrastructure.OnChain.Solana
                 throw new SolanaRpcException(
                     $"Solana RPC error {code}: {message}",
                     code,
-                    response.IsSuccessStatusCode ? null : (int)response.StatusCode);
+                    response.IsSuccessStatusCode ? null : (int)response.StatusCode, retryAfter);
             }
             if (!response.IsSuccessStatusCode)
             {
                 throw new SolanaRpcException(
                     $"The Solana RPC returned HTTP {(int)response.StatusCode}.",
-                    httpStatusCode: (int)response.StatusCode);
+                    httpStatusCode: (int)response.StatusCode, retryAfter: retryAfter);
             }
             if (!root.TryGetProperty("result", out var result))
             {

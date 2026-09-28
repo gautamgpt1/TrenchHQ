@@ -157,17 +157,17 @@ namespace TrenchHQ.Views
                 """
                 Save the providers you want to make available under APIs. TrenchHQ chooses a compatible provider for each chain automatically. You do not need to keep choosing one manually.
 
-                It switches when a connection fails or a local usage guard is reached, and retries eligible providers after a wait or reset. The widget keeps its polling or streaming mode. A backup must support the same chain and mode.
+                It switches when a connection fails or a usage limit you enabled is reached, and retries eligible providers after a wait or reset. The widget keeps its polling or streaming mode. A backup must support the same chain and mode.
 
                 PublicNode is the final key-free fallback for the four supported EVM chains. Solana has no equivalent built-in key-free fallback. If no compatible route remains, the feed pauses until one is available.
                 """),
             new("Connections & usage", "Can TrenchHQ guarantee I stay within a free allowance?",
                 """
-                No. TrenchHQ estimates its own usage and uses conservative daily guards for known free plans. Review or override those guards under APIs > Usage to match your plan.
+                No. TrenchHQ estimates its own usage. It does not impose a daily allowance or reserve part of your plan. You can enable your own limit under APIs > Usage.
 
                 These figures are not your provider's actual remaining balance. Another app may use the same key, and billing rules or custom plans can differ. Check the provider dashboard for the account's usage and billing controls.
 
-                A guard can trigger an automatic switch to an available backup. It cannot guarantee that a provider will never charge you.
+                Your limit can trigger an automatic switch to an available backup. It cannot guarantee that a provider will never charge you.
                 """),
             new("Connections & usage", "How can I reduce provider usage?",
                 """

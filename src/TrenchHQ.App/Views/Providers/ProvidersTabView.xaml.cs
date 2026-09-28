@@ -29,10 +29,10 @@ namespace TrenchHQ.Views
             var keys = providers.GetConfigurations()
                 .Where(profile => !OnChainProviderCatalog.IsPublicEvaluationProvider(profile.ProviderType))
                 .SelectMany(usage.Register).Distinct().ToArray();
-            var selector = new ComboBox { Header = "Provider allowance", HorizontalAlignment = HorizontalAlignment.Stretch };
+            var selector = new ComboBox { Header = "Provider", HorizontalAlignment = HorizontalAlignment.Stretch };
             foreach (var key in keys) selector.Items.Add(usage.Snapshot(key).Name);
             var summary = new TextBlock { Style = (Style)Application.Current.Resources["BodyTextStyle"] };
-            var enabled = new CheckBox { Content = "Apply a local usage limit (advanced override)" };
+            var enabled = new CheckBox { Content = "Set my own usage limit" };
             var limit = new NumberBox { Header = "Allowance assigned to TrenchHQ", Minimum = 0, SmallChange = 1000 };
             var used = new NumberBox { Header = "Usage already counted in this cycle", Minimum = 0, SmallChange = 1000 };
             var cycle = new ComboBox { Header = "Reset cycle", ItemsSource = new[] { "Monthly", "Daily" }, SelectedIndex = 0 };
@@ -41,7 +41,7 @@ namespace TrenchHQ.Views
             var panel = new StackPanel { Spacing = 12, MaxWidth = 520 };
             panel.Children.Add(new TextBlock
             {
-                Text = "Selection and fallback are automatic. Known free plans use a daily TrenchHQ guard: 90% of the monthly allowance divided by 31, or 90% of a daily allowance. These local estimates cannot see other apps or the actual account balance. Unknown plans rely on failure/quota responses. Optional overrides below are shared across this provider's chains; polling/event modes stay as selected.",
+                Text = "Usage is an estimate of traffic from TrenchHQ, not your provider's account balance. No app usage limit is applied unless you enable one below. Provider limits and automatic fallback still apply.",
                 Style = (Style)Application.Current.Resources["HintTextStyle"]
             });
             foreach (var control in new UIElement[] { selector, summary, enabled, limit, used, cycle, start, error }) panel.Children.Add(control);
@@ -50,9 +50,17 @@ namespace TrenchHQ.Views
             var dialog = new ContentDialog
             {
                 XamlRoot = XamlRoot, Title = "Usage", CloseButtonText = "Close",
-                PrimaryButtonText = "Save override", IsPrimaryButtonEnabled = keys.Length > 0,
+                PrimaryButtonText = "Save", IsPrimaryButtonEnabled = keys.Length > 0,
                 Content = new ScrollViewer { Content = panel, MaxHeight = 580 }
             };
+            void ShowLimitFields()
+            {
+                foreach (var field in new UIElement[] { limit, used, cycle, start })
+                    field.Visibility = enabled.IsChecked == true ? Visibility.Visible : Visibility.Collapsed;
+            }
+            enabled.Checked += (_, _) => ShowLimitFields();
+            enabled.Unchecked += (_, _) => ShowLimitFields();
+            ShowLimitFields();
             decimal loadedUsed = 0;
             void Refresh()
             {
@@ -60,15 +68,16 @@ namespace TrenchHQ.Views
                 var key = keys[selector.SelectedIndex];
                 var snapshot = usage.Snapshot(key);
                 var rate = usage.UnitsPerHour(key);
-                var status = snapshot.QuotaPauseUntilUtc.HasValue ? $"Provider quota pause until {snapshot.QuotaPauseUntilUtc:u}."
+                var status = snapshot.QuotaPauses.Count > 0 ? "A connection reported an exhausted provider quota. Other eligible connections remain available."
                     : snapshot.Enabled ? snapshot.Blocked ? "Local allowance reached; switched or paused."
-                    : snapshot.Automatic == true ? "Automatic daily guard is on." : "Custom allowance is on."
-                    : "Account allowance unknown; automatic health/quota fallback remains on.";
-                summary.Text = $"{snapshot.Used:N2} {snapshot.Unit} this cycle · {snapshot.RpcRequests:N0} RPC requests\n"
+                    : "Your usage limit is on."
+                    : "No app usage limit. Automatic fallback is on.";
+                summary.Text = $"{snapshot.Used:N2} {snapshot.Unit} {(snapshot.Enabled ? "this cycle" : "counted")} · {snapshot.RpcRequests:N0} RPC requests\n"
                     + $"{snapshot.StreamMessages:N0} stream messages · {snapshot.StreamBytes / 1048576d:N2} MiB received\n"
                     + (rate.HasValue ? $"Recent session rate: {rate:N2} {snapshot.Unit}/hour\n" : "Session rate needs 30 seconds of traffic.\n")
                     + (snapshot.Enabled && rate > 0 ? $"At this rate: {Math.Max(0, snapshot.Limit - snapshot.Used) / rate.Value:N1} hours until the local guard\n" : string.Empty)
-                    + status + (snapshot.UnknownCost ? " Some method costs are unknown; budgets pause this provider." : string.Empty)
+                    + status + (snapshot.UnknownCost ? " Some costs are unknown; the estimate is incomplete."
+                        + (snapshot.Enabled ? " Your usage limit pauses this provider." : string.Empty) : string.Empty)
                     + (usage.PersistenceError == null ? string.Empty : "\n" + usage.PersistenceError);
             }
             selector.SelectionChanged += (_, _) =>
@@ -317,49 +326,6 @@ namespace TrenchHQ.Views
             }
         }
 
-        private async void OnReuseCredentialClick(object sender, RoutedEventArgs e)
-        {
-            if (sender is not Button { Tag: ProviderPresetEditorRow row } button
-                || Application.Current is not App app
-                || row.GetReusableCredentialConfigurationId() is not string sourceId)
-            {
-                return;
-            }
-
-            button.IsEnabled = false;
-            row.StatusText = "Testing the target endpoint with the saved same-family key...";
-            try
-            {
-                var source = app.OnChainProviders.GetConfigurations().FirstOrDefault(configuration =>
-                    string.Equals(configuration.Id, sourceId, StringComparison.OrdinalIgnoreCase))
-                    ?? throw new InvalidOperationException("The source credential configuration is unavailable.");
-                var credential = await app.OnChainProviders.GetCredentialAsync(source);
-                var configuration = row.CreateConfiguration();
-                await ProbeConfigurationAsync(configuration, credential);
-                await app.OnChainProviders.UpsertAsync(
-                    configuration,
-                    null,
-                    source.CredentialReference);
-                PopulateRows(
-                    app.OnChainProviders.GetConfigurations(),
-                    GetActiveConfigurationIds(app),
-                    row.ProviderType);
-                var savedRow = AllRows().First(item => string.Equals(
-                    item.ProviderType,
-                    row.ProviderType,
-                    StringComparison.Ordinal));
-                savedRow.StatusText = "Configuration saved with the existing shared provider credential.";
-            }
-            catch (Exception exception)
-            {
-                row.StatusText = exception.Message;
-            }
-            finally
-            {
-                button.IsEnabled = true;
-            }
-        }
-
         private async void OnRemoveProviderClick(object sender, RoutedEventArgs e)
         {
             if (sender is not FrameworkElement { Tag: ProviderPresetEditorRow row }
@@ -471,7 +437,7 @@ namespace TrenchHQ.Views
                     var source = configurations.FirstOrDefault(item =>
                         !string.Equals(item.ProviderType, preset.ProviderType, StringComparison.Ordinal)
                         && OnChainProviderConfigurationStore.CanReuseCredential(item, preset));
-                    row.SetReusableCredential(source?.Id, source?.FriendlyName ?? source?.ProviderType);
+                    row.SetReusableCredential(source?.Id);
                 }
                 AddRowByAccessCategory(preset, row);
             }

@@ -55,8 +55,11 @@ Create a **Wallet Watcher**, choose the chain and enter a public wallet address.
 Add an optional label, save it and assign the widget to a panel. Provider
 requirements apply to wallet activity too.
 
-Wallet Watcher shows supported activity, not a complete account statement or
-portfolio valuation. Updates can arrive after the original transaction.
+Wallet Watcher shows new activity while connected. It does not load old
+transactions on startup or catch up on missed activity after a disconnection.
+Transfer details and confirmations can arrive after the first notification;
+internal EVM transfers also depend on your provider's trace support.
+It is not a complete account statement or portfolio valuation.
 TrenchHQ does not need a seed phrase, private key or wallet-signing permission.
 
 ### Follow accounts on X
@@ -104,7 +107,8 @@ others also need the endpoint URL from your provider dashboard. Save compatible
 providers and TrenchHQ chooses which to use for each chain, including backups
 when needed. It keeps your selected polling/streaming mode during a switch.
 
-**Usage** shows local estimates and configured limits. These are not the account's
+**Usage** shows local estimates. No app limit or daily allocation is imposed;
+enable **Set my own usage limit** only if you want one. These are not the account's
 actual remaining balance, especially if other apps share the same key. Use the
 provider dashboard for billing and account-wide usage. See
 [Services and integrations](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/SERVICES.md)

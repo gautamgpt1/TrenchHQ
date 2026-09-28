@@ -32,7 +32,6 @@ namespace TrenchHQ.ViewModels
         private int _commitmentIndex;
         private string _statusText = string.Empty;
         private string? _reusableCredentialConfigurationId;
-        private string _reuseCredentialText = string.Empty;
         private string _baselineStreamEndpoint = string.Empty;
         private string _baselineRpcEndpoint = string.Empty;
         private string _baselineCredential = string.Empty;
@@ -72,9 +71,6 @@ namespace TrenchHQ.ViewModels
         public string CredentialPlaceholder => Preset.RequiresCredential
             ? "Enter API key or access token"
             : "Optional for this provider";
-        public string CredentialStorageText => OnChainProviderCatalog.SharesCredentialAcrossChains(Preset)
-            ? "This encrypted provider credential is stored once and shared by its linked TrenchHQ chain configurations. Changing it here updates every linked configuration."
-            : "The credential is encrypted for this Windows account. TrenchHQ never stores it in the endpoint fields.";
         public Visibility CommitmentVisibility => Preset.ChainNamespace == ChainNamespaces.Solana
             ? Visibility.Visible
             : Visibility.Collapsed;
@@ -83,10 +79,6 @@ namespace TrenchHQ.ViewModels
         public string SetupLinkLabel => Preset.SetupLinkLabel;
         public Uri? SetupUri => string.IsNullOrWhiteSpace(Preset.SetupUrl) ? null : new Uri(Preset.SetupUrl);
         public Visibility SetupLinkVisibility => SetupUri == null ? Visibility.Collapsed : Visibility.Visible;
-        public string ReuseCredentialText => _reuseCredentialText;
-        public Visibility ReuseCredentialVisibility => _reusableCredentialConfigurationId == null
-            ? Visibility.Collapsed
-            : Visibility.Visible;
         public IReadOnlyList<string> CommitmentOptions => CommitmentValues;
         public Visibility ConfiguredVisibility => IsConfigured ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NotConfiguredVisibility => IsConfigured ? Visibility.Collapsed : Visibility.Visible;
@@ -248,14 +240,9 @@ namespace TrenchHQ.ViewModels
             UpdateDirty();
         }
 
-        internal void SetReusableCredential(string? configurationId, string? displayName)
+        internal void SetReusableCredential(string? configurationId)
         {
             _reusableCredentialConfigurationId = configurationId;
-            _reuseCredentialText = configurationId == null
-                ? string.Empty
-                : $"Reuse saved {displayName} key";
-            OnPropertyChanged(nameof(ReuseCredentialText));
-            OnPropertyChanged(nameof(ReuseCredentialVisibility));
         }
 
         internal string? GetReusableCredentialConfigurationId()

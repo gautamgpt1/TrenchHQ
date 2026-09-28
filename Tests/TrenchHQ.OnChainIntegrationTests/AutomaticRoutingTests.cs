@@ -16,6 +16,8 @@ internal static class AutomaticRoutingTests
             using var usage = new OnChainProviderUsage();
             var service = Service(usage, profile);
             Check(Selected(service, profile)?.Id == profile.Id, $"Key-only selection failed: {preset.ProviderType}");
+            Check(usage.Register(profile).All(key => !usage.Snapshot(key).Enabled && usage.Snapshot(key).Limit == 0),
+                $"An automatic usage cap was imposed: {preset.ProviderType}");
             foreach (var status in new[] { 402, 401, 403, 429 })
             {
                 using var isolatedUsage = new OnChainProviderUsage();
@@ -32,7 +34,7 @@ internal static class AutomaticRoutingTests
                 catch (OnChainUsageBudgetException)
                 {
                     Check(status == 402 && isolatedUsage.IsBlocked(profile), "Quota response did not pause the provider.");
-                    Check(isolatedUsage.Snapshot(OnChainProviderUsage.GroupKey(profile)).QuotaPauseUntilUtc.HasValue,
+                    Check(isolatedUsage.QuotaPauseUntil(profile).HasValue,
                         "Quota was treated as a permanently rejected credential.");
                 }
                 catch (EvmJsonRpcException) { Check(status != 402, "Quota bypassed the shared usage ledger."); }
@@ -104,11 +106,15 @@ internal static class AutomaticRoutingTests
                 FallbackConfigurationIds = new() { ["eip155:1"] = [alchemy.Id] }
             };
             var service = new OnChainProviderConfigurationService(document, () => true, usage: usage);
-            Check(Selected(service, alchemy)?.Id == drpc.Id, "Automatic selection used a saved manual route or raw CU values.");
+            Check(Selected(service, alchemy)?.Id == alchemy.Id, "Automatic selection used a saved manual route.");
             var key = usage.Register(drpc).Single();
             var auto = usage.Snapshot(key);
-            Check(auto.Automatic == true && auto.Daily && auto.Enabled && auto.Limit == decimal.Floor(210_000_000m * 0.9m / 31),
-                "The automatic free-plan guard was missing.");
+            Check(auto.Automatic == false && !auto.Enabled && auto.Limit == 0,
+                "An app-imposed guard was enabled.");
+            // Explicit limits can influence selection; unknown account balances cannot.
+            usage.Configure(usage.Register(alchemy).Single(), true, 100, true, now, 85);
+            usage.Configure(key, true, 100, true, now, 0);
+            usage.Configure(usage.Register(alchemy).Single(), true, 100, true, now, 0);
             usage.Configure(key, true, 100, true, now, 79);
             Check(Selected(service, alchemy)?.Id == drpc.Id, "A healthy route flapped before low headroom.");
             usage.CreateScope(drpc).Rpc("eth_getBlockByNumber");
@@ -179,7 +185,7 @@ internal static class AutomaticRoutingTests
             var infura = Profile(OnChainProviderTypes.InfuraEthereum);
             usage.CreateScope(infura).QuotaExceededForTest();
             var group = usage.Snapshot(usage.Register(infura).Single());
-            Check(group.QuotaPauseUntilUtc == new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero),
+            Check(usage.QuotaPauseUntil(infura) == new DateTimeOffset(now.UtcDateTime.Date.AddDays(1), TimeSpan.Zero),
                 "Infura did not use its documented UTC reset.");
             var used = group.Used;
             usage.CreateScope(infura, validation: true).Rpc("eth_chainId");
@@ -188,7 +194,7 @@ internal static class AutomaticRoutingTests
             usage.CredentialValidated(infura);
             Check(!usage.IsBlocked(infura), "A successfully corrected credential kept its server quota pause.");
         }
-        Console.WriteLine("PASS: 34 automatic presets, free guards, shared headroom, quota/auth separation, mode compatibility, reset and private recovery.");
+        Console.WriteLine("PASS: 34 automatic presets, opt-in guards, shared headroom, quota/auth separation, mode compatibility, reset and private recovery.");
     }
 
     private static void QuotaExceededForTest(this OnChainUsageScope scope)

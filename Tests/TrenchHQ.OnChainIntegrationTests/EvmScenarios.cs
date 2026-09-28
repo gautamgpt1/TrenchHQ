@@ -159,10 +159,8 @@ public partial class OnChainTests
             "An unsupported/custom EVM chain unexpectedly lost its head subscription.");
         AssertEqual(TimeSpan.FromMinutes(1), EvmWalletActivityStreamSource.FinalityRefreshInterval,
             "EVM Wallet Watcher finality polling returned to its quota-heavy cadence.");
-        AssertEqual(TimeSpan.FromSeconds(5), SolanaWalletActivityStreamSource.MaintenanceInterval,
+        AssertEqual(TimeSpan.FromSeconds(30), SolanaWalletActivityStreamSource.MaintenanceInterval,
             "Solana Wallet Watcher pending-signature maintenance returned to its quota-heavy cadence.");
-        AssertEqual(TimeSpan.FromMinutes(5), SolanaWalletActivityStreamSource.TokenAccountRefreshInterval,
-            "Solana Wallet Watcher token-account repair returned to its quota-heavy cadence.");
         AssertEqual(512, EvmWalletActivityStreamSource.MaximumTokenMetadataEntries,
             "The EVM Wallet Watcher token metadata cache lost its resource bound.");
         AssertEqual(TimeSpan.FromSeconds(5), EvmWalletActivityStreamSource.TraceBatchInterval,

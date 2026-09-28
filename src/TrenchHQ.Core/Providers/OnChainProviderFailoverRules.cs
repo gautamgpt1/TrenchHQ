@@ -24,9 +24,11 @@ namespace TrenchHQ.Core.Providers
 
     internal sealed class OnChainProviderFailureEventArgs(
         string configurationId,
-        OnChainProviderFailureKind kind) : EventArgs
+        OnChainProviderFailureKind kind,
+        TimeSpan? retryAfter = null) : EventArgs
     {
         internal string ConfigurationId { get; } = configurationId;
+        internal TimeSpan? RetryAfter { get; } = retryAfter;
         internal OnChainProviderFailureKind Kind { get; } = kind;
     }
 

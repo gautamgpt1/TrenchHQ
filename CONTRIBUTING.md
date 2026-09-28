@@ -72,9 +72,10 @@ contract/mint fixtures are intentional protocol data, not personal wallet record
 ## Documentation and licensing
 
 Keep the README focused on using the product. Setup and troubleshooting belong
-in `docs/public/support.md`; implementation details belong in the four maintained
-references: BUILD, ARCHITECTURE, SERVICES and RELEASE. Update those documents
-instead of adding development transcripts or session handoffs.
+in `docs/public/support.md`. Keep BUILD, ARCHITECTURE, SERVICES and RELEASE
+focused on reproducible instructions, product behavior and durable decisions.
+Record test results in the pull request or CI run, not a running development diary.
+Update existing documents instead of adding session handoffs or vendor billing tables.
 
 Contribute only material you have the right to share. Project contributions use
 the [MIT license](LICENSE) unless an identified third-party license applies.

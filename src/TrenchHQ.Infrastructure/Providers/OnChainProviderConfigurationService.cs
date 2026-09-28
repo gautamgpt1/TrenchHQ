@@ -321,7 +321,7 @@ namespace TrenchHQ.Infrastructure.Providers
         }
 
         internal Task<OnChainProviderFailoverOutcome> TryFailoverAsync(
-            string configurationId, OnChainProviderFailureKind kind)
+            string configurationId, OnChainProviderFailureKind kind, TimeSpan? retryAfter = null)
         {
             if (!OnChainProviderFailoverRules.ShouldAdvanceRoute(kind, _hasInternetAccess()))
                 return Task.FromResult(OnChainProviderFailoverOutcome.Ignored);
@@ -344,8 +344,9 @@ namespace TrenchHQ.Infrastructure.Providers
                     _routeRetries[configurationId] = retry;
                     _retryRounds.TryGetValue(configurationId, out var round);
                     _retryRounds[configurationId] = Math.Min(round + 1, 4);
-                    _ = RetryRouteAsync(profile, networkKey, retry,
-                        TimeSpan.FromTicks(_routeRetryDelay.Ticks * Math.Min(1 << round, 5)));
+                    var delay = TimeSpan.FromTicks(_routeRetryDelay.Ticks * Math.Min(1 << round, 5));
+                    if (retryAfter > delay) delay = retryAfter.Value;
+                    _ = RetryRouteAsync(profile, networkKey, retry, delay);
                 }
             }
             ReconcileUsageBudgets(configurationChanged: false);

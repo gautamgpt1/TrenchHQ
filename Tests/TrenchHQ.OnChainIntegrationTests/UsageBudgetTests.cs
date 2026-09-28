@@ -136,6 +136,28 @@ internal static class UsageBudgetTests
             };
             Check(usage.Snapshot(OnChainProviderUsage.GroupKey(profile)).Used == expected, "Incorrect uncompressed stream-byte rate.");
         }
+        {
+            var migrationNow = new DateTimeOffset(2026, 9, 28, 12, 0, 0, TimeSpan.Zero);
+            var migrationFolder = Path.Combine(Path.GetTempPath(), "TrenchHQUsageFixture", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(migrationFolder);
+            var alchemy = Profile(OnChainProviderTypes.AlchemyWebSocket);
+            var key = OnChainProviderUsage.GroupKey(alchemy);
+            var oldGroup = new OnChainUsageGroup
+            {
+                Name = "alchemy", Enabled = true, Automatic = true, Daily = true,
+                Limit = 100_000, Used = 20, StreamBytes = 100_000,
+                AnchorUtc = migrationNow, PeriodStartUtc = migrationNow,
+                Methods = new() { ["logsSubscribe"] = 1 }
+            };
+            File.WriteAllText(Path.Combine(migrationFolder, OnChainProviderUsage.FileName),
+                JsonSerializer.Serialize(new Dictionary<string, OnChainUsageGroup> { [key] = oldGroup }));
+            using var migrated = new OnChainProviderUsage(migrationFolder, () => migrationNow);
+            Check(!migrated.IsBlocked(alchemy), "An app-imposed budget survived migration.");
+            Check(!migrated.Snapshot(key).Enabled && migrated.Snapshot(key).Used == 20, "Migration lost counters or kept the automatic cap.");
+            migrationNow = migrationNow.AddDays(1);
+            Check(!migrated.IsBlocked(alchemy), "Automatic cap returned on the next day.");
+            Check(migrated.Snapshot(key).Used == 20, "Unrestricted usage was reset on an invented daily cycle.");
+        }
         using (var usage = new OnChainProviderUsage())
         {
             var profile = Profile(OnChainProviderTypes.AlchemyYellowstone);
