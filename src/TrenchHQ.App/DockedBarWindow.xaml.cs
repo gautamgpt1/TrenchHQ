@@ -95,6 +95,8 @@ namespace TrenchHQ
                 ? PanelContentSizeRules.GetScale(_definition.ContentSize)
                 : 1d;
             Title = WindowsAppBarNative.GetPanelName(_definition.Edge, _definition.MonitorDeviceName, WindowsAppBarNative.GetMonitors());
+            PanelTitleText.Text = _definition.UseApplicationWindow ? "Application Window" : _savedWidget?.Name ?? _definition.Name;
+            ToolTipService.SetToolTip(PanelTitleText, PanelTitleText.Text);
             var textColor = ApplyAppearance();
             ApplyOrientation();
             ApplyPanelChromeScale();
@@ -843,6 +845,8 @@ namespace TrenchHQ
 
         private void ApplyOrientation()
         {
+            PanelTitleText.Visibility = DockedBarLayoutRules.IsHorizontal(_definition.Edge)
+                ? Visibility.Collapsed : Visibility.Visible;
             // One top-right toolbar; thin horizontal feeds share its row to preserve content height.
             var horizontal = DockedBarLayoutRules.IsHorizontal(_definition.Edge)
                              && _savedWidget?.Type != PanelWidgetTypes.Website && !_definition.UseApplicationWindow;
@@ -856,6 +860,8 @@ namespace TrenchHQ
 
         private void ApplyPanelChromeScale()
         {
+            PanelTitleText.FontSize = 18 * _contentScale;
+            PanelTitleText.Margin = new Thickness(12 * _contentScale, 0, 8 * _contentScale, 0);
             PanelControls.Spacing = 4 * _contentScale;
             WebsiteActions.Spacing = 2 * _contentScale;
             ContentStatusDot.Width = 8 * _contentScale;

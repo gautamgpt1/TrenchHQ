@@ -159,6 +159,9 @@ interface and help text. Known layout limitations are listed in [BUILD](BUILD.md
 
 ## Panels and fullscreen
 
+Overlays and left/right panels show the assigned widget's name in their title
+bar. Top/bottom panels omit that label to preserve space for content.
+
 Minimize and the panel shortcut toggle the same running instance. Close disposes
 it; Show or Start recreates it. Stop closes panels and blocks their shortcuts.
 Hidden or minimized docked panels release their reserved work area.

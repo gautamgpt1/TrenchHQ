@@ -44,6 +44,17 @@
             <controls:WebsiteWidget x:Name="Website" Visibility="Collapsed" />
         </Grid>
 
+        <TextBlock x:Name="PanelTitleText"
+                   Grid.Row="0" Grid.Column="0"
+                   Style="{StaticResource SectionTitleStyle}"
+                   Foreground="{StaticResource DockedBarTextBrush}"
+                   Margin="12,0,8,0"
+                   VerticalAlignment="Center"
+                   TextWrapping="NoWrap"
+                   TextTrimming="CharacterEllipsis"
+                   MaxLines="1"
+                   Visibility="Collapsed" />
+
         <StackPanel x:Name="PanelControls"
                     Grid.Column="1"
                     Margin="8,4"

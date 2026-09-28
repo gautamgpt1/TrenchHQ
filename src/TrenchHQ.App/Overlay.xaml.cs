@@ -303,10 +303,11 @@ namespace TrenchHQ
                 : double.NaN;
             RefreshApplicationButtons();
             _overlayWidthDip = OverlayLayoutRules.ClampWidth(_definition.WidthDip, _savedWidget?.Type);
-            Title = _definition.Name;
+            Title = _definition.UseApplicationWindow ? "Application Window" : _savedWidget?.Name ?? _definition.Name;
             if (OverlayTitleText != null)
             {
-                OverlayTitleText.Text = _definition.Name;
+                OverlayTitleText.Text = Title;
+                ToolTipService.SetToolTip(OverlayTitleText, Title);
             }
 
             ApplyBackdropSettings(_definition);

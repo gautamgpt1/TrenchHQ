@@ -1,5 +1,5 @@
 TrenchHQ Privacy Policy
-Applies to TrenchHQ 1.0.1.0; last updated 27 September 2026
+Applies to TrenchHQ 1.0.2.0; last updated 29 September 2026
 Publisher: Gautam Gupta (GautamGupta)
 
 TrenchHQ is a local Windows desktop monitor. It does not provide wallet custody, wallet signing, exchange-account access or trading. You can use public exchange prices without an account or provider key. Optional network features contact the services described below.

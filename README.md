@@ -13,7 +13,10 @@ screens, across one monitor or several.
 [Setup and help](https://gautamgpt1.github.io/TrenchHQ/support.html) ·
 [Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions)
 
-<!-- Add the owner's real desktop screenshot/demo here when available. -->
+![TrenchHQ desktop with a top price ticker, website side panel and wallet activity overlay](docs/images/desktop-overview.png)
+
+*Arrange prices, websites and wallet activity around your workspace. Wallet
+transactions shown are sample data.*
 
 ## Make room for what you follow
 
@@ -43,6 +46,10 @@ overlays or panels you want. Application Window is chosen directly in a panel;
 you select the app to pin each session. Compatibility details are in
 [setup and help](docs/public/support.md#pin-an-application).
 
+![Widgets editor with Bitcoin search results and selected ticker markets](docs/images/widgets.png)
+
+*Create reusable widgets and choose the markets you want to follow.*
+
 ### Arrange it your way
 
 - Float overlays above other windows or dock panels to any screen edge.
@@ -50,6 +57,10 @@ you select the app to pin each session. Compatibility details are in
 - Adjust size, placement and appearance to suit your workspace.
 - Save widgets and layouts, and show or hide panels with shortcuts.
 - Choose whether to start with Windows and reopen the dashboard from the tray.
+
+![Desktop Setup showing panel content, shortcut, colors, screen position and thickness](docs/images/desktop-setup.png)
+
+*Choose your panel's content, position, size, colors and keyboard shortcut.*
 
 ### Follow the market you mean
 

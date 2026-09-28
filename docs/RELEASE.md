@@ -9,7 +9,9 @@ There is no signed public installer yet.
 
 The first Microsoft Store submission is a draft, with Free pricing selected.
 Its uploaded package predates the current source changes and must be replaced.
-Screenshots, final candidate checks and certification are still pending.
+Three listing screenshots are prepared in `docs/images`; the wallet rows in the
+desktop overview are labeled sample data. Final candidate checks, the replacement
+upload and certification are still pending.
 The reserved identity is in `release/store-identity.json`; the application
 version is maintained in `Directory.Build.props` and the package manifest.
 
