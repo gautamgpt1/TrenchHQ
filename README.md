@@ -4,6 +4,8 @@
 
 **Your crypto HQ, always in view.**
 
+[![Download for Windows](docs/images/download-for-windows.svg)](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge)
+
 TrenchHQ is a customizable crypto desktop companion for Windows. Keep prices,
 wallet activity, X feeds, websites and other apps visible while you work, browse
 or trade. Arrange them in floating overlays or panels along the edges of your
@@ -87,8 +89,21 @@ what each feature needs. Detailed integration behavior lives in
 
 ## Get TrenchHQ
 
-The first signed Windows download is being prepared. There is no public installer
-yet. To try the app today, [build from source](docs/BUILD.md) on Windows x64.
+[![Download for Windows](docs/images/download-for-windows.svg)](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge)
+
+Free for Windows x64.
+Run the downloaded **TrenchHQ Installer.exe** to install the app through Microsoft
+Store. Microsoft provides the trusted signature, download and automatic updates.
+
+You can also open the [Microsoft Store listing](https://apps.microsoft.com/detail/9PLRS95WJKSS)
+or install with WinGet:
+
+```powershell
+winget install --id 9PLRS95WJKSS --source msstore
+```
+
+See [release notes](https://github.com/gautamgpt1/TrenchHQ/releases) or
+[build from source](docs/BUILD.md).
 
 ### Set up your first ticker
 

@@ -2,16 +2,21 @@
 
 ## Current status
 
+TrenchHQ 1.0.2 is available free on the
+[Microsoft Store](https://apps.microsoft.com/detail/9PLRS95WJKSS).
+Microsoft signs and distributes the Store package and handles updates. The
+[Store Web Installer](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge)
+provides the Windows download linked from the README and website.
+
 The [source repository](https://github.com/gautamgpt1/TrenchHQ),
 [help site](https://gautamgpt1.github.io/TrenchHQ/) and
 [privacy policy](https://gautamgpt1.github.io/TrenchHQ/privacy.txt) are public.
-There is no signed public installer yet.
+GitHub releases provide versioned source and release notes with the Store install
+link. No independently signed MSIX is distributed on GitHub yet.
 
-The first Microsoft Store submission is a draft, with Free pricing selected.
-Its uploaded package predates the current source changes and must be replaced.
-Three listing screenshots are prepared in `docs/images`; the wallet rows in the
-desktop overview are labeled sample data. Final candidate checks, the replacement
-upload and certification are still pending.
+Three listing screenshots are maintained in `docs/images`; wallet rows in the
+desktop overview are labeled sample data. Store publication does not establish
+completion of the service reviews or every validation item below.
 The reserved identity is in `release/store-identity.json`; the application
 version is maintained in `Directory.Build.props` and the package manifest.
 
@@ -24,11 +29,13 @@ or CI run; this document tracks release decisions and outstanding requirements.
 | Channel | Purpose | Signing and updates |
 | --- | --- | --- |
 | Microsoft Store | Primary Windows installation | Microsoft signs after acceptance and handles updates |
-| GitHub Releases / direct download | Independent secondary installation | Requires an approved trusted signer and a tested update path |
+| GitHub Releases | Versioned source and release notes | Links to the Microsoft Store Web Installer |
+| Independent direct download (future) | Secondary installation channel | Requires an approved trusted signer and a tested update path |
 | GitHub repository | Source, documentation, issues and contributions | Build instructions and locked dependencies |
 
 SignPath Foundation is the preferred direct-signing option, subject to acceptance.
-It has not accepted TrenchHQ. Its [conditions](https://signpath.org/terms) require
+It has not accepted TrenchHQ and is not required for Store distribution.
+Its [conditions](https://signpath.org/terms) require
 maintained, released open-source software and verifiable builds. Confirm
 eligibility, including the native helper and bundled components, before relying
 on it. A Store rejection does not guarantee immediate SignPath availability.
@@ -37,13 +44,18 @@ Application Window remains part of the product. If Store review rejects that
 feature, pursue approved trusted direct distribution while addressing genuine
 security findings; do not remove the feature solely to obtain Store acceptance.
 
-Build both channels from the same approved version tag. Their publisher
-identities may differ, so do not promise cross-updates or shared settings.
+When adding independent distribution, build both channels from the same approved
+version tag. Their publisher identities may differ, so do not promise cross-updates
+or shared settings.
 Obtain the direct certificate's exact publisher before configuring that package;
 keep the reserved Store identity intact. Never publish unsigned or self-signed
 binaries as end-user downloads.
 
-## Before the first binary release
+## Release checks
+
+Retain candidate evidence for each binary release. Unchecked items below remain
+open; the Store listing alone does not mark them complete. Documentation and
+download-link updates do not require a new application package.
 
 - [ ] Finish screenshots and listing assets using the actual app and cleared content.
 - [ ] Resolve the open API/data/brand decisions in [Services](SERVICES.md#before-distribution).

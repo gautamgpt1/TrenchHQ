@@ -8,9 +8,16 @@ TrenchHQ puts the information you follow on your Windows desktop. A **widget**
 is what you watch; a **panel** is where you see it. You can place the same saved
 widget in several panels, each with its own size and appearance.
 
-The first signed Windows download is being prepared. To try the current app,
-follow [Build from source](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/BUILD.md)
-on Windows x64.
+[Download TrenchHQ for Windows](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge)
+and run **TrenchHQ Installer.exe**. The free app installs through Microsoft Store,
+which handles signing and automatic updates. You can also use the
+[Store listing](https://apps.microsoft.com/detail/9PLRS95WJKSS) or WinGet:
+
+```powershell
+winget install --id 9PLRS95WJKSS --source msstore
+```
+
+Developers can [build from source](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/BUILD.md).
 
 ## Set up your first ticker
 
@@ -141,9 +148,9 @@ are supported. Streaming cannot guarantee delivery of every event during an outa
 ### Windows
 
 The app currently targets Windows x64; ARM64 and 32-bit Windows are not supported.
-The tested Windows versions for the first public installer will be listed when
-it is released. The package's technical minimum alone is not a compatibility
-promise.
+The [Microsoft Store listing](https://apps.microsoft.com/detail/9PLRS95WJKSS)
+shows installation requirements, and the installer checks device eligibility.
+The package's technical minimum alone is not a compatibility promise.
 
 ## When something goes wrong
 

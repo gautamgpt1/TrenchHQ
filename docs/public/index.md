@@ -9,6 +9,12 @@ wallet activity, X feeds, websites and other apps visible in floating overlays
 or panels along your screen edges. Arrange them across your monitors and save
 a layout that fits the way you work.
 
+<p><a class="download-button" href="https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge">Download for Windows</a></p>
+
+Free for Windows x64. Run **TrenchHQ Installer.exe** to install through Microsoft
+Store, with trusted signing and automatic updates.
+[View in Microsoft Store](https://apps.microsoft.com/detail/9PLRS95WJKSS).
+
 ## Make it your own
 
 - Watch exchange prices or specific on-chain pools with **Price Ticker**.
@@ -19,9 +25,15 @@ a layout that fits the way you work.
 
 ## Get started
 
-The first signed Windows download is being prepared. There is no public installer
-yet. You can [build from source](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/BUILD.md)
-today, or browse the [project on GitHub](https://github.com/gautamgpt1/TrenchHQ).
+Use **Download for Windows** above, or install with WinGet:
+
+```powershell
+winget install --id 9PLRS95WJKSS --source msstore
+```
+
+See [release notes](https://github.com/gautamgpt1/TrenchHQ/releases),
+[build from source](https://github.com/gautamgpt1/TrenchHQ/blob/main/docs/BUILD.md),
+or browse the [project on GitHub](https://github.com/gautamgpt1/TrenchHQ).
 
 - [Set up your first ticker and explore the features](support.html)
 - [Ask a question or share a layout](https://github.com/gautamgpt1/TrenchHQ/discussions)

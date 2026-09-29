@@ -15,9 +15,9 @@ depend on maintainer availability; there is no guaranteed response window.
 
 ## Supported versions
 
-Report against the current `main` branch and identify the commit you tested.
-There is no stable public binary or long-term support branch yet. This policy
-will identify supported releases when signed downloads become available.
+Report against the latest Microsoft Store release (currently 1.0.2) or the
+current `main` branch. Identify the installed version or commit you tested.
+There is no long-term support branch; fixes are delivered in subsequent releases.
 
 ## What to report
 
