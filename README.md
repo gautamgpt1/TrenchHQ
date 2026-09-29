@@ -4,7 +4,15 @@
 
 **Your crypto HQ, always in view.**
 
-[![Download for Windows](docs/images/download-for-windows.svg)](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge)
+<a href="https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge">
+  <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Get it from Microsoft">
+</a>
+
+[![Latest release](https://img.shields.io/github/v/release/gautamgpt1/TrenchHQ?style=flat-square&label=release)](https://github.com/gautamgpt1/TrenchHQ/releases/latest)
+[![CI](https://github.com/gautamgpt1/TrenchHQ/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/gautamgpt1/TrenchHQ/actions/workflows/verify.yml)
+[![Windows x64](https://img.shields.io/badge/Windows-x64-0078D4?style=flat-square)](https://apps.microsoft.com/detail/9PLRS95WJKSS)
+[![License: MIT](https://img.shields.io/github/license/gautamgpt1/TrenchHQ?style=flat-square)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/gautamgpt1/TrenchHQ?style=flat-square)](https://github.com/gautamgpt1/TrenchHQ/stargazers)
 
 TrenchHQ is a customizable crypto desktop companion for Windows. Keep prices,
 wallet activity, X feeds, websites and other apps visible while you work, browse
@@ -89,7 +97,9 @@ what each feature needs. Detailed integration behavior lives in
 
 ## Get TrenchHQ
 
-[![Download for Windows](docs/images/download-for-windows.svg)](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge)
+<a href="https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge">
+  <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Get it from Microsoft">
+</a>
 
 Free for Windows x64.
 Run the downloaded **TrenchHQ Installer.exe** to install the app through Microsoft
@@ -152,7 +162,7 @@ build it; no other development checkout is required.
 - [Build and test](docs/BUILD.md)
 - [Architecture](docs/ARCHITECTURE.md)
 - [Services and integrations](docs/SERVICES.md)
-- [Release status](docs/RELEASE.md)
+- [Releases](https://github.com/gautamgpt1/TrenchHQ/releases)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 
 ## License

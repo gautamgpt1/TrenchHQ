@@ -1,6 +1,6 @@
-# Release plan
+# Releases and distribution
 
-## Current status
+## Current distribution
 
 TrenchHQ 1.0.2 is available free on the
 [Microsoft Store](https://apps.microsoft.com/detail/9PLRS95WJKSS).
@@ -24,8 +24,6 @@ Source publication, website deployment, signing and binary release are separate
 actions. Keep test logs, artifact hashes and review evidence with the candidate
 or CI run; this document tracks release decisions and outstanding requirements.
 
-## Distribution
-
 | Channel | Purpose | Signing and updates |
 | --- | --- | --- |
 | Microsoft Store | Primary Windows installation | Microsoft signs after acceptance and handles updates |
@@ -33,52 +31,35 @@ or CI run; this document tracks release decisions and outstanding requirements.
 | Independent direct download (future) | Secondary installation channel | Requires an approved trusted signer and a tested update path |
 | GitHub repository | Source, documentation, issues and contributions | Build instructions and locked dependencies |
 
-SignPath Foundation is the preferred direct-signing option, subject to acceptance.
-It has not accepted TrenchHQ and is not required for Store distribution.
-Its [conditions](https://signpath.org/terms) require
-maintained, released open-source software and verifiable builds. Confirm
-eligibility, including the native helper and bundled components, before relying
-on it. A Store rejection does not guarantee immediate SignPath availability.
+Store distribution is the current installation path. Independent signing and
+update infrastructure are deferred until there is a concrete need for another
+channel.
 
-Application Window remains part of the product. If Store review rejects that
-feature, pursue approved trusted direct distribution while addressing genuine
-security findings; do not remove the feature solely to obtain Store acceptance.
+## Release process
 
-When adding independent distribution, build both channels from the same approved
-version tag. Their publisher identities may differ, so do not promise cross-updates
-or shared settings.
-Obtain the direct certificate's exact publisher before configuring that package;
-keep the reserved Store identity intact. Never publish unsigned or self-signed
-binaries as end-user downloads.
+For each application update:
 
-## Release checks
+1. Review the intended source, version, locked dependencies and applicable
+   [service-use decisions](SERVICES.md#before-distribution). Use actual app
+   screenshots with cleared content for listing changes.
+2. Run the [candidate checks](BUILD.md#verify) against that source, including
+   current public exchange checks and newly authorized provider/X tests.
+   Record untested plans and features honestly.
+3. Scan source and payload for secrets, unexpected files and security findings;
+   review dependency licenses and native binaries.
+4. [Build and inspect the package](BUILD.md#package-privately). Record source
+   fingerprint, identity, toolchain and artifact hashes outside the public checkout.
+5. Verify live privacy/support URLs and that served privacy text matches the
+   bundled policy. Complete submission review, signature inspection, Defender
+   scanning and WACK; repeat affected checks when the candidate changes.
+6. Retain signed-installation and test-ring evidence using the matrix below,
+   then publish release notes and a source tag for the approved version.
 
-Retain candidate evidence for each binary release. Unchecked items below remain
-open; the Store listing alone does not mark them complete. Documentation and
-download-link updates do not require a new application package.
+This describes the recurring process, not a record that every check passed for
+1.0.2. Evidence belongs with its candidate or CI run. Documentation and download-link
+updates do not require a new application package.
 
-- [ ] Finish screenshots and listing assets using the actual app and cleared content.
-- [ ] Resolve the open API/data/brand decisions in [Services](SERVICES.md#before-distribution).
-- [ ] Review and tag the intended source, version and locked dependencies.
-- [ ] Run the [candidate checks](BUILD.md#verify) against that exact source,
-  including current public exchange checks and newly authorized provider/X tests.
-  Record untested plans and features honestly.
-- [ ] Scan source and payload for secrets, unexpected files and security findings;
-  review dependency licenses and native binaries.
-- [ ] Build and inspect the channel package. Record source fingerprint, identity,
-  toolchain and artifact hashes outside the public checkout.
-- [ ] Verify live privacy/support URLs and that the served privacy text matches
-  the policy bundled with the candidate.
-- [ ] Complete submission review, trusted signing, signature inspection, Defender
-  scanning and WACK. Repeat affected checks when the candidate changes.
-- [ ] Complete the signed clean-Windows matrix below.
-- [ ] Observe the small test ring before expanding distribution.
-
-Fresh account tests, clean Windows machines and final signed-artifact evidence
-are still required. Synthetic tests and local developer installations do not
-replace them. Packaging commands are in [Build](BUILD.md#package-privately).
-
-## Code signing policy
+### Code signing policy
 
 Maintainer and signing approver: [Gautam Gupta (@gautamgpt1)](https://github.com/gautamgpt1).
 Signing requires explicit approval of the verified artifact. Use MFA for signing
@@ -90,7 +71,7 @@ byte-identical signed packages. A direct `.appinstaller` feed needs its final
 HTTPS location and tested install/update/rollback behavior before publication.
 Add any signer attribution only after approval.
 
-## Certification notes
+### Certification notes
 
 The product is read-only: no wallet signing/custody, exchange-account access,
 orders, withdrawals, swaps or mining. It needs `runFullTrust` for desktop windows,
@@ -137,7 +118,16 @@ Sources: [Store policies](https://learn.microsoft.com/en-us/windows/apps/publish
 [capabilities](https://learn.microsoft.com/en-us/windows/apps/package-and-deploy/app-capability-declarations),
 [SignPath conditions](https://signpath.org/terms).
 
-## Signed clean-Windows matrix
+## Post-release validation and hardening
+
+Store availability is confirmed. The service-use and branding reviews in
+[Services](SERVICES.md#before-distribution) remain open; Store acceptance does
+not resolve those obligations. Fresh provider/X account tests and complete
+signed-artifact and clean-Windows evidence are still outstanding in this release
+plan. Synthetic tests and local developer installations do not replace them.
+Retain results as they become available; do not mark unverified work complete.
+
+### Signed clean-Windows matrix
 
 Use disposable, properly licensed Windows installations with the exact signed
 artifact: a current Windows 11 x64 edition and the oldest serviced Windows SKU
@@ -153,7 +143,7 @@ artifact hashes and sanitized observations. Do not mark unavailable tests passed
 | Update | Same-family lower signed test version, synthetic settings/credentials, upgrade preserves state |
 | Interrupted update | VM snapshots and controlled interruption; one complete version stays launchable |
 | Rollback replacement | Last-known-good source with a new higher version and same approved identity; preserve state |
-| Identity/channel | Store/direct coexistence and update tested; no assumed DPAPI migration |
+| Identity/channel (future direct distribution) | Store/direct coexistence and update tested before adding that channel; no assumed DPAPI migration |
 | Quit/uninstall | No orphan processes, appbar reservation, startup registration or unusable pinned target; data/cache behavior matches privacy |
 | Explorer restart | Tray/appbar recovery and eventual cleanup, inside a VM |
 | Sleep/network | Resume and offline/network-switch recovery; no busy retry or stale quote presented as current |
@@ -164,7 +154,7 @@ artifact hashes and sanitized observations. Do not mark unavailable tests passed
 WACK needs an appropriate administrator test session; preserve its report and
 failure details. A local development registration is not this matrix.
 
-## Ring and rollback
+### Ring and rollback
 
 After install/data-safety gates pass, start with the publisher and 2–5 consenting
 testers for at least 72 hours, including the 24-hour soak. Use one known signed
@@ -180,3 +170,22 @@ data or reuse a published version for different bits.
 Trading, wallet custody/signing, hosted execution, additional chains and other
 architectures require separate product, security and publisher review. They are
 not implied commitments for this first release.
+
+## Future direct distribution
+
+Revisit independent signed downloads when users need a Store-free installation
+path. SignPath Foundation is an option subject to acceptance; TrenchHQ has not
+been accepted, and no SignPath work is needed for the current Store channel.
+Its [conditions](https://signpath.org/terms) require maintained, released
+open-source software and verifiable builds. Confirm eligibility, including the
+native helper and bundled components, before relying on it.
+
+Application Window remains part of the product. If a future Store review rejects
+that feature, address genuine security findings and consider approved trusted
+direct distribution; do not remove it solely to obtain Store acceptance.
+
+When adding independent distribution, build both channels from the same approved
+version tag. Their publisher identities may differ, so do not promise cross-updates
+or shared settings. Obtain the direct certificate's exact publisher before
+configuring that package; keep the reserved Store identity intact. Never publish
+unsigned or self-signed binaries as end-user downloads.

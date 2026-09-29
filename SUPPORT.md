@@ -32,6 +32,8 @@ Community support is provided as the maintainer and contributors are available.
 There is no guaranteed response time. Provider billing, account access and
 regional restrictions must be resolved with the service concerned.
 
-The first signed Windows download is still being prepared. GitHub source builds
-are for people comfortable with the documented development setup; release and
-installation status is tracked in [RELEASE](docs/RELEASE.md).
+TrenchHQ is available free through Microsoft Store. Use the official
+[Windows installer](https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge),
+the [Store listing](https://apps.microsoft.com/detail/9PLRS95WJKSS), or install with
+`winget install --id 9PLRS95WJKSS --source msstore`.
+Developers can [build from source](docs/BUILD.md).
