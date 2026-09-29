@@ -9,7 +9,7 @@
     "start": "node dist/sidecar.bundle.cjs"
   },
   "dependencies": {
-    "ccxt": "^4.5.78",
+    "ccxt": "^4.5.84",
     "http-proxy-agent": "^8.0.0",
     "https-proxy-agent": "^8.0.0",
     "protobufjs": "^7.6.6",
