@@ -8,10 +8,6 @@
   <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Get it from Microsoft">
 </a>
 
-
-https://github.com/user-attachments/assets/20bb069d-1e8f-46ca-b268-d88f020a0d00
-
-
 [![Latest release](https://img.shields.io/github/v/release/gautamgpt1/TrenchHQ?style=flat-square&label=release)](https://github.com/gautamgpt1/TrenchHQ/releases/latest)
 [![CI](https://github.com/gautamgpt1/TrenchHQ/actions/workflows/verify.yml/badge.svg?branch=main)](https://github.com/gautamgpt1/TrenchHQ/actions/workflows/verify.yml)
 [![Windows x64](https://img.shields.io/badge/Windows-x64-0078D4?style=flat-square)](https://apps.microsoft.com/detail/9PLRS95WJKSS)
@@ -26,6 +22,8 @@ screens, across one monitor or several.
 [Get started](#get-trenchhq) · [Website](https://gautamgpt1.github.io/TrenchHQ/) ·
 [Setup and help](https://gautamgpt1.github.io/TrenchHQ/support.html) ·
 [Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions)
+
+https://github.com/user-attachments/assets/20bb069d-1e8f-46ca-b268-d88f020a0d00
 
 ![TrenchHQ desktop with a top price ticker, website side panel and wallet activity overlay](docs/images/desktop-overview.png)
 
