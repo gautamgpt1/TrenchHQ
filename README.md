@@ -1,8 +1,6 @@
-<img src="src/TrenchHQ.App/Assets/TrenchHQ.png" width="80" height="80" alt="TrenchHQ logo">
-
-# TrenchHQ
-
-**Your crypto HQ, always in view.**
+<p align="center">
+  <img src="docs/images/trenchhq-banner.png" width="800" alt="TrenchHQ — Your crypto HQ, always in view.">
+</p>
 
 <a href="https://get.microsoft.com/installer/download/9PLRS95WJKSS?referrer=appbadge">
   <img src="https://get.microsoft.com/images/en-us%20dark.svg" width="200" alt="Get it from Microsoft">
