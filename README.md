@@ -25,11 +25,6 @@ screens, across one monitor or several.
 
 https://github.com/user-attachments/assets/5d758cf8-a1ca-49ea-9b81-8c4860817809
 
-![TrenchHQ desktop with a top price ticker, website side panel and wallet activity overlay](docs/images/desktop-overview.png)
-
-*Arrange prices, websites and wallet activity around your workspace. Wallet
-transactions shown are sample data.*
-
 ## Make room for what you follow
 
 Watching crypto can mean jumping between exchange tabs, wallet trackers, X and
@@ -42,6 +37,11 @@ charts. TrenchHQ gives the information you follow a place on your desktop:
 
 Choose what stays visible, where it sits and how it looks. Save your layout so
 you can bring it back without arranging everything again.
+
+![TrenchHQ desktop with a top price ticker, website side panel and wallet activity overlay](docs/images/desktop-overview.png)
+
+*Arrange prices, websites and wallet activity around your workspace. Wallet
+transactions shown are sample data.*
 
 ## What you can put on your desktop
 
