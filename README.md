@@ -23,7 +23,7 @@ screens, across one monitor or several.
 [Setup and help](https://gautamgpt1.github.io/TrenchHQ/support.html) ·
 [Discussions](https://github.com/gautamgpt1/TrenchHQ/discussions)
 
-https://github.com/user-attachments/assets/20bb069d-1e8f-46ca-b268-d88f020a0d00
+https://github.com/user-attachments/assets/5d758cf8-a1ca-49ea-9b81-8c4860817809
 
 ![TrenchHQ desktop with a top price ticker, website side panel and wallet activity overlay](docs/images/desktop-overview.png)
 
